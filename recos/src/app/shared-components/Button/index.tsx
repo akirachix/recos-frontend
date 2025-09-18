@@ -4,13 +4,15 @@ import { ButtonHTMLAttributes, ReactNode } from 'react';
 import { cva, VariantProps } from 'class-variance-authority';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center rounded font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-600 disabled:opacity-50 disabled:cursor-not-allowed',
+  'inline-flex items-center justify-center rounded font-medium transition-colors duration-200 focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed',
   {
     variants: {
       variant: {
         primary: 'bg-[#1E1B4B] text-white hover:bg-[#141244]',
         secondary: 'bg-purple-100 text-[#1E1B4B] hover:bg-purple-200',
         outline: 'border border-[#1E1B4B] text-[#1E1B4B] hover:bg-purple-50',
+        purple: 'bg-[#803CEB] text-white',
+        period: 'bg-white text-black border-1',
       },
       size: {
         sm: 'px-2 py-1 text-sm',
