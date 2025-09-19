@@ -21,8 +21,8 @@ export const useFetchUser = () => {
         const userData = await fetchUser();
         setUser(Array.isArray(userData) ? userData[0] : userData || null);
         setError(null);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : String(err));
+      } catch (error) {
+        setError((error as Error).message);
       } finally {
         setLoading(false);
       }

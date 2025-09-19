@@ -17,8 +17,6 @@ export async function GET(request: NextRequest) {
       }
     });
 
-  
-
     const userData = await response.json();
     return NextResponse.json(userData);
     
