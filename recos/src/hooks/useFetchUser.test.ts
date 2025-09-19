@@ -8,7 +8,7 @@ describe('useFetchUser', () => {
     jest.clearAllMocks();
   });
   it('should fetch user successfully and set states correctly', async () => {
-    const mockUserData = { id: 1, first_name: 'John', last_name: 'Doe', email: 'john@example.com', image: null };
+    const mockUserData = { id: 1, first_name: 'James', last_name: 'Darren', email: 'james@example.com', image: null };
     mockFetchUser.mockResolvedValue(mockUserData);
     const { result } = renderHook(() => useFetchUser());
     expect(result.current.loading).toBe(true);
@@ -23,8 +23,8 @@ describe('useFetchUser', () => {
   });
   it('should handle array response and take first element', async () => {
     const mockUserData = [
-      { id: 1, first_name: 'John', last_name: 'Doe', email: 'john@example.com' },
-      { id: 2, first_name: 'Jane', last_name: 'Smith' },
+      { id: 1, first_name: 'James', last_name: 'Doe', email: 'james@example.com' },
+      { id: 2, first_name: 'Julia', last_name: 'Seth' },
     ];
     mockFetchUser.mockResolvedValue(mockUserData);
     const { result } = renderHook(() => useFetchUser());

@@ -8,7 +8,7 @@ describe('fetchUser', () => {
   });
 
   it('should fetch user data successfully', async () => {
-    const mockUserData = { id: 1, first_name: 'John', last_name: 'Doe', email: 'john@example.com' };
+    const mockUserData = { id: 1, first_name: 'James', last_name: 'Darren', email: 'james@example.com' };
     (global.fetch as jest.Mock).mockResolvedValue({
       ok: true,
       json: jest.fn().mockResolvedValue(mockUserData),
