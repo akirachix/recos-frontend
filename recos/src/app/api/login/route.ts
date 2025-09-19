@@ -10,11 +10,13 @@ interface LoginResponseData {
     message?: string;
 }
 
+const base_url = process.env.BASE_URL;
+
 export async function POST(request: Request): Promise<NextResponse> {
     try {
         const { email, password }: LoginRequestBody = await request.json();
         
-        const response: Response = await fetch('https://recos-662b3d74caf2.herokuapp.com/api/login/', {
+        const response: Response = await fetch(`${base_url}/api/login/`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })

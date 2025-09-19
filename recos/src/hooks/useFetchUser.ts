@@ -16,24 +16,13 @@ export const useFetchUser = () => {
 
   useEffect(() => {
     const getUser = async () => {
+      setLoading(true);
       try {
         const userData = await fetchUser();
-        
-        if (Array.isArray(userData) && userData.length > 0) {
-          setUser(userData[0]);
-        } else if (userData && typeof userData === 'object') {
-          setUser(userData);
-        } else {
-          setUser(null);
-        }
-        
+        setUser(Array.isArray(userData) ? userData[0] : userData || null);
         setError(null);
       } catch (err) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError(String(err));
-        }
+        setError(err instanceof Error ? err.message : String(err));
       } finally {
         setLoading(false);
       }

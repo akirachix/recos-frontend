@@ -1,12 +1,7 @@
 export const fetchUser = async () => {
   try {
     
-    const response = await fetch('/api/users', {
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
+    const response = await fetch('/api/users');
 
     if (!response.ok) {
       const errorData = await response.json();

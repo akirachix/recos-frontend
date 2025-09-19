@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
 
+const base_url = process.env.BASE_URL;
+
 export async function GET() {
   try {
     const email = 'nebyat797@gmail.com';
     const password = 'password123';
         
-    const response = await fetch('https://recos-662b3d74caf2.herokuapp.com/api/login/', {
+    const response = await fetch(`${base_url}/api/login/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
