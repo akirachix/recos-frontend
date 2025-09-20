@@ -13,6 +13,9 @@ export default function CompaniesExactStyledPage() {
   const handleAddCompanyClick = () => {
     router.push("/authentication/odoo");
   };
+  const handleCompanyClick = (companyId: string) => {
+    router.push(`/dashboard/${companyId}`);
+  };
 
   if (!token) {
     return (
@@ -21,6 +24,7 @@ export default function CompaniesExactStyledPage() {
       </p>
     );
   }
+
   const companyList = Array.isArray(companies) ? companies : [];
 
   return (
@@ -40,13 +44,15 @@ export default function CompaniesExactStyledPage() {
             </h2>
 
             {isLoading && <p>Loading companies...</p>}
+            {error && <p className="text-red-500">Error loading companies</p>}
+
             <div className="flex flex-col space-y-4 w-full max-w-md mx-auto">
               {companyList.map((comp) => (
                 <Button
                   key={comp.company_id}
                   variant="secondary"
                   className="text-gray-800 py-2 sm:py-3 text-sm sm:text-base md:text-lg hover:bg-purple-50 transition duration-300 font-semibold border cursor-pointer"
-                  onClick={() => {}}
+                  onClick={() => handleCompanyClick(comp.company_id)}
                 >
                   {comp.company_name}
                 </Button>
