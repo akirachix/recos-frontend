@@ -1,7 +1,7 @@
-import Image from "next/image";
+import React from "react";
+import OdooPage from "./authentication/odoo/page";
+
 
 export default function Home() {
-  return (
-  <></>
-  );
+  return <OdooPage />;
 }

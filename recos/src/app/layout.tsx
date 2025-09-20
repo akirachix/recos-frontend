@@ -6,9 +6,6 @@ const roboto = Roboto({
   variable: "--font-roboto",
   subsets: ["latin"],
 });
-
-
-
 export const metadata: Metadata = {
   title: "Recos",
   description: "Revolutionize Your Interview Process",
