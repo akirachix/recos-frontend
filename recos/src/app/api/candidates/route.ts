@@ -1,29 +1,4 @@
-// const baseurl = process.env.BASE_URL;
 
-// export async function GET(request: Request) {
-//   try {
-//     const token = request.headers.get("authorization")?.split(" ")[1];
-//     const response = await fetch(`${baseurl}/candidates/`, {
-//       headers: {
-//         ...(token ? { Authorization: `Token ${token}` } : {}),
-//       },
-//     });
-
-  
-//     const result = await response.json();
-
-//     return new Response(JSON.stringify(result), {
-//       status: 200,
-//       statusText: "Candidates fetched successfully",
-//       headers: { "Content-Type": "application/json" },
-//     });
-//   } catch (error) {
-//     return new Response(
-//       JSON.stringify({ message: "Failed to fetch candidates: " + (error as Error).message }),
-//       { status: 500, headers: { "Content-Type": "application/json" } }
-//     );
-//   }
-// }
 
 const baseurl = process.env.BASE_URL;
 
