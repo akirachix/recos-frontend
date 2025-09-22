@@ -1,17 +1,13 @@
-import type { Metadata } from "next";
-import { Roboto } from "next/font/google";
-import "./globals.css";
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import ClientLayout from './shared-components/ClientLayout';
 
-const roboto = Roboto({
-  variable: "--font-roboto",
-  subsets: ["latin"],
-});
-
-
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "Recos",
-  description: "Revolutionize Your Interview Process",
+  title: 'Recos Dashboard',
+  description: 'Recruitment Dashboard',
 };
 
 export default function RootLayout({
@@ -21,10 +17,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${roboto.variable}  antialiased`}
-      >
-        {children}
+      <body className={inter.className}>
+          {children}
       </body>
     </html>
   );
