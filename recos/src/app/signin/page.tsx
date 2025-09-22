@@ -100,7 +100,7 @@ export default function SignIn() {
             </div>
 
             <div className="flex justify-end text-sm text-[#24184e]">
-              <Link href="/Forgotpassword" className="text-purple-700 hover:underline">
+              <Link href="/authentication/forgot-password" className="text-purple-700 hover:underline">
                 Forgot Password?
               </Link>
             </div>
