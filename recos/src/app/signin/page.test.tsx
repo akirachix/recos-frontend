@@ -77,7 +77,7 @@ describe("SignIn", () => {
     jest.runAllTimers();
 
     await waitFor(() => {
-      expect(pushMock).toHaveBeenCalledWith("/dashboard");
+      expect(pushMock).toHaveBeenCalledWith("/authentication/odoo");
     });
   });
 
