@@ -1,7 +1,6 @@
 import { renderHook, act } from "@testing-library/react";
 import { useResetPassword } from "./useFetchResetPassword";
-import * as fetchUtils from "@/utils/fetchResetPassword";
-
+import * as fetchUtils from "@/app/utils/fetchResetPassword"; 
 jest.mock("@/app/utils/fetchResetPassword");
 
 describe("useResetPassword hook", () => {

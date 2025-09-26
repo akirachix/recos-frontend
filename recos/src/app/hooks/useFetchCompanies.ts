@@ -1,49 +1,52 @@
-import { useState, useEffect } from "react";
+"use client";
+import { useState, useEffect, useRef } from "react";
+import { fetchCompanies } from "../utils/fetchCompanies";
+import { getAuthToken } from "../utils/useToken";
 
 interface Company {
   company_id: string;
   company_name: string;
 }
-async function fetchCompanies(token: string): Promise<Company[]> {
-  const response = await fetch("/api/companies", {
-    headers: {
-      Authorization: `Token ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch companies: ${response.statusText}`);
-  }
-
-  const result = await response.json();
-  return result.data || [];
-}
-export function useCompanies(token: string | null) {
+export function useCompanies() {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
+  const hasFetched = useRef(false); 
+  const getCompaniesData = async () => {
+    if (hasFetched.current) return;
+    
+    const token = getAuthToken();
+    
     if (!token) {
-      setError("Missing token");
       setCompanies([]);
+      setIsLoading(false);
       return;
     }
+    
     setIsLoading(true);
     setError(null);
 
-    fetchCompanies(token)
-      .then((data) => {
-        setCompanies(data);
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setCompanies([]);
-        setIsLoading(false);
-      });
-  }, [token]);
+    try {
+      const data = await fetchCompanies(token);
+      setCompanies(Array.isArray(data) ? data : []);
+      hasFetched.current = true; 
+    } catch (err) {
+      setError((err as Error).message);
+      setCompanies([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  return { companies, isLoading, error };
+  useEffect(() => {
+    getCompaniesData();
+  }, []); 
+
+  return { 
+    companies, 
+    isLoading, 
+    error, 
+    refetch: getCompaniesData 
+  };
 }

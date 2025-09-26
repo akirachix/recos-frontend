@@ -21,7 +21,17 @@ export default function BottomNav() {
     '/settings': 'Settings',
   };
 
-  const currentTitle = routeToTitle[pathname] || 'Dashboard';
+  const getTitleFromPath = (path: string) => {
+    let currentTitle = 'Dashboard';
+    for (const route in routeToTitle) {
+      if (path.startsWith(route) && route.length > (Object.keys(routeToTitle).find(r => path.startsWith(r) && r.length > route.length)?.length || 0)) {
+        currentTitle = routeToTitle[route];
+      }
+    }
+    return currentTitle;
+  };
+
+  const currentTitle = getTitleFromPath(pathname);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -36,9 +46,8 @@ export default function BottomNav() {
     };
   }, []);
 
-
   return (
-    <div className="flex flex-row items-center justify-between px-4 sm:px-8 lg:px-16 py-4 gap-4 lg:gap-0">
+    <div className="flex flex-row items-center justify-between sm:px-8 py-4 gap-4 lg:gap-0">
       <div className="flex items-center space-x-4">
         <h1 className="text-2xl sm:text-3xl font-semibold text-[#1E1B4B]">{currentTitle}</h1>
       </div>

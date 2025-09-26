@@ -1,6 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { useFetchUser } from './useFetchUser';
-import * as fetchUserModule from '@/utils/fetchUser';
+import * as fetchUserModule from '@/app/utils/fetchUser';
 jest.mock('@/utils/fetchUser');
 const mockFetchUser = fetchUserModule.fetchUser as jest.Mock;
 describe('useFetchUser', () => {

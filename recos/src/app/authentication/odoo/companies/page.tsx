@@ -2,28 +2,24 @@
 import Image from "next/image";
 import Button from "@/app/authentication/components/Button";
 import { useCompanies } from "@/app/hooks/useFetchCompanies";
-import { useToken } from "@/app/hooks/useToken";
 import { useRouter } from "next/navigation";
 
 export default function CompaniesExactStyledPage() {
   const router = useRouter();
-  const token = useToken();
-  const { companies, isLoading, error } = useCompanies(token);
+  const { companies, isLoading, error, refetch } = useCompanies();
 
   const handleAddCompanyClick = () => {
     router.push("/authentication/odoo");
   };
-  const handleCompanyClick = (companyId: string) => {
-    router.push(`/dashboard/${companyId}`);
+  
+  const handleCompanyClick = (company: { company_id: string; company_name: string }) => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("selectedCompany", JSON.stringify(company));
+      console.log("Setting selected company to:", company);
+    }
+    
+    router.push(`/dashboard/${company.company_id}`);
   };
-
-  if (!token) {
-    return (
-      <p className="text-center mt-10 text-white">
-        Please log in to view your companies.
-      </p>
-    );
-  }
 
   const companyList = Array.isArray(companies) ? companies : [];
 
@@ -43,31 +39,53 @@ export default function CompaniesExactStyledPage() {
               Companies List
             </h2>
 
-            {isLoading && <p>Loading companies...</p>}
-            {error && <p className="text-red-500">Error loading companies</p>}
-
-            <div className="flex flex-col space-y-4 w-full max-w-md mx-auto">
-              {companyList.map((comp) => (
-                <Button
-                  key={comp.company_id}
-                  variant="secondary"
-                  className="text-gray-800 py-2 sm:py-3 text-sm sm:text-base md:text-lg hover:bg-purple-50 transition duration-300 font-semibold border cursor-pointer"
-                  onClick={() => handleCompanyClick(comp.company_id)}
-                >
-                  {comp.company_name}
-                </Button>
-              ))}
-
+            {isLoading && (
               <div className="flex justify-center">
+                <p>Loading companies...</p>
+              </div>
+            )}
+            
+            {error && (
+              <div className="text-center">
+                <p className="text-red-500 mb-4">Error loading companies: {error}</p>
                 <Button
                   variant="primary"
-                  className="w-32 sm:w-40 md:w-60 py-2 sm:py-3 rounded-full font-bold cursor-pointer"
-                  onClick={handleAddCompanyClick}
+                  className="w-32 sm:w-40 py-2 rounded-full font-bold cursor-pointer"
+                  onClick={refetch}
                 >
-                  + Add Company
+                  Retry
                 </Button>
               </div>
-            </div>
+            )}
+
+            {!isLoading && !error && (
+              <div className="flex flex-col space-y-4 w-full max-w-md mx-auto">
+                {companyList.length > 0 ? (
+                  companyList.map((comp) => (
+                    <Button
+                      key={comp.company_id}
+                      variant="secondary"
+                      className="text-gray-800 py-2 sm:py-3 text-sm sm:text-base md:text-lg hover:bg-purple-50 transition duration-300 font-semibold border cursor-pointer"
+                      onClick={() => handleCompanyClick(comp)}
+                    >
+                      {comp.company_name}
+                    </Button>
+                  ))
+                ) : (
+                  <p className="text-center text-gray-500">No companies found. Add a company to get started.</p>
+                )}
+
+                <div className="flex justify-center mt-4">
+                  <Button
+                    variant="primary"
+                    className="w-32 sm:w-40 md:w-60 py-2 sm:py-3 rounded-full font-bold cursor-pointer"
+                    onClick={handleAddCompanyClick}
+                  >
+                    + Add Company
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="p-4 sm:p-6 md:p-8 flex items-center justify-center min-h-[80px] sm:min-h-[800px]">

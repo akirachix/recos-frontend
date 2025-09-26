@@ -13,9 +13,11 @@ export async function fetchCompanies(token: string) {
       const errorText = await response.text();
       throw new Error(errorText || `Failed to fetch companies, status ${response.status}`);
     }
-    const data = await response.json();
-    return data;
+    
+    const result = await response.json();
+    return result.data || [];
   } catch (error) {
-    throw new Error((error as Error).message);
+    console.error("Error in fetchCompanies:", error);
+    throw error;
   }
 }

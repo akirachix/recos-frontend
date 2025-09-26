@@ -1,7 +1,7 @@
 'use client';
 
 import { BellIcon, UserCircleIcon } from '@heroicons/react/24/outline';
-import { useFetchUser } from '@/hooks/useFetchUser';
+import { useFetchUser } from '@/app/hooks/useFetchUser';
 
 export default function TopNav() {
   const { user, loading, error } = useFetchUser();

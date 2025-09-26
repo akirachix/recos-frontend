@@ -15,13 +15,14 @@ import {
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
-import { useSidebar } from "@/context/SidebarContext";
-import { useEffect, useRef, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useSidebar } from "@/app/context/SidebarContext";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import Button from "../Button";
+import { useCompany } from "@/app/context/CompanyContext";
 
 const topMenuItems = [
-  { name: "Dashboard", href: "/", icon: HomeIcon },
+  { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
   { name: "Jobs", href: "/jobs", icon: BriefcaseIcon },
   { name: "Candidates", href: "/candidates", icon: UserGroupIcon },
   { name: "Analytics", href: "/analytics", icon: ChartBarIcon },
@@ -32,16 +33,25 @@ const bottomMenuItems = [
   { name: "Settings", href: "/settings", icon: CogIcon },
 ];
 
-const companies = ["Zojo", "Alpha", "Beta"];
-
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { isCollapsed, toggleSidebar, sidebarWidth } = useSidebar();
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(companies[0]);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { selectedCompany, companies, setSelectedCompany } = useCompany();
   const iconSizeClass = isCollapsed ? "h-10 w-10" : "h-7 w-7";
+
+  const handleCompanySelect = useCallback((company: { company_id: string; company_name: string }) => {
+    setSelectedCompany(company);
+    setIsDropdownOpen(false);
+    router.push(`/dashboard/${company.company_id}`);
+  }, [setSelectedCompany, router]);
+
+  const toggleDropdown = useCallback(() => {
+    setIsDropdownOpen(prev => !prev);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -52,9 +62,11 @@ export default function Sidebar() {
         setIsDropdownOpen(false);
       }
     };
+    
     if (isDropdownOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
+    
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -77,6 +89,34 @@ export default function Sidebar() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isCollapsed, toggleSidebar]);
+
+  const isActive = useCallback((href: string) => {
+    return pathname === href || pathname.startsWith(href + '/');
+  }, [pathname]);
+
+  const getHref = useCallback((href: string) => {
+    if (href === "/jobs") {
+      return "/jobs";
+    }
+    
+    return selectedCompany ? `${href}/${selectedCompany.company_id}` : href;
+  }, [selectedCompany]);
+
+  const companiesList = useMemo(() => {
+    return companies.map((company) => (
+      <li
+        key={company.company_id}
+        className={`px-4 py-2 cursor-pointer ${
+          selectedCompany?.company_id === company.company_id
+            ? "bg-purple-700"
+            : "hover:bg-purple-700"
+        }`}
+        onClick={() => handleCompanySelect(company)}
+      >
+        {company.company_name}
+      </li>
+    ));
+  }, [companies, selectedCompany, handleCompanySelect]);
 
   return (
     <>
@@ -143,12 +183,12 @@ export default function Sidebar() {
             ref={dropdownRef}
           >
             <Button
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              onClick={toggleDropdown}
               variant="purple"
               size="sm"
               className="flex items-center w-full text-xl text-white p-2 rounded transition-colors duration-200 cursor-pointer"
             >
-              {selectedOption}
+              {selectedCompany ? selectedCompany.company_name : "Select Company"}
               <ChevronDownIcon
                 className={`ml-10 h-4 w-4 transition-transform ${
                   isDropdownOpen ? "rotate-180" : ""
@@ -159,18 +199,7 @@ export default function Sidebar() {
             {isDropdownOpen && (
               <div className="absolute top-10 left-0 mt-2 w-full bg-[#803CEB] rounded shadow-lg z-10 animate-fade-in">
                 <ul className="py-1 text-xl text-white">
-                  {companies.map((company, index) => (
-                    <li
-                      key={index}
-                      className="px-4 py-2 cursor-pointer"
-                      onClick={() => {
-                        setSelectedOption(company);
-                        setIsDropdownOpen(false);
-                      }}
-                    >
-                      {company}
-                    </li>
-                  ))}
+                  {companiesList}
                 </ul>
               </div>
             )}
@@ -182,9 +211,9 @@ export default function Sidebar() {
             {topMenuItems.map((item) => (
               <Link
                 key={item.name}
-                href={item.href}
+                href={getHref(item.href)}
                 className={`flex items-center p-2 rounded ${
-                  pathname === item.href
+                  isActive(item.href)
                     ? "text-purple-600 border-b-3 border-purple-600"
                     : "hover:bg-purple-600/20"
                 } ${isCollapsed ? "justify-center" : "space-x-2"}`}
@@ -198,9 +227,9 @@ export default function Sidebar() {
             {bottomMenuItems.map((item) => (
               <Link
                 key={item.name}
-                href={item.href}
+                href={getHref(item.href)}
                 className={`flex items-center p-2 rounded ${
-                  pathname === item.href
+                  isActive(item.href)
                     ? "text-purple-600 border-b-3 border-purple-600"
                     : "hover:bg-purple-600/20"
                 } ${isCollapsed ? "justify-center" : "space-x-2"}`}

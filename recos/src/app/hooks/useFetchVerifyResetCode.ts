@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { fetchVerifyResetCode } from "@/utils/fetchVerifyResetCode";
+import { fetchVerifyResetCode } from "../utils/fetchVerifyResetCode";
 
 export function useFetchVerifyResetCode() {
   const [loading, setLoading] = useState(false);

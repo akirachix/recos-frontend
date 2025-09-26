@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useFetchVerifyResetCode } from "@/hooks/useFetchVerifyResetCode";
-import { useForgotPasswordRequest } from "@/hooks/useFetchForgotPassword";
+import { useFetchVerifyResetCode } from "@/app/hooks/useFetchVerifyResetCode";
+import { useForgotPasswordRequest } from "@/app/hooks/useFetchForgotPassword";
 
 export default function VerifyResetCodePage() {
   const router = useRouter();

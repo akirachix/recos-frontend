@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { useForgotPasswordRequest } from "./useFetchForgotPassword";
-import * as fetchUtils from "@/utils/fetchForgotPassword";
+import * as fetchUtils from "@/app/utils/fetchForgotPassword";
 
 jest.mock("@/app/utils/fetchForgotPassword");
 

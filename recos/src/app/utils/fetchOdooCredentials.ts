@@ -1,20 +1,30 @@
+const baseUrl = "/api/odoo-credentials/";
+
 export async function postOdooCredentials(token: string, credentials: object) {
   try {
-    const response = await fetch("/api/auth", {
+    const response = await fetch(baseUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Token ${token}`,
+        'Authorization': `Token ${token}`,
       },
       body: JSON.stringify(credentials),
     });
 
     if (!response.ok) {
-      const error = await response.text();
-      return { error, status: response.status }; 
+      const errorData = await response.json();
+      return { 
+        error: errorData.error || "Failed to save credentials", 
+        status: response.status 
+      }; 
     }
+    
     return await response.json();  
   } catch (error) {
-    throw new Error((error as Error).message);
+    console.error("Error in postOdooCredentials:", error);
+    return { 
+      error: "Network error or server unreachable", 
+      status: 500 
+    };
   }
 }
