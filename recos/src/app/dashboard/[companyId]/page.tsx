@@ -1,60 +1,71 @@
-"use client";
-import { useParams, useRouter } from "next/navigation";
-import ClientLayout from "../../shared-components/ClientLayout";
-import { useEffect } from "react";
-import { useCompany } from "@/app/context/CompanyContext";
+
+'use client';
+import { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
+import Navbar from '@/app/shared-components/Navbar';
+import Sidebar from '@/app/shared-components/Sidebar';
+import { CompanyProvider, useCompany } from '@/app/context/CompanyContext';
+import { SidebarProvider } from '@/app/context/SidebarContext';
+import { useDashboardData } from '@/app/hooks/useDashboardData';
+import MetricCard from '../components/MetricsCard';
+import SimpleLineChart from '../components/SimpleLineChart';
+import SimpleDonutChart from '../components/SimpleDonutChart';
+import UpcomingInterviews from '../components/UpcomingInterview';
+import JobSummary from '../components/JobSummary';
 
 function DashboardContent() {
   const params = useParams();
-  const router = useRouter();
   const companyId = params.companyId as string;
-  const { selectedCompany, companies, setSelectedCompany, isLoading } = useCompany();
-
+  const { selectedCompany, companies, setSelectedCompany } = useCompany();
+  const {
+    jobs,
+    interviews,
+    metrics,
+    loading,
+    error
+  } = useDashboardData(companyId);
+  const [isGeneralView, setIsGeneralView] = useState(!companyId);
   useEffect(() => {
     if (companyId && companies.length > 0) {
-      const company = companies.find(c => c.company_id === companyId);
-      if (company && (!selectedCompany || selectedCompany.company_id !== companyId)) {
-        console.log("Setting selected company to:", company);
+      const company = companies.find(c => c.company_id.toString() === companyId);
+      if (company && company.company_id !== selectedCompany?.company_id) {
         setSelectedCompany(company);
       }
+      setIsGeneralView(false);
+    } else {
+      setIsGeneralView(true);
     }
   }, [companyId, companies, selectedCompany, setSelectedCompany]);
 
-  useEffect(() => {
-    if (!isLoading && !selectedCompany && companies.length > 0) {
-      console.log("No company selected, redirecting to first company:", companies[0]);
-      router.push(`/dashboard/${companies[0].company_id}`);
-    }
-  }, [selectedCompany, companies, router, isLoading]);
-
-  if (isLoading) {
+  if (loading) {
     return (
-      <div className="p-6">
-        <p>Loading company information...</p>
+      <div className="flex min-h-screen">
+        <Sidebar />
+        <div className="flex-1">
+          <Navbar />
+          <div className="p-6 flex items-center justify-center h-[calc(100vh-4rem)]">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
+        </div>
       </div>
     );
   }
 
-  if (!isLoading && companies.length === 0) {
+  if (error) {
     return (
-      <div className="p-6">
-        <h1 className="text-3xl font-bold mb-4">Dashboard</h1>
-        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <svg className="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <div className="ml-3">
-              <p className="text-sm text-yellow-700">
-                No companies found. Please connect your Odoo account to get started.
-              </p>
+      <div className="flex min-h-screen">
+        <Sidebar />
+        <div className="flex-1">
+          <Navbar />
+          <div className="p-6 flex items-center justify-center h-[calc(100vh-4rem)]">
+            <div className="text-center">
+              <div className="text-red-500 text-xl mb-4">Error</div>
+              <div className="text-gray-700 mb-6">{error}</div>
               <button
-                onClick={() => router.push("/authentication/odoo")}
-                className="mt-2 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                onClick={() => window.location.reload()}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
               >
-                Connect Odoo Account
+                Retry
               </button>
             </div>
           </div>
@@ -64,34 +75,49 @@ function DashboardContent() {
   }
 
   return (
-    <div className="p-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white shadow rounded-lg p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Jobs</h3>
-          <p className="text-3xl font-bold text-purple-600">0</p>
-          <p className="text-sm text-gray-500 mt-1">Active job postings</p>
-        </div>
-        
-        <div className="bg-white shadow rounded-lg p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Candidates</h3>
-          <p className="text-3xl font-bold text-purple-600">0</p>
-          <p className="text-sm text-gray-500 mt-1">Total candidates</p>
-        </div>
-        
-        <div className="bg-white shadow rounded-lg p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Interviews</h3>
-          <p className="text-3xl font-bold text-purple-600">0</p>
-          <p className="text-sm text-gray-500 mt-1">Scheduled interviews</p>
+    <div className="flex min-h-screen">
+      <Sidebar />
+      <div className="">
+        <Navbar />
+        <div className="p-6">
+          <h1 className="text-2xl font-bold mb-6">
+            {isGeneralView ? 'General Dashboard' : selectedCompany ? `${selectedCompany.company_name} Dashboard` : 'Dashboard'}
+          </h1>
+
+          <div className="flex  gap-6 mb-6 mt-20 ml-70 justify-between ">
+            <MetricCard
+              title="Open Positions"
+              value={metrics?.openPositions || 0}
+            />
+            <MetricCard
+              title="Completed Interviews"
+              value={metrics?.completedInterviews || 0}
+            />
+            <MetricCard
+              title="Total Candidates"
+              value={metrics?.totalCandidates || 0}
+            />
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 mb-6 ml-70">
+            <SimpleLineChart />
+            <SimpleDonutChart />
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 mb-6 ml-70">
+            <UpcomingInterviews />
+            <JobSummary />
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-export default function Dashboard() {
+export default function DashboardPage() {
   return (
-    <ClientLayout>
-      <DashboardContent />
-    </ClientLayout>
+    <SidebarProvider>
+      <CompanyProvider>
+        <DashboardContent />
+      </CompanyProvider>
+    </SidebarProvider>
   );
 }

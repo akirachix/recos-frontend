@@ -98,7 +98,9 @@ export default function Sidebar() {
     if (href === "/jobs") {
       return "/jobs";
     }
-    
+    if (href === "/calendar") {  
+      return "/calendar";
+    }
     return selectedCompany ? `${href}/${selectedCompany.company_id}` : href;
   }, [selectedCompany]);
 

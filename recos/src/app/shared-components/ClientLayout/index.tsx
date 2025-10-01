@@ -1,19 +1,15 @@
 'use client';
-
 import { useState } from 'react';
 import { SidebarProvider } from '@/app/context/SidebarContext';
 import { CompanyProvider } from '@/app/context/CompanyContext';
 import { ReactNode } from 'react';
 import Sidebar from '../Sidebar';
 import Navbar from '../Navbar';
-
 export default function ClientLayout({ children }: { children: ReactNode }) {
-  const [isCollapsed, setIsCollapsed] = useState(false); 
-
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const toggleSidebar = () => {
     setIsCollapsed((prev) => !prev);
   };
-
   return (
     <SidebarProvider>
       <CompanyProvider>
@@ -30,3 +26,9 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
     </SidebarProvider>
   );
 }
+
+
+
+
+
+
