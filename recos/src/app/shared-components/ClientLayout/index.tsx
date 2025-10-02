@@ -16,7 +16,7 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
         <Sidebar />
         <Navbar />
         <main
-          className={`p-4 bg-gray-100 transition-all duration-300 ${
+          className={`p-4  transition-all duration-300 ${
             isCollapsed ? 'ml-16' : 'ml-64'
           } mt-[140px] ${toggleSidebar}`}
         >

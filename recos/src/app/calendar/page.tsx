@@ -43,8 +43,8 @@ export default function CalendarPage() {
     try {
       await createInterview(data);
       closeFormModal();
-    } catch {
-      alert("Failed to create interview");
+    } catch (error) {
+        throw error;
     }
   };
   return (
@@ -68,7 +68,6 @@ export default function CalendarPage() {
           <>
             <h2 className="text-xl font-bold mb-4">Interview Details</h2>
             <p><strong>Candidate:</strong> {selectedInterview.candidate_name} ({selectedInterview.candidate_email})</p>
-            <p><strong>Recruiter:</strong> {selectedInterview.recruiter_name} ({selectedInterview.recruiter_email})</p>
             <p><strong>Description:</strong> {selectedInterview.description}</p>
             <p><strong>Scheduled At:</strong> {new Date(selectedInterview.scheduled_at).toLocaleString()}</p>
             <p><strong>Duration:</strong> {selectedInterview.duration} minutes</p>
@@ -76,14 +75,10 @@ export default function CalendarPage() {
               <strong>Status:</strong>
               <span
                 className={
-                  selectedInterview.status === "draft" || selectedInterview.status === "pending"
-                    ? "text-purple-600"
-                    : selectedInterview.status === "scheduled"
-                      ? "text-green-600"
-                      : ""
+                  selectedInterview.status === "draft" || selectedInterview.status === "  Pending" ? "text-purple-600" : selectedInterview.status === "scheduled" ? "text-green-600" : ""
                 }
               >
-                {selectedInterview.status === "draft" ? "pending" : selectedInterview.status}
+                {selectedInterview.status === "draft" ? " Pending" : selectedInterview.status}
               </span>
             </p>
             {selectedInterview.interview_link && (

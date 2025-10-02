@@ -5,7 +5,6 @@ interface CandidateSummary {
   pending: number;
   total: number;
 }
-
 interface SimpleDonutChartProps {
   data: CandidateSummary;
 }
@@ -22,10 +21,9 @@ const SimpleDonutChart: React.FC<SimpleDonutChartProps> = ({ data }) => {
   const pendingDasharray = `${(pendingPercentage / 100) * circumference} ${circumference}`;
   const reviewedRotation = -90;
   const pendingRotation = reviewedRotation + (reviewedPercentage / 100) * 360;
-
   return (
     <div className="bg-pink-50 rounded-lg shadow p-6 max-w-4xl">
-      <h3 className="text-lg font-semibold mb-4 text-gray-900">Candidates summary</h3>
+      <h3 className="text-xl font-semibold mb-4 text-gray-900">Candidates summary</h3>
       <div className="flex flex-col items-center">
         <div className="text-center mb-4">
           <p className="text-3xl font-bold text-violet-600">{total}</p>

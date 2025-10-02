@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from "react";
 import { useCreateInterview } from "@/app/hooks/useCreateInterview";
 
@@ -11,7 +10,6 @@ export type Event = {
 };
 
 const weekDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-
 interface SimpleScheduleProps {
   initialYear: number;
   initialMonth: number;
@@ -47,7 +45,6 @@ export default function SimpleSchedule({
     const dd = day < 10 ? "0" + day : day.toString();
     return `${year}-${mm}-${dd}`;
   };
-
   const uniqueEvents = (events: Event[]) => {
     const seen = new Set<string>();
     return events.filter((ev) => {
@@ -107,7 +104,6 @@ export default function SimpleSchedule({
           </div>
         ))}
       </div>
-
       <div className="grid grid-cols-7 gap-2 text-2xl">
         {[...Array(firstDayIndex)].map((_, i) => (
           <div key={`empty-start-${i}`} />

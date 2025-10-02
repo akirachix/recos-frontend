@@ -10,7 +10,6 @@ interface InterviewFormModalProps {
   initialData: CreateInterviewPayload;
   scheduledDate?: string; 
 }
-
 export default function InterviewFormModal({
   isOpen,
   onClose,
@@ -37,8 +36,6 @@ export default function InterviewFormModal({
     createInterview,
     reset,
   } = useCreateInterview(initialData);
-
-
   useEffect(() => {
     if (scheduledDate) {
       setScheduledAt(scheduledDate);
@@ -52,7 +49,6 @@ export default function InterviewFormModal({
     event.preventDefault();
     setError(null);
     setSaving(true);
-
     try {
       const payload: CreateInterviewPayload = {
         title,
@@ -119,18 +115,6 @@ export default function InterviewFormModal({
                 value={candidateName}
                 onChange={(e) => setCandidateName(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-lg"
-              />
-            </div>
-
-            <div>
-              <label className="block text-lg font-medium text-black mb-2">Recruiter ID</label>
-              <input
-                type="number"
-                min={1}
-                value={recruiterId ?? ""}
-                onChange={(e) => setRecruiterId(Number(e.target.value) || null)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-lg"
-                required
               />
             </div>
 

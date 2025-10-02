@@ -5,7 +5,6 @@ interface ModalProps {
   onClose: () => void;
   children: React.ReactNode;
 }
-
 export default function Modal({ isOpen, onClose, children }: ModalProps) {
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -33,7 +32,7 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
         <button
           aria-label="Close modal"
           onClick={onClose}
-          className="float-right text-2xl font-bold mb-4 leading-none select-none hover:text-red-600 transition"
+          className="float-right text-2xl font-bold mb-4 leading-none select-none hover:text-red-600 transition cursor-pointer"
         >
           &times;
         </button>

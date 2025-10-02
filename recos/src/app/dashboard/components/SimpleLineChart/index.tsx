@@ -15,26 +15,26 @@ const chartHeight = 400;
 const chartWidth = 600;
 const padding = 50;
 
-function lerp(a: number, b: number, t: number) {
-  return a + (b - a) * t;
+function linearInterpolate(startValue: number, endValue: number, interpolationFactor: number) {
+  return startValue + (endValue - startValue) * interpolationFactor;
 }
 
 function generateSmoothPath(points: { x: number; y: number }[]) {
   if (points.length < 2) return "";
 
-  let d = `M ${points[0].x} ${points[0].y}`;
-  for (let i = 0; i < points.length - 1; i++) {
-    const p0 = points[i];
-    const p1 = points[i + 1];
+  let pathData = `M ${points[0].x} ${points[0].y}`;
 
-    const cp1x = lerp(p0.x, p1.x, 0.7);
-    const cp1y = p0.y;
-    const cp2x = lerp(p0.x, p1.x, 0.3);
-    const cp2y = p1.y;
+  for (let currentIndex = 0; currentIndex < points.length - 1; currentIndex++) {
+    const startPoint = points[currentIndex];
+    const endPoint = points[currentIndex + 1];
+    const controlPoint1X = linearInterpolate(startPoint.x, endPoint.x, 0.7);
+    const controlPoint1Y = startPoint.y;
+    const controlPoint2X = linearInterpolate(startPoint.x, endPoint.x, 0.3);
+    const controlPoint2Y = endPoint.y;
 
-    d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p1.x} ${p1.y}`;
+    pathData += ` C ${controlPoint1X} ${controlPoint1Y}, ${controlPoint2X} ${controlPoint2Y}, ${endPoint.x} ${endPoint.y}`;
   }
-  return d;
+  return pathData;
 }
 
 const months = [
@@ -62,16 +62,16 @@ const MultiLineChart: React.FC<MultiLineChartProps> = ({
 
   const xStep = (chartWidth - 2 * padding) / (months.length - 1);
 
-  const monthIndexMap = months.reduce<Record<string, number>>((acc, m, i) => {
-    acc[m] = i;
-    return acc;
-  }, {});
+const monthNameToIndexMap = months.reduce<Record<string, number>>((accumulator, monthName, monthIndex) => {
+  accumulator[monthName] = monthIndex;
+  return accumulator;
+}, {});
 
   const paths = seriesNames.map((series, i) => {
     const points = data
       .map((item) => {
         const monthName = item.month as string;
-        const x = padding + (monthIndexMap[monthName] || 0) * xStep;
+        const x = padding + (monthNameToIndexMap [monthName] || 0) * xStep;
         const y =
           chartHeight -
           padding -
@@ -89,7 +89,7 @@ const MultiLineChart: React.FC<MultiLineChartProps> = ({
 
   return (
     <div className="bg-pink-50 rounded-xl p-4 max-w-4xl">
-      <h3 className="font-semibold mb-2 text-gray-900">Most Applied Positions</h3>
+      <h3 className="font-semibold mt-2 text-gray-900 text-xl">Most Applied Positions</h3>
       <svg
         width="100%"
         height={chartHeight}
@@ -212,10 +212,8 @@ const Dashboard = () => {
     { month: "Nov", "QA Analyst": 720, "Financial Analyst": 980, Manager: 800 },
     { month: "Dec", "QA Analyst": 750, "Financial Analyst": 900, Manager: 830 },
   ];
-
   const seriesNames = ["QA Analyst", "Financial Analyst", "Manager"];
   const seriesColors = ["#6366f1", "#22d3ee", "#a78bfa"];
-
   return <MultiLineChart data={data} seriesNames={seriesNames} seriesColors={seriesColors} />;
 };
 

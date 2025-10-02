@@ -10,11 +10,10 @@ interface Interview {
 interface UpcomingInterviewsProps {
   interviews: Interview[];
 }
-
 const UpcomingInterviews: React.FC<UpcomingInterviewsProps> = ({ interviews }) => {
   return (
     <div className="bg-white rounded-lg shadow p-6 max-w-4xl">
-      <h3 className="text-lg font-semibold mb-4">Upcoming Interviews</h3>
+      <h3 className="text-xl font-semibold mb-4">Upcoming Interviews</h3>
       <ul className="space-y-4 max-h-80 overflow-auto">
         {interviews.map((interview, idx) => (
           <li key={idx} className="flex items-center justify-between border-b pb-2">
@@ -26,9 +25,6 @@ const UpcomingInterviews: React.FC<UpcomingInterviewsProps> = ({ interviews }) =
                 </p>
               </div>
             </div>
-            {interview.status === 'completed' && (
-              <span className="text-green-600 text-xl">&#10003;</span>
-            )}
           </li>
         ))}
       </ul>
@@ -43,7 +39,6 @@ export const UpcomingInterview = () => {
     { time: '11.30 - 12.30 PM', candidateName: 'Bob Smith', position: 'Developer', status: 'pending' },
     { time: '01.00 - 02.00 PM', candidateName: 'Diana Prince', position: 'Designer', status: 'pending' },
   ];
-
   return <UpcomingInterviews interviews={mockInterviews} />;
 };
 export default UpcomingInterview;

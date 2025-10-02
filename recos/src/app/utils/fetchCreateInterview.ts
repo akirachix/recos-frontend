@@ -1,13 +1,14 @@
 import { CreateInterviewPayload } from "../hooks/useCreateInterview";
 
-const baseUrl = "/api/interview";
+const baseUrl = "/api/interview/create";
 export async function fetchCreateInterview(payload?: CreateInterviewPayload){
   try {
-    const response = await fetch(`${baseUrl}/create/`, {
+    const response = await fetch(`${baseUrl}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
+       body: JSON.stringify(payload), 
     });
 
     if (!response.ok) {
