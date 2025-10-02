@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import ClientLayout from '@/app/shared-components/ClientLayout';
 import Link from 'next/link';
-import { EyeIcon, ChevronDoubleLeftIcon, ChevronDoubleRightIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
+import { EyeIcon, ChevronDoubleLeftIcon, ChevronDoubleRightIcon, ChevronDownIcon , ArrowLeftIcon} from '@heroicons/react/24/outline';
 import Button from '@/app/shared-components/Button';
 import { useRouter } from 'next/navigation';
 
@@ -134,7 +134,10 @@ export default function JobDetailsPage() {
         ) : (
           <>
             <div className="mb-6">
-              <Link href="/jobs" className="text-blue-600 hover:underline">Back to jobs</Link>
+              <Link href="/jobs" className="text-blue-600 hover:underline items-center flex gap-1">
+                <ArrowLeftIcon className="h-4 w-5" aria-hidden="true" />
+                Back to jobs
+              </Link>
               <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold text-purple-800">{job.job_title}</h1>
                 <div className="flex items-center space-x-2">
@@ -153,7 +156,7 @@ export default function JobDetailsPage() {
                   </p>
                   <div className="flex justify-end mt-2">
                     <button
-                      className="px-4 py-1 bg-none underline text-black rounded flex items-center"
+                      className="px-4 py-1 bg-none underline text-black rounded flex items-center cursor-pointer"
                       onClick={() => setShowFullDescription(!showFullDescription)}
                     >
                       {showFullDescription ? 'Hide Job Description' : 'View Job Description'}
@@ -182,7 +185,7 @@ export default function JobDetailsPage() {
                   </div>
                   <div className="relative" ref={stateDropdownRef}>
                     <button
-                      className={`px-8 py-2 rounded w-full flex items-center justify-between ${getStatusColor(job.status)} text-white`}
+                      className={`px-8 py-2 rounded w-full flex items-center justify-between ${getStatusColor(job.status)} text-white cursor-pointer`}
                       onClick={() => setIsStateDropdownOpen(!isStateDropdownOpen)}
                       disabled={updating}
                     >

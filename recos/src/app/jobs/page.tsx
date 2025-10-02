@@ -176,7 +176,7 @@ useEffect(() => {
           <Button
             onClick={handleSync}
             disabled={syncing || !selectedCompany}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 cursor-pointer"
           >
             <ArrowPathIcon className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
             {syncing ? "Syncing..." : "Sync Jobs"}

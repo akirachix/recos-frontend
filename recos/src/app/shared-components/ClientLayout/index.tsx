@@ -23,7 +23,7 @@ function MainContent({ children }: { children: ReactNode }) {
 
   return (
     <main
-      className="p-4 bg-gray-100 transition-all duration-300 mt-[140px]"
+      className="p-4 transition-all duration-300 mt-[140px]"
       style={{ marginLeft: `${sidebarWidth}px` }}
     >
       {children}

@@ -25,7 +25,7 @@ const mockTransformedJob = {
   company_name: 'Tech Corp',
   job_title: 'Senior Developer',
   job_description: 'An amazing job opportunity',
-  created_at: 'Jan 15',
+  created_at: 'Jan 15, 2023',
   status: 'Published',
   total_applicants: 5,
   generated_job_summary: 'Great job for developers',
@@ -192,7 +192,7 @@ describe('useFetchJobDetails', () => {
       expect(result.current.loading).toBe(false);
     });
 
-    expect(result.current.job?.created_at).toBe('Jan 15');
+    expect(result.current.job?.created_at).toBe('Jan 15, 2023');
     expect(result.current.job?.status).toBe('Published');
     expect(result.current.job?.total_applicants).toBe(5);
   });
