@@ -21,6 +21,7 @@ import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import Button from "../Button";
 import { useCompany } from "@/app/context/CompanyContext";
 
+
 const topMenuItems = [
   { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
   { name: "Jobs", href: "/jobs", icon: BriefcaseIcon },
@@ -43,10 +44,12 @@ export default function Sidebar() {
   const { selectedCompany, companies, setSelectedCompany } = useCompany();
   const iconSizeClass = isCollapsed ? "h-10 w-10" : "h-7 w-7";
 
-  const handleCompanySelect = useCallback((company: { company_id: string; company_name: string }) => {
-    setSelectedCompany(company);
+  const handleCompanySelect = useCallback(async (company: { company_id: string; company_name: string }) => {
     setIsDropdownOpen(false);
-    router.push(`/dashboard/${company.company_id}`);
+    
+    setSelectedCompany(company);
+    
+    await router.push(`/dashboard/${company.company_id}`);
   }, [setSelectedCompany, router]);
 
   const toggleDropdown = useCallback(() => {
@@ -188,7 +191,7 @@ export default function Sidebar() {
               size="sm"
               className="flex items-center w-full text-xl text-white p-2 rounded transition-colors duration-200 cursor-pointer"
             >
-              {selectedCompany ? selectedCompany.company_name : "Select Company"}
+              {selectedCompany?.company_name || "Company"}
               <ChevronDownIcon
                 className={`ml-10 h-4 w-4 transition-transform ${
                   isDropdownOpen ? "rotate-180" : ""

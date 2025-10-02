@@ -16,7 +16,6 @@ export function useResetPassword() {
     setSuccess(false);
     try {
       const response = await fetchResetPassword(email, password, confirmPassword);
-      console.log(response);
       if (response.detail && response.detail.toLowerCase().includes("successful")) {
         setSuccess(true);
        

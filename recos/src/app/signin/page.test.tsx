@@ -127,6 +127,6 @@ describe("SignIn", () => {
   it("renders Forgot Password link correctly", () => {
     render(<SignIn />);
     const forgotLink = screen.getByText(/forgot password\?/i);
-    expect(forgotLink.closest("a")).toHaveAttribute("href", "/Forgotpassword");
+    expect(forgotLink.closest("a")).toHaveAttribute("href", "/authentication/forgot-password");
   });
 });

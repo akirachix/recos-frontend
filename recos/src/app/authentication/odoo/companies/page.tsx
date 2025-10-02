@@ -15,7 +15,6 @@ export default function CompaniesExactStyledPage() {
   const handleCompanyClick = (company: { company_id: string; company_name: string }) => {
     if (typeof window !== "undefined") {
       localStorage.setItem("selectedCompany", JSON.stringify(company));
-      console.log("Setting selected company to:", company);
     }
     
     router.push(`/dashboard/${company.company_id}`);

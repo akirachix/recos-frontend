@@ -76,14 +76,13 @@ export async function GET(request: NextRequest) {
         });
 
         if (!candidatesResponse.ok) {
-          console.error(`Failed to fetch candidates for job ${job.job_id}: ${candidatesResponse.statusText}`);
           return { candidates: [], jobId: job.job_id };
         }
 
         const candidatesData = await candidatesResponse.json() as Candidate[];
         return { candidates: candidatesData, jobId: job.job_id };
       } catch (error) {
-        console.error(`Error fetching candidates for job ${job.job_id}:`, error);
+        console.error(`Failed to fetch candidates for job ${job.job_id}:`, error);
         return { candidates: [], jobId: job.job_id };
       }
     });
@@ -126,7 +125,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(enhancedJobs);
     
   } catch (error) {
-    console.error('Error in jobs API:', error);
     return NextResponse.json({ 
       error: 'Internal server error',
       details: (error as Error).message 

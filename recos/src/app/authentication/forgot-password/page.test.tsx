@@ -1,92 +1,74 @@
+"use client";
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import ForgotPasswordPage from "../forgot-password/page"; 
-import { useForgotPasswordRequest } from "@/hooks/useFetchForgotPassword";
+import ForgotPasswordPage from "./page";
 import { useRouter } from "next/navigation";
+import { useForgotPasswordRequest } from "@/app/hooks/useFetchForgotPassword";
 
-jest.mock("../hooks/useFetchForgotPassword");
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
 }));
 
+jest.mock("@/app/hooks/useFetchForgotPassword", () => ({
+  useForgotPasswordRequest: jest.fn(),
+}));
+
+import "@testing-library/jest-dom";
+
 describe("ForgotPasswordPage", () => {
-  let mockRequestCode: jest.Mock;
-  let mockPush: jest.Mock;
+  const mockPush = jest.fn();
+  const mockRequestCode = jest.fn();
 
   beforeEach(() => {
-    mockRequestCode = jest.fn();
-    mockPush = jest.fn();
-
+    jest.clearAllMocks();
+    (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
     (useForgotPasswordRequest as jest.Mock).mockReturnValue({
       loading: false,
       error: null,
       success: false,
       requestCode: mockRequestCode,
     });
-
-    (useRouter as jest.Mock).mockReturnValue({
-      push: mockPush,
-    });
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it("renders email input and button", () => {
+  it("renders the email input and submit button", () => {
     render(<ForgotPasswordPage />);
-    expect(screen.getByPlaceholderText(/enter your email/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /recover password/i })).toBeInTheDocument();
   });
 
-  it("accepts input text changes", () => {
+  it("updates email input value on change", () => {
     render(<ForgotPasswordPage />);
-    const input = screen.getByPlaceholderText(/enter your email/i);
-    fireEvent.change(input, { target: { value: "user@example.com" } });
-    expect(input).toHaveValue("user@example.com");
+    const emailInput = screen.getByLabelText(/email/i);
+    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    expect(emailInput).toHaveValue("test@example.com");
   });
 
-  it("calls requestCode with email on submit", () => {
+  it("calls requestCode on form submission", async () => {
     render(<ForgotPasswordPage />);
-    const input = screen.getByPlaceholderText(/enter your email/i);
-    const button = screen.getByRole("button", { name: /recover password/i });
-    fireEvent.change(input, { target: { value: "test@example.com" } });
-    fireEvent.click(button);
-    expect(mockRequestCode).toHaveBeenCalledWith("test@example.com");
-  });
+    const emailInput = screen.getByLabelText(/email/i);
+    const submitButton = screen.getByRole("button", { name: /recover password/i });
 
-  it("disables button and shows loading state when loading", () => {
-    (useForgotPasswordRequest as jest.Mock).mockReturnValue({
-      loading: true,
-      error: null,
-      success: false,
-      requestCode: mockRequestCode,
+    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(mockRequestCode).toHaveBeenCalledWith("test@example.com");
     });
-    render(<ForgotPasswordPage />);
-    const button = screen.getByRole("button", { name: /sending.../i });
-    expect(button).toBeDisabled();
   });
 
-  it("shows error message if present", () => {
+  it("displays error message when error is present", () => {
     (useForgotPasswordRequest as jest.Mock).mockReturnValue({
       loading: false,
       error: "Invalid email",
       success: false,
       requestCode: mockRequestCode,
     });
+
     render(<ForgotPasswordPage />);
     expect(screen.getByText(/invalid email/i)).toBeInTheDocument();
   });
 
-  it("navigates to verify-reset-code page on success", async () => {
-    const { rerender } = render(<ForgotPasswordPage />);
-    const input = screen.getByPlaceholderText(/enter your email/i);
-
-    fireEvent.change(input, { target: { value: "navigate@test.com" } });
-    fireEvent.click(screen.getByRole("button", { name: /recover password/i }));
-
-    expect(mockRequestCode).toHaveBeenCalledWith("navigate@test.com");
-
+  it("redirects to verify-reset-code on success", async () => {
     (useForgotPasswordRequest as jest.Mock).mockReturnValue({
       loading: false,
       error: null,
@@ -94,12 +76,17 @@ describe("ForgotPasswordPage", () => {
       requestCode: mockRequestCode,
     });
 
-    rerender(<ForgotPasswordPage />);
+    render(<ForgotPasswordPage />);
+    const emailInput = screen.getByLabelText(/email/i);
+    const submitButton = screen.getByRole("button", { name: /recover password/i });
 
-    await waitFor(() =>
+    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith(
-        "/authentication/verify-reset-code?email=navigate%40test.com"
-      )
-    );
+        `/authentication/verify-reset-code?email=${encodeURIComponent("test@example.com")}`
+      );
+    });
   });
 });

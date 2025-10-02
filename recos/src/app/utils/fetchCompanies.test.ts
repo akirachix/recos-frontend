@@ -1,60 +1,87 @@
 import { fetchCompanies } from './fetchCompanies';
 
-describe('fetchCompanies', () => {
-  const token = 'test-token';
+global.fetch = jest.fn();
 
+describe('fetchCompanies', () => {
+  const mockToken = 'test-token';
+  const baseUrl = '/api/companies/';
+  
   beforeEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
-  it('returns data when fetch is successful', async () => {
-    const mockData = [{ id: 1, name: 'Zojo' }];
-    global.fetch = jest.fn().mockResolvedValue({
+  it('should fetch companies successfully with valid token', async () => {
+    const mockResponse = {
+      data: [{ id: 1, name: 'Company A' }, { id: 2, name: 'Company B' }],
+    };
+    
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
-      status: 200,
-      json: async () => mockData,
-      text: async () => JSON.stringify(mockData),
+      json: jest.fn().mockResolvedValueOnce(mockResponse),
     });
 
-    const data = await fetchCompanies(token);
+    const result = await fetchCompanies(mockToken);
 
-    expect(global.fetch).toHaveBeenCalledWith('/api/companies/', {
+    expect(global.fetch).toHaveBeenCalledWith(baseUrl, {
       headers: {
-        Authorization: `Token ${token}`,
+        Authorization: `Token ${mockToken}`,
         'Content-Type': 'application/json',
       },
     });
-    expect(data).toEqual(mockData);
+    expect(result).toEqual(mockResponse.data);
   });
 
-  it('throws an error when error message includes "already exist"', async () => {
-    const errorMessage = 'Company already exists';
-    global.fetch = jest.fn().mockResolvedValue({
-      ok: false,
-      status: 400,
-      json: async () => { throw new Error('Not JSON'); },
-      text: async () => errorMessage,
+  it('should return empty array if response.data is undefined', async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: jest.fn().mockResolvedValueOnce({}),
     });
 
-    await expect(fetchCompanies(token)).rejects.toThrow(errorMessage);
+    const result = await fetchCompanies(mockToken);
+
+    expect(result).toEqual([]);
   });
 
-  it('throws an error when error message does not include "already exist"', async () => {
-    const errorMessage = 'Some other error';
-    global.fetch = jest.fn().mockResolvedValue({
+  it('should throw error when response is not ok', async () => {
+    const errorMessage = 'Unauthorized';
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: false,
+      status: 401,
+      text: jest.fn().mockResolvedValueOnce(errorMessage),
+    });
+
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    await expect(fetchCompanies(mockToken)).rejects.toThrow(errorMessage);
+    expect(consoleErrorSpy).toHaveBeenCalledWith('Error in fetchCompanies:', expect.any(Error));
+
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('should throw generic error when response text is empty', async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: false,
       status: 500,
-      json: async () => { throw new Error('Not JSON'); },
-      text: async () => errorMessage,
+      text: jest.fn().mockResolvedValueOnce(''),
     });
 
-    await expect(fetchCompanies(token)).rejects.toThrow(errorMessage);
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    await expect(fetchCompanies(mockToken)).rejects.toThrow('Failed to fetch companies, status 500');
+    expect(consoleErrorSpy).toHaveBeenCalledWith('Error in fetchCompanies:', expect.any(Error));
+
+    consoleErrorSpy.mockRestore();
   });
 
-  it('throws error if fetch rejects', async () => {
-    const error = new Error('Network error');
-    global.fetch = jest.fn().mockRejectedValue(error);
+  it('should handle network errors', async () => {
+    const networkError = new Error('Network error');
+    (global.fetch as jest.Mock).mockRejectedValueOnce(networkError);
 
-    await expect(fetchCompanies(token)).rejects.toThrow('Network error');
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    await expect(fetchCompanies(mockToken)).rejects.toThrow(networkError);
+    expect(consoleErrorSpy).toHaveBeenCalledWith('Error in fetchCompanies:', networkError);
+
+    consoleErrorSpy.mockRestore();
   });
 });

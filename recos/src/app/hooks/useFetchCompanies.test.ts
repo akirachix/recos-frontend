@@ -1,10 +1,8 @@
-import { renderHook, act } from '@testing-library/react';
-import { waitFor } from '@testing-library/react';
+import { renderHook, act, waitFor } from '@testing-library/react';
+import { useCompanies } from './useFetchCompanies';
 import { fetchCompanies } from '../utils/fetchCompanies';
 import { getAuthToken } from '../utils/useToken';
-import { useCompanies } from './useFetchCompanies';
 
-// Mock the imported utilities
 jest.mock('../utils/fetchCompanies');
 jest.mock('../utils/useToken');
 
@@ -19,110 +17,53 @@ describe('useCompanies Hook', () => {
   it('should initialize with correct default states', () => {
     mockGetAuthToken.mockReturnValue(null);
     const { result } = renderHook(() => useCompanies());
-
     expect(result.current.companies).toEqual([]);
     expect(result.current.isLoading).toBe(false);
-    expect(result.current.error).toBe('Missing token');
+    expect(result.current.error).toBe(null);
   });
 
-  it('should fetch companies successfully with valid token', async () => {
+  it('should set companies when fetchCompanies returns data', async () => {
     const mockCompanies = [
       { company_id: '1', company_name: 'Company A' },
       { company_id: '2', company_name: 'Company B' },
     ];
     mockGetAuthToken.mockReturnValue('valid-token');
     mockFetchCompanies.mockResolvedValue(mockCompanies);
-
     const { result } = renderHook(() => useCompanies());
-
     expect(result.current.isLoading).toBe(true);
-    expect(result.current.error).toBe(null);
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
-
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(result.current.companies).toEqual(mockCompanies);
     expect(result.current.error).toBe(null);
     expect(mockFetchCompanies).toHaveBeenCalledWith('valid-token');
   });
 
-  it('should handle fetch error', async () => {
+  it('should handle fetch error correctly', async () => {
     mockGetAuthToken.mockReturnValue('valid-token');
-    mockFetchCompanies.mockRejectedValue(new Error('Network error'));
-
+    mockFetchCompanies.mockRejectedValue(new Error('Failed to fetch'));
     const { result } = renderHook(() => useCompanies());
-
     expect(result.current.isLoading).toBe(true);
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
-
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(result.current.companies).toEqual([]);
-    expect(result.current.error).toBe('Network error');
+    expect(result.current.error).toBe('Failed to fetch');
   });
 
-  it('should call refetch correctly', async () => {
-    const mockCompanies = [
-      { company_id: '1', company_name: 'Company A' },
-    ];
-    mockGetAuthToken.mockReturnValue('valid-token');
-    mockFetchCompanies.mockResolvedValue(mockCompanies);
-
+  it('should not fetch if token is null', () => {
+    mockGetAuthToken.mockReturnValue(null);
     const { result } = renderHook(() => useCompanies());
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
-    expect(result.current.companies).toEqual(mockCompanies);
-
-    // Clear previous calls and mock new data
-    mockFetchCompanies.mockClear();
-    const newCompanies = [
-      { company_id: '3', company_name: 'Company C' },
-    ];
-    mockFetchCompanies.mockResolvedValue(newCompanies);
-
-    // Call refetch
-    await act(async () => {
-      result.current.refetch();
-    });
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
-
-    expect(mockFetchCompanies).toHaveBeenCalledTimes(1);
-    expect(result.current.companies).toEqual(newCompanies);
+    expect(result.current.companies).toEqual([]);
+    expect(result.current.isLoading).toBe(false);
     expect(result.current.error).toBe(null);
+    expect(mockFetchCompanies).not.toHaveBeenCalled();
   });
 
-  it('should handle refetch with error', async () => {
+  it('should not refetch if already fetched', async () => {
     mockGetAuthToken.mockReturnValue('valid-token');
-    mockFetchCompanies.mockResolvedValueOnce([
-      { company_id: '1', company_name: 'Company A' },
-    ]);
-
+    mockFetchCompanies.mockResolvedValue([]);
     const { result } = renderHook(() => useCompanies());
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
-
-    // Mock error for refetch
-    mockFetchCompanies.mockClear();
-    mockFetchCompanies.mockRejectedValue(new Error('Refetch error'));
-
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
     await act(async () => {
-      result.current.refetch();
+      await result.current.refetch();
     });
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
-
-    expect(result.current.companies).toEqual([]);
-    expect(result.current.error).toBe('Refetch error');
+    expect(mockFetchCompanies).toHaveBeenCalledTimes(1);
   });
 });

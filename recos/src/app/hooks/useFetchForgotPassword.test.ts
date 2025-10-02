@@ -26,10 +26,10 @@ describe("useForgotPasswordRequest hook", () => {
     const { result } = renderHook(() => useForgotPasswordRequest());
 
     await act(async () => {
-      await result.current.requestCode("test@example.com");
+      await result.current.requestCode("rahwa@gmail.com");
     });
 
-    expect(mockedFetchForgotPassword).toHaveBeenCalledWith("test@example.com");
+    expect(mockedFetchForgotPassword).toHaveBeenCalledWith("rahwa@gmail.com");
     expect(result.current.loading).toBe(false);
     expect(result.current.error).toBeNull();
     expect(result.current.success).toBe(true);
@@ -41,12 +41,12 @@ describe("useForgotPasswordRequest hook", () => {
     const { result } = renderHook(() => useForgotPasswordRequest());
 
     await act(async () => {
-      await result.current.requestCode("fail@example.com");
+      await result.current.requestCode("rahwa@gmail.com");
     });
 
-    expect(mockedFetchForgotPassword).toHaveBeenCalledWith("fail@example.com");
+    expect(mockedFetchForgotPassword).toHaveBeenCalledWith("rahwa@gmail.com");
     expect(result.current.loading).toBe(false);
     expect(result.current.success).toBe(false);
-    expect(result.current.error).toBe("Failed to send code. Please try again");
+    expect(result.current.error).toBe("Network error");
   });
 });

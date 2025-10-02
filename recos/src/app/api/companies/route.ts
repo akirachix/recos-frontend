@@ -23,7 +23,6 @@ export async function GET(request: NextRequest) {
     const data = await response.json();
     return NextResponse.json({ success: true, data }, { status: 200 });
   } catch (error) {
-    console.error("Error fetching companies:", error);
     return NextResponse.json({ 
       error: 'Internal server error',
       details: (error as Error).message 

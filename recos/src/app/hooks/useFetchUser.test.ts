@@ -1,63 +1,93 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { useFetchUser } from './useFetchUser';
-import * as fetchUserModule from '@/app/utils/fetchUser';
-jest.mock('@/utils/fetchUser');
-const mockFetchUser = fetchUserModule.fetchUser as jest.Mock;
-describe('useFetchUser', () => {
+import { fetchUser } from '@/app/utils/fetchUser';
+
+jest.mock('@/app/utils/fetchUser');
+
+const mockFetchUser = fetchUser as jest.MockedFunction<typeof fetchUser>;
+
+describe('useFetchUser Hook', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
-  it('should fetch user successfully and set states correctly', async () => {
-    const mockUserData = { id: 1, first_name: 'James', last_name: 'Darren', email: 'james@example.com', image: null };
-    mockFetchUser.mockResolvedValue(mockUserData);
+
+  it('should initialize with correct default states', () => {
     const { result } = renderHook(() => useFetchUser());
-    expect(result.current.loading).toBe(true);
+
     expect(result.current.user).toBe(null);
+    expect(result.current.loading).toBe(true);
     expect(result.current.error).toBe(null);
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false);
-    });
-    expect(result.current.user).toEqual(mockUserData);
+  });
+
+  it('should set user and clear error on successful fetch with single user object', async () => {
+    const mockUser = {
+      id: 1,
+      first_name: 'John',
+      last_name: 'Doe',
+      email: 'john.doe@example.com',
+      image: null,
+      notifications: [{ type: 'new_message', count: 2 }],
+    };
+    mockFetchUser.mockResolvedValue(mockUser);
+
+    const { result } = renderHook(() => useFetchUser());
+
+    expect(result.current.loading).toBe(true);
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(result.current.user).toEqual(mockUser);
     expect(result.current.error).toBe(null);
     expect(mockFetchUser).toHaveBeenCalledTimes(1);
   });
-  it('should handle array response and take first element', async () => {
-    const mockUserData = [
-      { id: 1, first_name: 'James', last_name: 'Doe', email: 'james@example.com' },
-      { id: 2, first_name: 'Julia', last_name: 'Seth' },
-    ];
-    mockFetchUser.mockResolvedValue(mockUserData);
+
+  it('should set user and clear error on successful fetch with array of users', async () => {
+    const mockUser = {
+      id: 1,
+      first_name: 'John',
+      last_name: 'Doe',
+      email: 'john.doe@example.com',
+      image: null,
+      notifications: [{ type: 'new_message', count: 2 }],
+    };
+    mockFetchUser.mockResolvedValue([mockUser]);
+
     const { result } = renderHook(() => useFetchUser());
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false);
-    });
-    expect(result.current.user).toEqual(mockUserData[0]);
+
+    expect(result.current.loading).toBe(true);
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(result.current.user).toEqual(mockUser);
+    expect(result.current.error).toBe(null);
+    expect(mockFetchUser).toHaveBeenCalledTimes(1);
   });
-  it('should handle falsy user data and set user to null', async () => {
+
+  it('should set user to null and clear error on successful fetch with empty data', async () => {
     mockFetchUser.mockResolvedValue(null);
+
     const { result } = renderHook(() => useFetchUser());
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false);
-    });
+
+    expect(result.current.loading).toBe(true);
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
     expect(result.current.user).toBe(null);
+    expect(result.current.error).toBe(null);
+    expect(mockFetchUser).toHaveBeenCalledTimes(1);
   });
-  it('should set error on fetch failure', async () => {
-    const mockError = new Error('Failed to fetch user');
-    mockFetchUser.mockRejectedValue(mockError);
+
+  it('should set error and user to null on failed fetch', async () => {
+    mockFetchUser.mockRejectedValue(new Error('Failed to fetch user'));
+
     const { result } = renderHook(() => useFetchUser());
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false);
-    });
-    expect(result.current.error).toBe(mockError.message);
+
+    expect(result.current.loading).toBe(true);
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
     expect(result.current.user).toBe(null);
-  });
-  it('should run effect only once on mount', async () => {
-    mockFetchUser.mockResolvedValue({ id: 1 });
-    const { rerender } = renderHook(() => useFetchUser());
-    await waitFor(() => {
-      expect(mockFetchUser).toHaveBeenCalledTimes(1);
-    });
-    rerender();
+    expect(result.current.error).toBe('Failed to fetch user');
     expect(mockFetchUser).toHaveBeenCalledTimes(1);
   });
 });

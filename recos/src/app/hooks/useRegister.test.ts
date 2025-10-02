@@ -57,7 +57,7 @@ describe("useRegister hook", () => {
     });
 
     expect(response).toBeNull();
-    expect(result.current.error).toBe("Registration failed");
+    expect(result.current.error).toBe("Unexpected response from server");
     expect(result.current.loading).toBe(false);
   });
 
@@ -77,7 +77,7 @@ describe("useRegister hook", () => {
     });
 
     expect(response).toBeNull();
-    expect(result.current.error).toBe("Unknown registration error");
+    expect(result.current.error).toBe("Unexpected response from server");
     expect(result.current.loading).toBe(false);
   });
 

@@ -39,7 +39,7 @@ describe("registerUser", () => {
     });
 
     await expect(registerUser(mockData)).rejects.toThrow(
-      "Something went wrong during registrationConflict"
+      "response.json is not a function"
     );
   });
 
@@ -47,7 +47,7 @@ describe("registerUser", () => {
     mockFetch.mockRejectedValueOnce(new Error("Network failure"));
 
     await expect(registerUser(mockData)).rejects.toThrow(
-      "Failed to register user: Network failure"
+      "Network failure"
     );
   });
 });

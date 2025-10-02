@@ -1,12 +1,14 @@
 'use client';
 
-import { Candidate, useFetchJobDetails } from '@/app/hooks/useFetchJobDetails';
+import { useFetchJobDetails } from '@/app/hooks/useFetchJobDetails';
 import { useParams } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import ClientLayout from '@/app/shared-components/ClientLayout';
 import Link from 'next/link';
 import { EyeIcon, ChevronDoubleLeftIcon, ChevronDoubleRightIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import Button from '@/app/shared-components/Button';
+import { useRouter } from 'next/navigation';
+
 
 const JOB_STATES = [
   { value: 'open', label: 'Open' },
@@ -15,7 +17,7 @@ const JOB_STATES = [
   { value: 'cancel', label: 'Cancelled' },
 ];
 
-const formatButtonStatus = (status: string) => {
+export const formatButtonStatus = (status: string) => {
   if (status.toLowerCase() === 'open') {
     return status.charAt(0).toUpperCase() + status.slice(1);
   }
@@ -27,7 +29,7 @@ const formatButtonStatus = (status: string) => {
   }
 };
 
-const formatDropdownStatus = (status: string) => {
+export const formatDropdownStatus = (status: string) => {
   return status.charAt(0).toUpperCase() + status.slice(1);
 };
 
@@ -44,6 +46,12 @@ export default function JobDetailsPage() {
   const pageSizes = [5, 10, 20];
   const [isStateDropdownOpen, setIsStateDropdownOpen] = useState(false);
   const stateDropdownRef = useRef<HTMLDivElement>(null);
+
+  const router = useRouter(); 
+
+  const handleNavigate = () => {
+    router.push('/candidates');
+  };
 
   const candidates = fetchedCandidates;
 
@@ -317,7 +325,8 @@ export default function JobDetailsPage() {
                             </span>
                           </td>
                           <td className="p-3">
-                            <button className="p-1 flex border-[#141344] text-sm border-1 text-[#141344] rounded cursor-pointer">
+                            <button className="p-1 flex border-[#141344] text-sm border-1 text-[#141344] rounded cursor-pointer"
+                            onClick={handleNavigate}>
                               <EyeIcon className="h-5 w-5 text-gray-500 mr-1" aria-hidden="true" />
                               View Profile
                             </button>

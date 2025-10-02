@@ -98,13 +98,23 @@ export const useFetchJobDetails = (jobId: string) => {
     setUpdating(true);
     try {
       const updatedJob = await updateJobState(jobId, newState, job);
-      setJob({
+      
+      const transformedJob: Job = {
         ...job,
         state: updatedJob.state,
         status: updatedJob.state.charAt(0).toUpperCase() + updatedJob.state.slice(1)
-      });
+      };
+      
+      setJob(transformedJob);
+      
+      window.dispatchEvent(new CustomEvent('jobUpdated', { 
+        detail: { jobId, state: updatedJob.state } 
+      }));
+      
+      return transformedJob;
     } catch (error) {
       setError((error as Error).message);
+      throw error;
     } finally {
       setUpdating(false);
     }

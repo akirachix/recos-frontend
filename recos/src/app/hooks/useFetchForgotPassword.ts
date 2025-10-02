@@ -14,7 +14,7 @@ export function useForgotPasswordRequest() {
       await fetchForgotPassword(email);
       setSuccess(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      setError(err instanceof Error ? err.message : String(err));      
     } finally {
       setLoading(false);
     }
