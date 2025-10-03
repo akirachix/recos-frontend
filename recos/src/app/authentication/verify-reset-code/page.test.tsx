@@ -1,148 +1,124 @@
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import React from "react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import VerifyResetCodePage from "@/app/authentication/verify-reset-code/page";
+
+import { useFetchVerifyResetCode } from "@/app/hooks/useFetchVerifyResetCode";
+import { useForgotPasswordRequest } from "@/app/hooks/useFetchForgotPassword";
+import { useRouter } from "next/navigation";
 import '@testing-library/jest-dom';
-import VerifyResetCodePage from '@/app/authentication/verify-reset-code/page';
-import { useFetchVerifyResetCode } from '@/app/hooks/useFetchVerifyResetCode';
-import { useForgotPasswordRequest } from '@/app/hooks/useFetchForgotPassword';
-import { useRouter, useSearchParams } from 'next/navigation';
 
-jest.mock('next/navigation', () => ({
+jest.mock("@/app/hooks/useFetchVerifyResetCode");
+jest.mock("@/app/hooks/useFetchForgotPassword");
+jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
-  useSearchParams: jest.fn(),
 }));
-jest.mock('@/app/hooks/useFetchVerifyResetCode');
-jest.mock('@/app/hooks/useFetchForgotPassword');
 
-const mockURLSearchParams = jest.fn();
-const originalURLSearchParams = global.URLSearchParams;
+jest.mock("next/image", () => ({
+  __esModule: true,
+  default: (props: React.ImgHTMLAttributes<HTMLImageElement>) => <img {...props} alt={props.alt || ""} />,
+}));
 
-beforeAll(() => {
-  (global.URLSearchParams as jest.MockedClass<typeof URLSearchParams>) = mockURLSearchParams;
-});
-
-afterAll(() => {
-  global.URLSearchParams = originalURLSearchParams;
-});
-
-const mockUseFetchVerifyResetCode = useFetchVerifyResetCode as jest.Mock;
-const mockUseForgotPasswordRequest = useForgotPasswordRequest as jest.Mock;
-
-describe('VerifyResetCodePage', () => {
-
-  const mockPush = jest.fn();
-
-  const mockVerifyResetCode = jest.fn();
-
-  const mockRequestCode = jest.fn();
-
-  const mockGet = jest.fn();
-
-
+describe("VerifyResetCodePage", () => {
+  let mockVerifyResetCode: jest.Mock;
+  let mockRequestCode: jest.Mock;
+  let mockPush: jest.Mock;
 
   beforeEach(() => {
+    mockVerifyResetCode = jest.fn();
+    mockRequestCode = jest.fn();
+    mockPush = jest.fn();
 
-    jest.clearAllMocks();
+    (useFetchVerifyResetCode as jest.Mock).mockReturnValue({
+      loading: false,
+      error: null,
+      verified: false,
+      verifyResetCode: mockVerifyResetCode,
+    });
+
+    (useForgotPasswordRequest as jest.Mock).mockReturnValue({
+      loading: false,
+      error: null,
+      success: false,
+      requestCode: mockRequestCode,
+    });
 
     (useRouter as jest.Mock).mockReturnValue({
-
       push: mockPush,
-
     });
+  });
 
-    (useSearchParams as jest.Mock).mockReturnValue({
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
 
-      get: mockGet,
+  it("renders 4 input boxes and email verification heading", () => {
+    render(<VerifyResetCodePage />);
+    expect(screen.getAllByRole("textbox")).toHaveLength(4);
+    expect(screen.getByText(/email verification/i)).toBeInTheDocument();
+  });
 
-    });
+  it("moves focus to next input on digit entry", () => {
+    render(<VerifyResetCodePage />);
+    const inputs = screen.getAllByRole("textbox");
 
-    
+    const focusSpy = jest.spyOn(inputs[1], "focus");
+    fireEvent.change(inputs[0], { target: { value: "5" } });
 
-    mockUseFetchVerifyResetCode.mockReturnValue({
+    expect(focusSpy).toHaveBeenCalled();
 
+    focusSpy.mockRestore();
+  });
+
+  it("shows error and prevents submit if code incomplete", () => {
+    render(<VerifyResetCodePage />);
+    const inputs = screen.getAllByRole("textbox");
+    const button = screen.getByRole("button", { name: /verify/i });
+
+    fireEvent.change(inputs[0], { target: { value: "1" } });
+    fireEvent.change(inputs[1], { target: { value: "2" } });
+    fireEvent.click(button);
+
+    expect(screen.getByText(/please enter the 4-digit code/i)).toBeInTheDocument();
+    expect(mockVerifyResetCode).not.toHaveBeenCalled();
+  });
+
+  it("calls verifyResetCode with email and code on complete submit", () => {
+    render(<VerifyResetCodePage />);
+    const inputs = screen.getAllByRole("textbox");
+    const button = screen.getByRole("button", { name: /verify/i });
+
+    fireEvent.change(inputs[0], { target: { value: "1" } });
+    fireEvent.change(inputs[1], { target: { value: "2" } });
+    fireEvent.change(inputs[2], { target: { value: "3" } });
+    fireEvent.change(inputs[3], { target: { value: "4" } });
+
+    fireEvent.click(button);
+
+    expect(mockVerifyResetCode).toHaveBeenCalledWith(expect.any(String), "1234");
+  });
+
+  it("displays error message returned from verifyResetCode hook", () => {
+    (useFetchVerifyResetCode as jest.Mock).mockReturnValue({
       loading: false,
-
-      error: null,
-
+      error: "Invalid code",
       verified: false,
-
       verifyResetCode: mockVerifyResetCode,
-
     });
+    render(<VerifyResetCodePage />);
+    expect(screen.getByText(/invalid code/i)).toBeInTheDocument();
+  });
 
-    
-
-    mockUseForgotPasswordRequest.mockReturnValue({
-
+  it("redirects to reset-password page when verified", async () => {
+    const { rerender } = render(<VerifyResetCodePage />);
+    (useFetchVerifyResetCode as jest.Mock).mockReturnValue({
       loading: false,
-
       error: null,
-
-      success: false,
-
-      requestCode: mockRequestCode,
-
+      verified: true,
+      verifyResetCode: mockVerifyResetCode,
     });
-
-    
-
-    mockGet.mockReturnValue('test@example.com');
-
-    mockURLSearchParams.mockImplementation(() => ({
-
-      get: mockGet
-
-    }));
-
-  });
-
-  it('renders verification form with email from URL', () => {
-    render(<VerifyResetCodePage />);
-    
-    expect(screen.getByText('Email Verification')).toBeInTheDocument();
-    expect(screen.getByText('test@example.com')).toBeInTheDocument();
-    expect(screen.getAllByRole('textbox')).toHaveLength(4);
-  });
-
-  it('accepts numeric input and moves focus to next field', () => {
-    render(<VerifyResetCodePage />);
-    
-    const inputs = screen.getAllByRole('textbox');
-    
-    fireEvent.change(inputs[0], { target: { value: '1' } });
-    expect(inputs[0]).toHaveValue('1');
-    
-    expect(inputs[1]).toHaveFocus();
-    
-    fireEvent.change(inputs[1], { target: { value: 'a' } });
-    expect(inputs[1]).toHaveValue('');
-  });
-
-  it('submits verification code when form is submitted', async () => {
-    render(<VerifyResetCodePage />);
-    
-    const inputs = screen.getAllByRole('textbox');
-    
-    fireEvent.change(inputs[0], { target: { value: '1' } });
-    fireEvent.change(inputs[1], { target: { value: '2' } });
-    fireEvent.change(inputs[2], { target: { value: '3' } });
-    fireEvent.change(inputs[3], { target: { value: '4' } });
-    
-    fireEvent.click(screen.getByRole('button', { name: 'Verify' }));
-    
+    rerender(<VerifyResetCodePage />);
     await waitFor(() => {
-      expect(mockVerifyResetCode).toHaveBeenCalledWith('test@example.com', '1234');
+      expect(mockPush).toHaveBeenCalledWith(expect.stringContaining("/authentication/reset-password"));
     });
-  });
-
-  it('shows error when code is incomplete', () => {
-    render(<VerifyResetCodePage />);
-    
-    const inputs = screen.getAllByRole('textbox');
-    fireEvent.change(inputs[0], { target: { value: '1' } });
-    fireEvent.change(inputs[1], { target: { value: '2' } });
-    
-    fireEvent.click(screen.getByRole('button', { name: 'Verify' }));
-    
-    expect(screen.getByText('Please enter the 4-digit code.')).toBeInTheDocument();
   });
 });

@@ -1,15 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { SidebarProvider, useSidebar } from '@/app/context/SidebarContext';
-import { CompanyProvider } from '@/app/context/CompanyContext';
-import { LogoutModalProvider, useLogoutModal } from '@/app/context/LogoutModalContext';
+import { useLogoutModal } from '@/app/context/LogoutModalContext';
 import { useLogout } from '@/app/hooks/useFetchLogout';
-import { ReactNode } from 'react';
-import Sidebar from '../Sidebar';
-import Navbar from '../Navbar';
 
-function LogoutModal() {
+export default function LogoutModal() {
   const { show, close } = useLogoutModal();
   const { logout, loading, error } = useLogout();
 
@@ -17,7 +11,7 @@ function LogoutModal() {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-black/80">
-      <div className="w-full max-w-2xl rounded-3xl shadow-2xl py-16 px-12 flex flex-col items-center bg-[#141244] border-4 border-[#eee]">
+      <div className="w-full max-w-2xl rounded-3xl shadow-2xl py-16 px-12 flex flex-col items-center bg-[#141244] border-[#eee]">
         <h1 className="text-4xl font-extrabold text-[#8645E8] mb-10 tracking-wide drop-shadow">
           Logout Confirmation
         </h1>
@@ -51,39 +45,5 @@ function LogoutModal() {
         )}
       </div>
     </div>
-  );
-}
-
-export default function ClientLayout({ children }: { children: ReactNode }) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-
-  const toggleSidebar = () => {
-    setIsCollapsed((prev) => !prev);
-  };
-
-  return (
-    <LogoutModalProvider>
-      <SidebarProvider>
-        <CompanyProvider>
-          <Sidebar />
-          <Navbar />
-          <LogoutModal />
-          <MainContent isCollapsed={isCollapsed}>{children}</MainContent>
-        </CompanyProvider>
-      </SidebarProvider>
-    </LogoutModalProvider>
-  );
-}
-
-function MainContent({ children, isCollapsed }: { children: ReactNode; isCollapsed: boolean }) {
-  const sidebarWidth = isCollapsed ? 64 : 256; 
-
-  return (
-    <main
-      className="p-4 bg-gray-100 min-h-screen transition-all duration-300 mt-[140px]"
-      style={{ marginLeft: sidebarWidth }}
-    >
-      {children}
-    </main>
   );
 }

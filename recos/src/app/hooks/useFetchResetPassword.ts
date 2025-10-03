@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { fetchResetPassword } from "../utils/fetchResetPassword";
+import { fetchResetPassword } from "@/app/utils/fetchResetPassword";
 
 export function useResetPassword() {
   const [loading, setLoading] = useState(false);
@@ -12,13 +12,16 @@ export function useResetPassword() {
     confirmPassword: string
   ) => {
     setLoading(true);
+    
     setError(null);
     setSuccess(false);
     try {
-      
-     await fetchResetPassword(email, password, confirmPassword);
-     setSuccess(true);
-
+      const response = await fetchResetPassword(email, password, confirmPassword);
+      if (response.detail && response.detail.toLowerCase().includes("successful")) {
+        setSuccess(true);
+      } else {
+        setError("Reset password failed");
+      }
     } catch (error) {
       setError((error as Error).message);
     } finally {

@@ -1,26 +1,31 @@
-import { useState, useCallback } from 'react';
-import { fetchVerifyResetCode } from '../utils/fetchVerifyResetCode';
+import { useState } from "react";
+import { fetchVerifyResetCode } from "@/app/utils/fetchVerifyResetCode";
 
-export const useVerifyResetCode = () => {
+export function useFetchVerifyResetCode() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [verified, setVerified] = useState(false);
 
-  const verifyResetCode = useCallback(async (code: string) => {
+  const verifyResetCode = async (email: string, code: string) => {
     setLoading(true);
     setError(null);
+    setVerified(false);
     try {
-      const response = await fetchVerifyResetCode(code);
-      if (response.success) {
-        setSuccess(true);
+      const response = await fetchVerifyResetCode(email, code);
+      if (
+        response.detail &&
+        response.detail.toLowerCase().includes("verified")
+      ) {
+        setVerified(true);
       } else {
-        setError(response.error || 'Failed to verify reset code.');
+        setError("Verification failed. Code not valid.");
       }
-    } catch (err) {
-      setError((err as Error).message);
+    } catch (error) {
+      setError((error as Error).message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  }, []);
+  };
 
-  return { verifyResetCode, loading, error, success };
-};
+  return { loading, error, verified, verifyResetCode };
+}

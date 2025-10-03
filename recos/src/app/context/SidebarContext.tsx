@@ -8,7 +8,7 @@ interface SidebarContextType {
   sidebarWidth: number;
 }
 
-const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
+const SidebarContext = createContext<SidebarContextType | null>(null);
 
 export const SidebarProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -28,7 +28,7 @@ export const SidebarProvider: React.FC<{ children: ReactNode }> = ({ children })
 
 export const useSidebar = (): SidebarContextType => {
   const context = useContext(SidebarContext);
-  if (!context) {
+  if (context === null) {
     throw new Error('useSidebar must be used within a SidebarProvider');
   }
   return context;

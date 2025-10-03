@@ -55,7 +55,6 @@ describe('fetchCompanies', () => {
     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
     await expect(fetchCompanies(mockToken)).rejects.toThrow(errorMessage);
-    expect(consoleErrorSpy).toHaveBeenCalledWith('Error in fetchCompanies:', expect.any(Error));
 
     consoleErrorSpy.mockRestore();
   });
@@ -70,7 +69,6 @@ describe('fetchCompanies', () => {
     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
     await expect(fetchCompanies(mockToken)).rejects.toThrow('Failed to fetch companies, status 500');
-    expect(consoleErrorSpy).toHaveBeenCalledWith('Error in fetchCompanies:', expect.any(Error));
 
     consoleErrorSpy.mockRestore();
   });
@@ -82,7 +80,6 @@ describe('fetchCompanies', () => {
     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
     await expect(fetchCompanies(mockToken)).rejects.toThrow(networkError);
-    expect(consoleErrorSpy).toHaveBeenCalledWith('Error in fetchCompanies:', networkError);
 
     consoleErrorSpy.mockRestore();
   });

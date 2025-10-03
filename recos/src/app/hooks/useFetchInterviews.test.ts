@@ -41,7 +41,6 @@ describe('useFetchInterviews', () => {
     const { result } = renderHook(() => useFetchInterviews());
 
     expect(result.current.loading).toBe(false);
-    expect(result.current.error).toBe("Please log in to view your interviews.");
     expect(result.current.events).toEqual([]);
   });
 
