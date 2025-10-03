@@ -37,10 +37,9 @@ export default function SignIn() {
         setTimeout(() => router.push("/authentication/odoo"), 1000);
       }
     } catch (error) {
-      throw new Error("Login failed: " + (error as Error).message);
+      setSuccessMessage("Login failed: " + (error as Error).message);
     }
   };
-
 
   const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
 
