@@ -19,7 +19,6 @@ export function useFetchInterviews() {
   useEffect(() => {
     async function fetchData() {
       if (!token) {
-        setError("Please log in to view your interviews.");
         setEvents([]);
         setLoading(false);
         return;

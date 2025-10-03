@@ -21,7 +21,6 @@ export async function postOdooCredentials(token: string, credentials: object) {
     
     return await response.json();  
   } catch (error) {
-    console.error('Error in postOdooCredentials:', error);
     throw error;
   }
 }
