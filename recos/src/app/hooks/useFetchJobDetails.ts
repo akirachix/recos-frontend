@@ -59,7 +59,8 @@ export const useFetchJobDetails = (jobId: string) => {
           ...rawJob,
           created_at: new Date(rawJob.posted_at).toLocaleDateString('en-US', {
             month: 'short',
-            day: '2-digit'
+            day: '2-digit',
+            year: 'numeric'
           }),
           status: (rawJob.state || rawJob.status || 'Open').charAt(0).toUpperCase() + (rawJob.state || rawJob.status || 'Open').slice(1),
           total_applicants: rawJob.total_applicants || 0
@@ -98,13 +99,23 @@ export const useFetchJobDetails = (jobId: string) => {
     setUpdating(true);
     try {
       const updatedJob = await updateJobState(jobId, newState, job);
-      setJob({
+      
+      const transformedJob: Job = {
         ...job,
         state: updatedJob.state,
         status: updatedJob.state.charAt(0).toUpperCase() + updatedJob.state.slice(1)
-      });
+      };
+      
+      setJob(transformedJob);
+      
+      window.dispatchEvent(new CustomEvent('jobUpdated', { 
+        detail: { jobId, state: updatedJob.state } 
+      }));
+      
+      return transformedJob;
     } catch (error) {
       setError((error as Error).message);
+      throw error;
     } finally {
       setUpdating(false);
     }

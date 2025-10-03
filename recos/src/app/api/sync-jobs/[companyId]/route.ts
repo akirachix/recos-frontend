@@ -28,8 +28,6 @@ export async function POST(
     });
 
     if (!syncResponse.ok) {
-      const errorText = await syncResponse.text();
-      console.error('Sync jobs error:', errorText);
       return NextResponse.json({ 
         error: `Failed to sync jobs: ${syncResponse.statusText}` 
       }, { status: syncResponse.status });
@@ -39,7 +37,6 @@ export async function POST(
     return NextResponse.json(syncData);
     
   } catch (error) {
-    console.error('Error in sync jobs API:', error);
     return NextResponse.json({ 
       error: 'Internal server error',
       details: (error as Error).message 

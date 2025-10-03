@@ -42,8 +42,8 @@ export function CompanyProvider({ children }: { children: React.ReactNode }) {
               setSelectedCompanyState(companies[0]);
             }
           }
-        } catch (e) {
-          console.error("Failed to parse saved company", e);
+        } catch (error) {
+          console.error("Failed to parse saved company", error);
         }
       }
     }

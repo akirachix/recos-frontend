@@ -1,8 +1,8 @@
-import CandidateReportPage from "./page";
-export default function Candidate() {
-return(
-  <div>
-    
-  </div>
-)
+import ClientLayout from "../shared-components/ClientLayout";
+export default function Dashboard() {
+  return (
+    <ClientLayout>
+      <div></div>
+    </ClientLayout>
+  );
 }

@@ -15,7 +15,7 @@ export async function POST(request: Request) {
 
     const result = await response.json();
     return new Response(JSON.stringify(result), { status: 201 });
-  } catch (error) {
+  } catch {
     return new Response(JSON.stringify({ statusText: "Failed to send code" }), { status: 500 });
   }
 }

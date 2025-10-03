@@ -4,7 +4,6 @@ const baseurl = process.env.BASE_URL;
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { email, password } = body;
 
     if (!body) {
       return new Response("Missing required values: email, password", { status: 400 });

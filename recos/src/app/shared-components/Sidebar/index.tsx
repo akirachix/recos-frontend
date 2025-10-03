@@ -43,11 +43,37 @@ export default function Sidebar() {
   const { selectedCompany, companies, setSelectedCompany } = useCompany();
   const iconSizeClass = isCollapsed ? "h-10 w-10" : "h-7 w-7";
 
-  const handleCompanySelect = useCallback((company: { company_id: string; company_name: string }) => {
-    setSelectedCompany(company);
+  const getBasePath = useCallback((path: string) => {
+    const segments = path.split('/').filter(Boolean);
+    
+    if (segments.length >= 2 && segments[1] !== 'jobs' && segments[1] !== 'candidates' && segments[1] !== 'analytics' && segments[1] !== 'calendar' && segments[1] !== 'settings') {
+      return `/${segments[0]}`;
+    }
+    
+    return path;
+  }, []);
+
+  const constructPathWithCompany = useCallback((basePath: string, companyId: string) => {
+    const noCompanyIdPaths = ['/jobs', '/candidates', '/analytics', '/calendar', '/settings'];
+    
+    if (noCompanyIdPaths.includes(basePath)) {
+      return basePath;
+    }
+    
+    return `${basePath}/${companyId}`;
+  }, []);
+
+  const handleCompanySelect = useCallback(async (company: { company_id: string; company_name: string }) => {
     setIsDropdownOpen(false);
-    router.push(`/dashboard/${company.company_id}`);
-  }, [setSelectedCompany, router]);
+    
+    setSelectedCompany(company);
+    
+    const basePath = getBasePath(pathname);
+    
+    const newPath = constructPathWithCompany(basePath, company.company_id);
+    
+    await router.push(newPath);
+  }, [setSelectedCompany, pathname, getBasePath, constructPathWithCompany, router]);
 
   const toggleDropdown = useCallback(() => {
     setIsDropdownOpen(prev => !prev);
@@ -190,7 +216,7 @@ export default function Sidebar() {
               size="sm"
               className="flex items-center w-full text-xl text-white p-2 rounded transition-colors duration-200 cursor-pointer"
             >
-              {selectedCompany ? selectedCompany.company_name : "Select Company"}
+              {selectedCompany?.company_name || "Company"}
               <ChevronDownIcon
                 className={`ml-10 h-4 w-4 transition-transform ${
                   isDropdownOpen ? "rotate-180" : ""

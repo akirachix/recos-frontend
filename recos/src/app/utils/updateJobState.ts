@@ -1,4 +1,4 @@
-interface JobUpdateData {
+export interface JobUpdateData {
   company_id?: number;
   company?: number;
   job_title: string;

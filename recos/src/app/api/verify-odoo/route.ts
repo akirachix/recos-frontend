@@ -23,7 +23,6 @@ export async function POST(request: NextRequest) {
     const responseBody = await response.json();
     return NextResponse.json(responseBody, { status: response.status });
   } catch (error) {
-    console.error("Error verifying Odoo credentials:", error);
     return NextResponse.json({ 
       error: 'Internal server error',
       details: (error as Error).message 

@@ -23,7 +23,6 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
-    console.error("Error saving Odoo credentials:", error);
     return NextResponse.json({ 
       error: 'Internal server error',
       details: (error as Error).message 

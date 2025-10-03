@@ -10,7 +10,7 @@ import Button from '@/app/shared-components/Button';
 import ClientLayout from '@/app/shared-components/ClientLayout';
 import { useCompany } from '@/app/context/CompanyContext';
 
-const formatButtonStatus = (status: string) => {
+export const formatButtonStatus = (status: string) => {
   if (status.toLowerCase() === 'open') {
     return status.charAt(0).toUpperCase() + status.slice(1);
   }
@@ -36,6 +36,7 @@ function JobsPageContent() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const pageSizes = [5, 10, 20];
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -46,6 +47,18 @@ function JobsPageContent() {
       default: return 'bg-gray-800'; 
     }
   };
+
+useEffect(() => {
+  const handleJobUpdate = () => {
+    refetch();
+  };
+
+  window.addEventListener('jobUpdated', handleJobUpdate);
+  
+  return () => {
+    window.removeEventListener('jobUpdated', handleJobUpdate);
+  };
+}, [refetch]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -69,6 +82,11 @@ function JobsPageContent() {
   }, [selectedCompany]);
 
   useEffect(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+
     if (syncing) {
       setSyncStatus('syncing');
       setSyncMessage('Syncing jobs from Odoo...');
@@ -80,102 +98,93 @@ function JobsPageContent() {
         setSyncStatus('success');
         setSyncMessage('Jobs synced successfully!');
         
-        const timer = setTimeout(() => {
+        timerRef.current = setTimeout(() => {
           setSyncStatus('idle');
+          timerRef.current = null;
         }, 3000);
-        
-        return () => clearTimeout(timer);
       }
     }
-  }, [syncing, error]);
+  }, [syncing, error, syncStatus]);
+
+  useEffect(() => {
+    if (syncStatus === 'success') {
+      const timer = setTimeout(() => {
+        setSyncStatus('idle');
+      }, 3000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [syncStatus]);
 
   const handleSync = async () => {
     if (!selectedCompany) return;
+    
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
     
     setSyncStatus('syncing');
     setSyncMessage('Syncing jobs from Odoo...');
     
     try {
       await syncAndFetchJobs();
-    } catch (err) {
+    } catch (error) {
+      console.error('Error syncing jobs:', error);
     }
   };
 
   return (
     <div className="p-4">
-      {syncStatus !== 'idle' && (
-        <div className={`mb-4 p-4 rounded-md ${
-          syncStatus === 'syncing' ? 'bg-blue-50 border border-blue-200' :
-          syncStatus === 'success' ? 'bg-green-50 border border-green-200' :
-          'bg-red-50 border border-red-200'
-        }`}>
-          <div className="flex items-center">
-            <div className={`flex-shrink-0 ${
-              syncStatus === 'syncing' ? 'text-blue-400' :
-              syncStatus === 'success' ? 'text-green-400' :
-              'text-red-400'
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+        <div className="w-full sm:w-auto mb-4 sm:mb-0">
+          {syncStatus !== 'idle' && (
+            <div className={`p-4 rounded-md ${
+              syncStatus === 'syncing' ? 'bg-blue-50 border border-blue-200' :
+              syncStatus === 'success' ? 'bg-green-50 border border-green-200' :
+              'bg-red-50 border border-red-200'
             }`}>
-              {syncStatus === 'syncing' ? (
-                <ArrowPathIcon className="h-5 w-5 animate-spin" />
-              ) : syncStatus === 'success' ? (
-                <CheckCircleIcon className="h-5 w-5" />
-              ) : (
-                <ExclamationTriangleIcon className="h-5 w-5" />
-              )}
+              <div className="flex items-center">
+                <div className={`flex-shrink-0 ${
+                  syncStatus === 'syncing' ? 'text-blue-400' :
+                  syncStatus === 'success' ? 'text-green-400' :
+                  'text-red-400'
+                }`}>
+                  {syncStatus === 'syncing' ? (
+                    <ArrowPathIcon className="h-5 w-5 animate-spin" />
+                  ) : syncStatus === 'success' ? (
+                    <CheckCircleIcon className="h-5 w-5" />
+                  ) : (
+                    <ExclamationTriangleIcon className="h-5 w-5" />
+                  )}
+                </div>
+                <div className="ml-3">
+                  <p className={`text-sm font-medium ${
+                    syncStatus === 'syncing' ? 'text-blue-800' :
+                    syncStatus === 'success' ? 'text-green-800' :
+                    'text-red-800'
+                  }`}>
+                    {syncMessage}
+                  </p>
+                </div>
+              </div>
             </div>
-            <div className="ml-3">
-              <p className={`text-sm font-medium ${
-                syncStatus === 'syncing' ? 'text-blue-800' :
-                syncStatus === 'success' ? 'text-green-800' :
-                'text-red-800'
-              }`}>
-                {syncMessage}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">Jobs</h1>
-          {selectedCompany ? (
-            <p className="text-gray-600">
-              Showing jobs for {selectedCompany.company_name}
-            </p>
-          ) : (
-            <p className="text-gray-600">
-              Please select a company to view jobs
-            </p>
           )}
         </div>
         
-        <Button
-          onClick={handleSync}
-          disabled={syncing || !selectedCompany}
-          className="flex items-center gap-2"
-        >
-          <ArrowPathIcon className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
-          {syncing ? "Syncing..." : "Sync Jobs"}
-        </Button>
+        <div className="w-full sm:w-auto flex justify-end">
+          <Button
+            onClick={handleSync}
+            disabled={syncing || !selectedCompany}
+            className="flex items-center gap-2 cursor-pointer"
+          >
+            <ArrowPathIcon className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
+            {syncing ? "Syncing..." : "Sync Jobs"}
+          </Button>
+        </div>
       </div>
 
-      {!selectedCompany ? (
-        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <svg className="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <div className="ml-3">
-              <p className="text-sm text-yellow-700">
-                No company selected. Please select a company from the sidebar to view jobs.
-              </p>
-            </div>
-          </div>
-        </div>
-      ) : loading ? (
+      {loading ? (
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-purple-600"></div>
           <span className="ml-4 text-lg text-gray-600">Loading jobs...</span>
@@ -353,7 +362,6 @@ function JobsPageContent() {
                   </table>
                 </div>
 
-                {totalPages > 1 && (
                   <div className="mt-4 flex justify-center items-center space-x-2">
                     <button
                       className={`px-4 py-2 rounded ${
@@ -383,7 +391,6 @@ function JobsPageContent() {
                       <ChevronDoubleRightIcon className="h-5 w-5" />
                     </button>
                   </div>
-                )}
               </>
             );
           })()}

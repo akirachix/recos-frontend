@@ -12,25 +12,26 @@ export function useCompanies() {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const hasFetched = useRef(false); 
+  const hasFetched = useRef(false);
+
   const getCompaniesData = async () => {
     if (hasFetched.current) return;
-    
+
     const token = getAuthToken();
-    
+
     if (!token) {
       setCompanies([]);
       setIsLoading(false);
       return;
     }
-    
+
     setIsLoading(true);
     setError(null);
 
     try {
       const data = await fetchCompanies(token);
       setCompanies(Array.isArray(data) ? data : []);
-      hasFetched.current = true; 
+      hasFetched.current = true;
     } catch (err) {
       setError((err as Error).message);
       setCompanies([]);
@@ -39,14 +40,19 @@ export function useCompanies() {
     }
   };
 
+  const reset = () => {
+    hasFetched.current = false;
+  };
+
   useEffect(() => {
     getCompaniesData();
-  }, []); 
+  }, []);
 
-  return { 
-    companies, 
-    isLoading, 
-    error, 
-    refetch: getCompaniesData 
+  return {
+    companies,
+    isLoading,
+    error,
+    refetch: getCompaniesData,
+    reset,
   };
 }
