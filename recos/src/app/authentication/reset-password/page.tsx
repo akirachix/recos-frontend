@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useResetPassword } from "@/hooks/useFetchResetPassword";
+import { useResetPassword } from "@/app/hooks/useFetchResetPassword";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 export default function ResetPasswordPage() {

@@ -1,6 +1,7 @@
 import { verifyOdoo } from '../utils/fetchVerifyOdoo';
 
 describe('verifyOdoo', () => {
+  const token = 'test-token';
   const credentials = { db_url: 'http://recos.odoo.com', db_name: 'recos' };
 
   beforeEach(() => {
@@ -16,35 +17,56 @@ describe('verifyOdoo', () => {
       text: async () => JSON.stringify(mockResponseData),
     });
 
-    const data = await verifyOdoo(credentials);
+    const data = await verifyOdoo(credentials, token);
 
-    expect(global.fetch).toHaveBeenCalledWith('/api/verify-odoo', {
+    expect(global.fetch).toHaveBeenCalledWith('/api/verify-odoo/', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Token ${token}`,
+      },
       body: JSON.stringify(credentials),
     });
     expect(data).toEqual(mockResponseData);
   });
 
-  it('returns error-like object on failed POST', async () => {
+  it('returns error-like object on failed POST with JSON error', async () => {
     const errorMessage = 'Verification failed';
     global.fetch = jest.fn().mockResolvedValue({
       ok: false,
       status: 400,
-      json: async () => { throw new Error('Not JSON'); }, 
-      text: async () => errorMessage,
+      json: async () => ({ error: errorMessage }),
     });
 
-    const result = await verifyOdoo(credentials);
-    expect(result).toEqual(expect.objectContaining({
-      status: expect.any(Number),
-    }));
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    const result = await verifyOdoo(credentials, token);
+
+    expect(result).toEqual({
+      error: errorMessage,
+      status: 400,
+      valid: false,
+    });
+
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 
-  it('throws error when fetch rejects', async () => {
+  it('returns error-like object on fetch rejection', async () => {
     const error = new Error('Network error');
     global.fetch = jest.fn().mockRejectedValue(error);
 
-    await expect(verifyOdoo(credentials)).rejects.toThrow('Network error');
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    const result = await verifyOdoo(credentials, token);
+
+    expect(result).toEqual({
+      error: 'Network error or server unreachable',
+      status: 500,
+      valid: false,
+    });
+
+    expect(consoleErrorSpy).toHaveBeenCalledWith('Error in verifyOdoo:', error);
+    consoleErrorSpy.mockRestore();
   });
 });

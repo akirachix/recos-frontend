@@ -1,20 +1,31 @@
-const baseUrl = "/api/verify-odoo";
+const baseUrl = "/api/verify-odoo/";
 
-export async function verifyOdoo(credentials: object) {
+export async function verifyOdoo(credentials: object, token: string) {
     try {
         const response = await fetch(baseUrl, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Token ${token}`
+            },
             body: JSON.stringify(credentials),
         });
+        
         if (!response.ok) {
-            const error = await response.text();
-            return { error, status: response.status };
+            const errorData = await response.json();
+            return { 
+                error: errorData.error || "Failed to verify credentials", 
+                status: response.status,
+                valid: false
+            };
         }
 
         return await response.json();
     } catch (error) {
-        throw new Error((error as Error).message
-        );
+        return { 
+            error: (error as Error).message,
+            status: 500,
+            valid: false
+        };
     }
 }

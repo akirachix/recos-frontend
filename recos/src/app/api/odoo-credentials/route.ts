@@ -1,11 +1,17 @@
-const baseUrl = process.env.API_BASE_URL;
+import { NextRequest, NextResponse } from 'next/server';
+
+const baseUrl = process.env.BASE_URL;
 if (!baseUrl) throw new Error("API base URL not configured");
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    const token = cookieStore.get("auth_token");
+    const token = request.cookies.get('auth_token')?.value;
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized: No auth token' }, { status: 401 });
+    }
+    
     const credentials = await request.json();
-    const response = await fetch(`${baseUrl}/odoo-credentials`, {
+    const response = await fetch(`${baseUrl}/odoo-credentials/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -13,11 +19,13 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify(credentials),
     });
+    
     const data = await response.json();
-    return new Response(JSON.stringify(data), {
-      headers: { "Content-Type": "application/json" },
-    });
+    return NextResponse.json(data, { status: response.status });
   } catch (error) {
-    return new Response(JSON.stringify({ error: "Internal Server Error"}),{ status: 500 });
+    return NextResponse.json({ 
+      error: 'Internal server error',
+      details: (error as Error).message 
+    }, { status: 500 });
   }
 }

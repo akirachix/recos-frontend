@@ -4,7 +4,8 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import useRegister from "../hooks/useRegister";
-import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
+import {EyeIcon, EyeSlashIcon} from '@heroicons/react/24/outline';
+import Image from "next/image";
 
 export default function Signup() {
   const router = useRouter();
@@ -48,7 +49,11 @@ export default function Signup() {
       <div className="relative z-20 bg-[#fff7f9] rounded-xl flex flex-col md:flex-row w-full max-w-7xl max-h-[900px] overflow-hidden">
         <div className="bg-purple-700 text-white md:w-1/2 flex flex-col p-16 rounded-l-xl space-y-8 relative">
           <div className="absolute top-6 left-6">
-            <img src="/logo-white.png" alt="Recos Logo" width="140" height="100" />
+            <Image
+            src="/logo-white.png"
+            alt="Recos Logo"
+            width="140" 
+            height="100"/>
           </div>
           <div className="mt-32 text-center">
             <h2 className="font-bold text-3xl leading-snug select-none">
@@ -134,9 +139,9 @@ export default function Signup() {
                 tabIndex={0}
               >
                 {showPassword ? (
-                  <HiOutlineEye className="h-5 w-5" />
+                  <EyeIcon className="h-5 w-5" />
                 ) : (
-                  <HiOutlineEyeOff className="h-5 w-5" />
+                  <EyeSlashIcon className="h-5 w-5" />
                 )}
               </button>
             </div>

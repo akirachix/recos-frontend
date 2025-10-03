@@ -1,15 +1,15 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { useOdooAuth } from "../../hooks/useFetchOdooCredentials";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 export default function OdooPage() {
   const {
-    token,
     loading,
-    error: authError,
+    error,
     dbUrl,
     setDbUrl,
     dbName,
@@ -22,26 +22,32 @@ export default function OdooPage() {
     setAgreed,
     verifyAndSave,
   } = useOdooAuth();
+  
+  const router = useRouter();
 
-  if (!token) {
-    return <p className="text-center mt-10">Please log in to connect your Odoo account.</p>;
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await verifyAndSave();
+  };
+
+  const handleViewCompanies = () => {
+    router.push("/authentication/odoo/companies");
+  };
 
   return (
     <div className="min-h-screen bg-[#141244] flex items-center justify-center">
       <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8 max-w-7xl w-full mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-full">
-          <div className="relative bg-purple-600 text-white p-4 sm:p-6 md:p-8 rounded-lg flex flex-col gap-50 text-center min-h-[100px] sm:min-h-[500px]">
+          <div className="relative bg-purple-600 text-white p-4 sm:p-6 md:p-8 rounded-lg flex flex-col gap-40 text-center min-h-[100px] sm:min-h-[500px]">
             <div>
-            <Image
-              src="/logo-white.png"
-              alt="Logo"
-              width={100}
-              height={100}
-              className=" object-contain"
-            />
+              <Image
+                src="/logo-white.png"
+                alt="Logo"
+                width={100}
+                height={100}
+                className="object-contain"
+              />
             </div>
-            <div>
             <div className="mt-6 sm:mt-24 md:mt-6">
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold">
                 Connect Your Odoo Account
@@ -49,20 +55,26 @@ export default function OdooPage() {
               <p className="text-sm sm:text-base md:text-lg max-w-xs sm:max-w-md md:max-w-xl leading-relaxed mt-4">
                 To sync company candidate data, connect your Odoo account. Your credentials are securely encrypted.
               </p>
-              <Button
+              <div className="flex flex-col gap-4 justify-center items-center">
+                  <Button
                 className="w-32 sm:w-40 md:w-60 border border-white bg-transparent text-white font-semibold py-2 sm:py-3 rounded-full hover:bg-white hover:text-purple-700 transition duration-300 mt-6 cursor-pointer"
                 onClick={() => window.open("https://www.odoo.com/", "_blank")}
               >
                 Create Odoo Account
               </Button>
+              
+              <Button
+                className="w-32 sm:w-40 md:w-60 border border-white text-purple-600 font-semibold py-2 sm:py-3 rounded-full hover:bg-purple-50 transition duration-300 mt-4 cursor-pointer"
+                onClick={handleViewCompanies}
+              >
+                View Your Companies
+              </Button>
+              </div>
+            
             </div>
           </div>
-          </div>
           <form
-            onSubmit={async (e) => {
-              e.preventDefault();
-              await verifyAndSave();
-            }}
+            onSubmit={handleSubmit}
             className="p-4 sm:p-6 md:p-10 space-y-4 sm:space-y-6 flex flex-col justify-center min-h-[400px] sm:min-h-[500px]"
           >
             <h2 className="text-xl sm:text-2xl md:text-3xl text-purple-500 text-left font-bold mb-2 sm:mb-4">
@@ -78,6 +90,7 @@ export default function OdooPage() {
                 value={dbUrl}
                 onChange={(e) => setDbUrl(e.target.value)}
                 className="w-full"
+                required
               />
             </div>
             <div>
@@ -90,6 +103,7 @@ export default function OdooPage() {
                 value={dbName}
                 onChange={(e) => setDbName(e.target.value)}
                 className="w-full"
+                required
               />
             </div>
             <div>
@@ -102,6 +116,8 @@ export default function OdooPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full"
+                type="email"
+                required
               />
             </div>
             <div>
@@ -115,10 +131,24 @@ export default function OdooPage() {
                 onChange={(e) => setApiKey(e.target.value)}
                 type="password"
                 className="w-full"
+                required
               />
             </div>
-            {authError && (
-              <p className="text-red-600 text-xs sm:text-sm text-center">{authError}</p>
+            {error && (
+              <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm text-red-700">
+                      {error}
+                    </p>
+                  </div>
+                </div>
+              </div>
             )}
             <div className="flex items-start">
               <div className="flex items-center h-4 sm:h-5">
@@ -157,7 +187,6 @@ export default function OdooPage() {
                 >
                   Generate Key
                 </a>
-
               </p>
             </div>
           </form>

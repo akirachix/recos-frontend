@@ -1,33 +1,31 @@
+import { NextRequest, NextResponse } from 'next/server';
 
-const baseUrl = process.env.API_BASE_URL;
-if (!baseUrl) throw new Error("API base URL missing.");
+const baseUrl = process.env.BASE_URL;
+if (!baseUrl) throw new Error("API base URL missing");
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
-    const authHeader = request.headers.get("authorization");
-    const token = authHeader?.replace("Token ", "");
+    const token = request.cookies.get('auth_token')?.value;
     if (!token) {
-      return new Response(
-        JSON.stringify({ success: false, error: "Unauthorized, token missing" }),
-        { status: 401, headers: { "Content-Type": "application/json" } }
-      );
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Unauthorized, token missing' 
+      }, { status: 401 });
     }
-    const response = await fetch(`${baseUrl}/api/companies/`, {
+    
+    const response = await fetch(`${baseUrl}/companies/`, {
       headers: {
         Authorization: `Token ${token}`,
         "Content-Type": "application/json",
       },
     });
+    
     const data = await response.json();
-    return new Response(JSON.stringify({ success: true, data }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return NextResponse.json({ success: true, data }, { status: 200 });
   } catch (error) {
-    return new Response(JSON.stringify({ error: "Internal Server Error"}), {
-      status: 500,
-    });
+    return NextResponse.json({ 
+      error: 'Internal server error',
+      details: (error as Error).message 
+    }, { status: 500 });
   }
 }
-
- 

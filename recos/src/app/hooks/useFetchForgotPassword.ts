@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { fetchForgotPassword } from "@/utils/fetchForgotPassword";
+import { fetchForgotPassword } from "../utils/fetchForgotPassword";
 
 export function useForgotPasswordRequest() {
   const [loading, setLoading] = useState(false);
@@ -14,7 +14,7 @@ export function useForgotPasswordRequest() {
       await fetchForgotPassword(email);
       setSuccess(true);
     } catch (err) {
-      setError("Failed to send code. Please try again");
+      setError(err instanceof Error ? err.message : String(err));      
     } finally {
       setLoading(false);
     }
