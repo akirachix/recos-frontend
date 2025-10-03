@@ -1,23 +1,31 @@
-// const baseUrl = process.env.API_BASE_URL;
-// if (!baseUrl) throw new Error("API base URL not configured");
+import { NextRequest, NextResponse } from 'next/server';
 
-// export async function POST(request: Request) {
-//   try {
-//     const token = cookieStore.get("auth_token");
-//     const credentials = await request.json();
-//     const response = await fetch(`${baseUrl}/odoo-credentials`, {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//         Authorization: `Token ${token}`,
-//       },
-//       body: JSON.stringify(credentials),
-//     });
-//     const data = await response.json();
-//     return new Response(JSON.stringify(data), {
-//       headers: { "Content-Type": "application/json" },
-//     });
-//   } catch (error) {
-//     return new Response(JSON.stringify({ error: "Internal Server Error"}),{ status: 500 });
-//   }
-// }
+const baseUrl = process.env.BASE_URL;
+if (!baseUrl) throw new Error("API base URL not configured");
+
+export async function POST(request: NextRequest) {
+  try {
+    const token = request.cookies.get('auth_token')?.value;
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized: No auth token' }, { status: 401 });
+    }
+    
+    const credentials = await request.json();
+    const response = await fetch(`${baseUrl}/odoo-credentials/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Token ${token}`,
+      },
+      body: JSON.stringify(credentials),
+    });
+    
+    const data = await response.json();
+    return NextResponse.json(data, { status: response.status });
+  } catch (error) {
+    return NextResponse.json({ 
+      error: 'Internal server error',
+      details: (error as Error).message 
+    }, { status: 500 });
+  }
+}

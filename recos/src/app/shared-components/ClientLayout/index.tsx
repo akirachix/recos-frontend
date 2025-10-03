@@ -1,5 +1,6 @@
 'use client';
 
+<<<<<<< HEAD
 import { useState } from 'react';
 import { SidebarProvider } from '@/app/context/SidebarContext';
 import { LogoutModalProvider } from '@/app/context/LogoutModalContext';
@@ -78,5 +79,35 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
         </main>
       </SidebarProvider>
     </LogoutModalProvider>
+=======
+import { SidebarProvider, useSidebar } from '@/app/context/SidebarContext';
+import { CompanyProvider } from '@/app/context/CompanyContext';
+import { ReactNode } from 'react';
+import Sidebar from '../Sidebar';
+import Navbar from '../Navbar';
+
+export default function ClientLayout({ children }: { children: ReactNode }) {
+  return (
+    <SidebarProvider>
+      <CompanyProvider>
+        <Sidebar />
+        <Navbar />
+        <MainContent>{children}</MainContent>
+      </CompanyProvider>
+    </SidebarProvider>
+>>>>>>> 2bb68eaca8eb54a90698bdbdcdf40e3175ddbac7
+  );
+}
+
+function MainContent({ children }: { children: ReactNode }) {
+  const { sidebarWidth } = useSidebar();
+
+  return (
+    <main
+      className="p-4 transition-all duration-300 mt-[140px]"
+      style={{ marginLeft: `${sidebarWidth}px` }}
+    >
+      {children}
+    </main>
   );
 }

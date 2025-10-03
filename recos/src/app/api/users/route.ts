@@ -4,13 +4,13 @@ const base_url = process.env.BASE_URL;
 export async function GET(request: NextRequest) {
   try {
     
-    const token = request.cookies.get('token')?.value;
+    const token = request.cookies.get('auth_token')?.value;
 
     if (!token) {
       return NextResponse.json({ error: 'Unauthorized: No token' }, { status: 401 });
     }
 
-    const response = await fetch(`${base_url}/api/users/`, {
+    const response = await fetch(`${base_url}/users/`, {
       headers: {
         'Authorization': `Token ${token}`,
         'Content-Type': 'application/json'

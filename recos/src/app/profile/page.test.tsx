@@ -3,6 +3,8 @@ import React from "react";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { useRouter } from "next/navigation";
 import ProfilePage from "./page";
+import useFetchProfile from "../hooks/useFetchProfile";
+
 
 jest.mock("../hooks/useFetchProfile", () => ({
   __esModule: true,
@@ -13,8 +15,6 @@ jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
   usePathname: () => '/',
 }));
-
-import useFetchProfile from "../hooks/useFetchProfile";
 
 describe("ProfilePage", () => {
   const pushMock = jest.fn();

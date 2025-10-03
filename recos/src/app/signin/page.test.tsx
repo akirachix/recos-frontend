@@ -2,7 +2,6 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import SignInPage from './page';
 
-// Mock the useLogin hook
 jest.mock('../hooks/useLogin', () => ({
   __esModule: true,
   default: () => ({

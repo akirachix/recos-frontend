@@ -1,6 +1,11 @@
 const baseurl = "/api/auth/signup";
 
-export async function registerUser(data: {  first_name: string; last_name: string; email: string; password: string }) {
+export async function registerUser(data: {  
+  first_name: string; 
+  last_name: string; 
+  email: string; 
+  password: string 
+}) {
   try {
     const response = await fetch(baseurl, {
       method: "POST",

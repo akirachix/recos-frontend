@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { registerUser } from "../utils/fetchRegister";
 
@@ -16,16 +15,15 @@ const useRegister = () => {
     setError(null);
     try { 
       const result = await registerUser(userData);
-      if (!result) {
-        throw new Error("Registration failed");
-      }
-      if (result.user) {
+      
+      if (result && result.user) {
         return "success";
       }
-
-      throw new Error("Unknown registration error");
-    } catch(error){
-                setError((error as Error).message);
+      
+      throw new Error("Unexpected response from server");
+    } catch(err){
+      const error = err as Error;
+      setError(error.message);      
       return null;
     } finally {
       setLoading(false);
@@ -36,6 +34,3 @@ const useRegister = () => {
 };
 
 export default useRegister;
-
-
-

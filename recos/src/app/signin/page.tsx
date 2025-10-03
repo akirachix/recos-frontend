@@ -4,7 +4,9 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import useLogin from "../hooks/useLogin";
-import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
+import {EyeIcon, EyeSlashIcon} from '@heroicons/react/24/outline'
+import Image from "next/image";
+
 
 export default function SignIn() {
   const router = useRouter();
@@ -49,7 +51,11 @@ export default function SignIn() {
       <div className="relative z-20 bg-[#fff7f9] rounded-xl shadow-lg flex flex-col md:flex-row w-full max-w-7xl max-h-[90vh] overflow-auto">
         <div className="flex flex-col p-8 md:p-16 md:w-1/2">
           <div className="absolute top-6 left-6">
-            <img src="/Group 328.png" alt="Recos Logo" width="140" height="100" />
+            <Image
+            src="/Group 328.png"
+            alt="Recos Logo"
+            width="140" 
+            height="100"/>
           </div>
           <h2 className="text-purple-700 font-semibold text-xl mt-16 mb-10 select-none">
             Sign In to Recos
@@ -92,9 +98,9 @@ export default function SignIn() {
                 tabIndex={0}
               >
                 {showPassword ? (
-                  <HiOutlineEye className="h-5 w-5" />
+                  <EyeIcon className="h-5 w-5" />
                 ) : (
-                  <HiOutlineEyeOff className="h-5 w-5" />
+                  <EyeSlashIcon className="h-5 w-5" />
                 )}
               </button>
             </div>

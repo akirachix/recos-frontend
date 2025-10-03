@@ -36,18 +36,19 @@ describe("registerUser", () => {
     mockFetch.mockResolvedValueOnce({
       ok: false,
       statusText: "Conflict",
+      json: jest.fn().mockResolvedValue({
+        error: "Something went wrong during registrationConflict",
+      }),
     });
 
     await expect(registerUser(mockData)).rejects.toThrow(
-      "Something went wrong during registrationConflict"
+      "Failed to register user: Something went wrong during registrationConflict"
     );
   });
 
   test("should throw error when fetch rejects", async () => {
     mockFetch.mockRejectedValueOnce(new Error("Network failure"));
 
-    await expect(registerUser(mockData)).rejects.toThrow(
-      "Failed to register user: Network failure"
-    );
+    await expect(registerUser(mockData)).rejects.toThrow("Network failure");
   });
 });

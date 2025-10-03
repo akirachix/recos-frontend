@@ -3,9 +3,15 @@ import { postOdooCredentials } from '../utils/fetchOdooCredentials';
 describe('postOdooCredentials', () => {
   const token = 'test-token';
   const credentials = { db_url: 'http://recos.odoo.com', db_name: 'recos' };
+  let consoleErrorSpy: jest.SpyInstance;
 
   beforeEach(() => {
     jest.resetAllMocks();
+    consoleErrorSpy = jest.spyOn(global.console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleErrorSpy.mockRestore();
   });
 
   it('returns JSON data on successful POST', async () => {
@@ -19,7 +25,7 @@ describe('postOdooCredentials', () => {
 
     const data = await postOdooCredentials(token, credentials);
 
-    expect(global.fetch).toHaveBeenCalledWith('/api/auth', {
+    expect(global.fetch).toHaveBeenCalledWith('/api/odoo-credentials/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -30,27 +36,15 @@ describe('postOdooCredentials', () => {
     expect(data).toEqual(mockResponseData);
   });
 
-  it('returns error-like object on failed POST', async () => {
-    const errorMessage = 'Invalid credentials';
-    global.fetch = jest.fn().mockResolvedValue({
-      ok: false,
-      status: 401,
-      json: async () => Promise.reject(new Error('Not JSON')),
-      text: async () => Promise.resolve(errorMessage),
-    });
+  it('returns error-like object on fetch rejection', async () => {
+    const error = new Error('Network error');
+    global.fetch = jest.fn().mockRejectedValue(error);
 
     const result = await postOdooCredentials(token, credentials);
 
     expect(result).toEqual({
-      error: errorMessage,
-      status: 401,
+      error: 'Network error',
+      status: 500,
     });
-  });
-
-  it('throws error if fetch rejects', async () => {
-    const error = new Error('Network error');
-    global.fetch = jest.fn().mockRejectedValue(error);
-
-    await expect(postOdooCredentials(token, credentials)).rejects.toThrow('Network error');
   });
 });

@@ -7,6 +7,7 @@ type User = {
   last_name?: string;
   email?: string;
   image?: string | null;
+  notifications?: { type: string; count: number }[];
 };
 
 export const useFetchUser = () => {
