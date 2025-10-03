@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { User as UserIcon, Mail, Calendar, Edit2 } from "lucide-react";
 import useFetchProfile from "../hooks/useFetchProfile";
@@ -19,6 +19,7 @@ function formatDate(dateString: string | undefined) {
 }
 
 export default function ProfilePage() {
+  const router = useRouter();
   const { user: profile, error } = useFetchProfile();
   return (
     <LogoutModalProvider>
@@ -39,7 +40,7 @@ export default function ProfilePage() {
             <div className="bg-[#1e1a3a] rounded-3xl shadow-2xl px-8 py-12 flex flex-col md:flex-row items-center justify-center gap-35 max-w-5xl w-full ml-50 mt-20">
               <div className="relative flex flex-col items-center justify-center mb-8 md:mb-0 mr-10">
                 <div className="relative w-[250px] h-[260px] rounded-full bg-[#141244] border-4 border-[#8645E8] overflow-hidden shadow-xl flex items-center justify-center">
-                  {profile && profile.image ? (
+                {profile && profile.image ? (
                     <Image
                       src={profile.image}
                       alt="User Avatar"
@@ -51,13 +52,14 @@ export default function ProfilePage() {
                     <UserIcon className="w-32 h-32 text-[#8645E8] opacity-50" />
                   )}
                 </div>
-                <Link
-                  href="/update-profile"
-                  aria-label="Edit Profile"
+                <button
+                  onClick={() => router.push("/update-profile")}
                   className="absolute bottom-6 right-1.5 w-11 h-11 bg-[#8645E8] border-4 border-[#141244] rounded-full flex items-center justify-center shadow-lg hover:bg-[#a886f9] transition mb-1 ml-100 cursor-pointer"
+                  aria-label="Edit Profile"
+                  type="button"
                 >
                   <Edit2 className="w-6 h-6 text-white" />
-                </Link>
+                </button>
               </div>
               <div className="flex flex-col gap-10 items-center w-full max-w-md mt-0">
                 <h2 className="text-4xl font-bold text-white mb-0 tracking-wide mr-80">
@@ -91,12 +93,12 @@ export default function ProfilePage() {
                     </p>
                   </div>
                 </div>
-                <Link
-                  href="/update-profile"
-                  className="self-end mt-4 px-6 py-2 bg-[#8645E8] text-white rounded-lg font-semibold hover:bg-[#a886f9] transition shadow cursor-pointer text-center"
+                <button
+                  onClick={() => router.push("/update-profile")}
+                  className="self-end mt-4 px-6 py-2 bg-[#8645E8] text-white rounded-lg font-semibold hover:bg-[#a886f9] transition shadow cursor-pointer"
                 >
                   Update
-                </Link>
+                </button>
               </div>
             </div>
           )}
