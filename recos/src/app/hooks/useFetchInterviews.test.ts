@@ -25,7 +25,6 @@ describe('useFetchInterviews', () => {
     expect(result.current.loading).toBe(true);
     expect(result.current.error).toBe(null);
     expect(result.current.events).toEqual([]);
-
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
       expect(result.current.error).toBe(null);
