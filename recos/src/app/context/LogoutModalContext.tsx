@@ -23,7 +23,6 @@ export function LogoutModalProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// ✅ This is a NAMED export!
 export function useLogoutModal() {
   const context = useContext(LogoutModalContext);
   if (context === null) {

@@ -9,7 +9,6 @@ interface SidebarContextType {
 }
 
 const SidebarContext = createContext<SidebarContextType | null>(null);
-// Changed from undefined to null for default value. This avoids React warnings and is a more common pattern.
 
 export const SidebarProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);

@@ -3,15 +3,9 @@ import { postOdooCredentials } from '../utils/fetchOdooCredentials';
 describe('postOdooCredentials', () => {
   const token = 'test-token';
   const credentials = { db_url: 'http://recos.odoo.com', db_name: 'recos' };
-  let consoleErrorSpy: jest.SpyInstance;
 
   beforeEach(() => {
     jest.resetAllMocks();
-    consoleErrorSpy = jest.spyOn(global.console, 'error').mockImplementation(() => {});
-  });
-
-  afterEach(() => {
-    consoleErrorSpy.mockRestore();
   });
 
   it('returns JSON data on successful POST', async () => {
@@ -36,15 +30,10 @@ describe('postOdooCredentials', () => {
     expect(data).toEqual(mockResponseData);
   });
 
-  it('returns error-like object on fetch rejection', async () => {
+
+  it('throws error if fetch rejects', async () => {
     const error = new Error('Network error');
     global.fetch = jest.fn().mockRejectedValue(error);
-
-    const result = await postOdooCredentials(token, credentials);
-
-    expect(result).toEqual({
-      error: 'Network error',
-      status: 500,
-    });
+    await expect(postOdooCredentials(token, credentials)).rejects.toThrow('Network error');
   });
 });

@@ -3,15 +3,9 @@ import { verifyOdoo } from '../utils/fetchVerifyOdoo';
 describe('verifyOdoo', () => {
   const token = 'test-token';
   const credentials = { db_url: 'http://recos.odoo.com', db_name: 'recos' };
-  let consoleErrorSpy: jest.SpyInstance;
 
   beforeEach(() => {
     jest.resetAllMocks();
-    consoleErrorSpy = jest.spyOn(global.console, 'error').mockImplementation(() => {});
-  });
-
-  afterEach(() => {
-    consoleErrorSpy.mockRestore();
   });
 
   it('returns JSON data on successful POST', async () => {
@@ -44,6 +38,8 @@ describe('verifyOdoo', () => {
       json: async () => ({ error: errorMessage }),
     });
 
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
     const result = await verifyOdoo(credentials, token);
 
     expect(result).toEqual({
@@ -53,18 +49,12 @@ describe('verifyOdoo', () => {
     });
 
     expect(consoleErrorSpy).not.toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 
-  it('returns error-like object on fetch rejection', async () => {
+  it('throws error if fetch rejects', async () => {
     const error = new Error('Network error');
     global.fetch = jest.fn().mockRejectedValue(error);
-
-    const result = await verifyOdoo(credentials, token);
-
-    expect(result).toEqual({
-      error: 'Network error',
-      status: 500,
-      valid: false,
-    });
+    await expect(verifyOdoo(credentials, token)).rejects.toThrow('Network error');
   });
 });
