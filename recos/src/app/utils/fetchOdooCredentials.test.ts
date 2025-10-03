@@ -30,29 +30,10 @@ describe('postOdooCredentials', () => {
     expect(data).toEqual(mockResponseData);
   });
 
-  it('returns error-like object on fetch rejection', async () => {
-    const error = new Error('Network error');
-    global.fetch = jest.fn().mockRejectedValue(error);
-
-    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-
-    const result = await postOdooCredentials(token, credentials);
-
-    expect(result).toEqual({
-      error: 'Network error or server unreachable',
-      status: 500,
-    });
-<<<<<<< HEAD
-  });
 
   it('throws error if fetch rejects', async () => {
     const error = new Error('Network error');
     global.fetch = jest.fn().mockRejectedValue(error);
     await expect(postOdooCredentials(token, credentials)).rejects.toThrow('Network error');
-=======
-
-    expect(consoleErrorSpy).toHaveBeenCalledWith('Error in postOdooCredentials:', error);
-    consoleErrorSpy.mockRestore();
->>>>>>> 2bb68eaca8eb54a90698bdbdcdf40e3175ddbac7
   });
 });

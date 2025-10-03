@@ -1,27 +1,3 @@
-<<<<<<< HEAD
-import { renderHook } from "@testing-library/react";
-import { useToken } from "./useToken";
-
-describe("useToken hook", () => {
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
-  it("should return token from cookie", () => {
-    jest.spyOn(require("../utils/authToken"), "getAuthToken").mockReturnValue("test-auth-token");
-
-    const { result } = renderHook(() => useToken());
-
-    expect(result.current).toBe("test-auth-token");
-  });
-
-  it("should return null if no token", () => {
-    jest.spyOn(require("../utils/authToken"), "getAuthToken").mockReturnValue(null);
-
-    const { result } = renderHook(() => useToken());
-
-    expect(result.current).toBeNull();
-=======
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useCompanies } from './useFetchCompanies';
 import { fetchCompanies } from '../utils/fetchCompanies';
@@ -78,12 +54,8 @@ describe('useCompanies Hook', () => {
     expect(result.current.isLoading).toBe(false);
     expect(result.current.error).toBe(null);
     expect(mockFetchCompanies).not.toHaveBeenCalled();
->>>>>>> 2bb68eaca8eb54a90698bdbdcdf40e3175ddbac7
   });
-});
 
-<<<<<<< HEAD
-=======
   it('should not refetch if already fetched', async () => {
     mockGetAuthToken.mockReturnValue('valid-token');
     mockFetchCompanies.mockResolvedValue([]);
@@ -95,4 +67,3 @@ describe('useCompanies Hook', () => {
     expect(mockFetchCompanies).toHaveBeenCalledTimes(1);
   });
 });
->>>>>>> 2bb68eaca8eb54a90698bdbdcdf40e3175ddbac7

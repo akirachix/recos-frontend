@@ -22,10 +22,6 @@ export async function verifyOdoo(credentials: object, token: string) {
 
         return await response.json();
     } catch (error) {
-        return { 
-            error: (error as Error).message,
-            status: 500,
-            valid: false
-        };
-    }
+            console.error('Error in verifyOdoo:', error);
+            throw error;    }
 }
