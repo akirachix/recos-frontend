@@ -37,7 +37,7 @@ export default function SignIn() {
         setTimeout(() => router.push("/authentication/odoo"), 1000);
       }
     } catch (error) {
-      console.error("Login failed:", error);
+      throw new Error("Login failed: " + (error as Error).message);
     }
   };
 
