@@ -1,4 +1,1 @@
-
-import '@testing-library/jest-dom/extend-expect';
-
-
+/// <reference types="@testing-library/jest-dom" />

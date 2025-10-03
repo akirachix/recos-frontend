@@ -1,4 +1,6 @@
+
 import { fetchCompanies } from './fetchCompanies';
+import { getAuthToken } from './useToken';
 
 global.fetch = jest.fn();
 

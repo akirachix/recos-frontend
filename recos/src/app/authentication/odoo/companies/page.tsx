@@ -3,25 +3,19 @@ import Image from "next/image";
 import Button from "@/app/authentication/components/Button";
 import { useCompanies } from "@/app/hooks/useFetchCompanies";
 import { useRouter } from "next/navigation";
-
 export default function CompaniesExactStyledPage() {
   const router = useRouter();
   const { companies, isLoading, error, refetch } = useCompanies();
-
   const handleAddCompanyClick = () => {
     router.push("/authentication/odoo");
   };
-  
   const handleCompanyClick = (company: { company_id: string; company_name: string }) => {
     if (typeof window !== "undefined") {
       localStorage.setItem("selectedCompany", JSON.stringify(company));
     }
-    
     router.push(`/dashboard/${company.company_id}`);
   };
-
   const companyList = Array.isArray(companies) ? companies : [];
-
   return (
     <div className="min-h-screen bg-[#141244] flex items-center justify-center p-4 sm:p-6 md:p-8">
       <div className="bg-white rounded-xl shadow-lg max-w-7xl w-full mx-auto h-[800px]">
@@ -37,13 +31,11 @@ export default function CompaniesExactStyledPage() {
             <h2 className="text-xl sm:text-2xl md:text-3xl text-[#803CEB] font-bold mb-4 text-center">
               Companies List
             </h2>
-
             {isLoading && (
               <div className="flex justify-center">
                 <p>Loading companies...</p>
               </div>
             )}
-            
             {error && (
               <div className="text-center">
                 <p className="text-red-500 mb-4">Error loading companies: {error}</p>
@@ -56,7 +48,6 @@ export default function CompaniesExactStyledPage() {
                 </Button>
               </div>
             )}
-
             {!isLoading && !error && (
               <div className="flex flex-col space-y-4 w-full max-w-md mx-auto">
                 {companyList.length > 0 ? (
@@ -73,7 +64,6 @@ export default function CompaniesExactStyledPage() {
                 ) : (
                   <p className="text-center text-gray-500">No companies found. Add a company to get started.</p>
                 )}
-
                 <div className="flex justify-center mt-4">
                   <Button
                     variant="primary"
@@ -86,7 +76,6 @@ export default function CompaniesExactStyledPage() {
               </div>
             )}
           </div>
-
           <div className="p-4 sm:p-6 md:p-8 flex items-center justify-center min-h-[80px] sm:min-h-[800px]">
             <div className="relative bg-[#803CEB] text-white p-4 sm:p-6 md:p-8 rounded-lg shadow-lg flex flex-col items-center justify-center text-center w-full max-w-8xl min-h-[100px] sm:min-h-[700px]">
               <h3 className="text-2xl sm:text-3xl md:text-3xl font-bold">
@@ -104,3 +93,21 @@ export default function CompaniesExactStyledPage() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

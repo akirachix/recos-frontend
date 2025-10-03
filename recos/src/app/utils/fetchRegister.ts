@@ -14,7 +14,8 @@ export async function registerUser(data: {
     });
     if (!response.ok) {
      
-      throw new Error("Something went wrong during registration" + response.statusText);
+      const errorData = await response.json();
+      throw new Error("Something went wrong during registration" + (errorData.error || response.statusText));
     }
     
     const result= await response.json();
