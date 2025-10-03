@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import { useFetchInterviews } from "../hooks/useFetchInterviews";
 import {useToken} from "../hooks/useToken";
-
 import ClientLayout from "../shared-components/ClientLayout";
 import SimpleSchedule from "./components/Calendar";
 import Modal from "./components/Modal";

@@ -19,6 +19,7 @@ export async function GET(request: NextRequest) {
         "Content-Type": "application/json",
       },
     });
+
     const data = await response.json();
     return NextResponse.json({ success: true, data }, { status: 200 });
   }catch (error) {

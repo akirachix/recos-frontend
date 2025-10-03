@@ -22,7 +22,6 @@ describe('useFetchInterviews', () => {
     (fetchInterviews as jest.Mock).mockResolvedValue(mockData);
 
     const { result } = renderHook(() => useFetchInterviews());
-
     expect(result.current.loading).toBe(true);
     expect(result.current.error).toBe(null);
     expect(result.current.events).toEqual([]);
