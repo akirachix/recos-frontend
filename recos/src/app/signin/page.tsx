@@ -34,7 +34,7 @@ export default function SignIn() {
       const success = await login(form);
       if (success) {
         setSuccessMessage("Successfully logged in!");
-        setTimeout(() => router.push("/dashboard"), 1000);
+        setTimeout(() => router.push("/profile"), 1000);
       }
     } catch (error) {
       console.error("Login failed:", error);

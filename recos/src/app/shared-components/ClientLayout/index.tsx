@@ -10,7 +10,6 @@ import Navbar from '../Navbar';
 import { useLogout } from '@/app/hooks/useFetchLogout';
 import { useLogoutModal } from '@/app/context/LogoutModalContext';
 
-// 1. Define the modal component here
 function LogoutModal() {
   const { show, close } = useLogoutModal();
   const { logout, loading, error } = useLogout();
@@ -56,7 +55,6 @@ function LogoutModal() {
   );
 }
 
-// 2. Use the modal in your layout
 export default function ClientLayout({ children }: { children: ReactNode }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
