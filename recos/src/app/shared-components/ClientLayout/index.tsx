@@ -5,7 +5,6 @@ import { CompanyProvider } from '@/app/context/CompanyContext';
 import { ReactNode } from 'react';
 import Sidebar from '../Sidebar';
 import Navbar from '../Navbar';
-
 export default function ClientLayout({ children }: { children: ReactNode }) {
   return (
     <SidebarProvider>

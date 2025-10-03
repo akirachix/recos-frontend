@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import ForgotPasswordPage from "./page";
+import ForgotPasswordPage from './page';
 import { useRouter } from "next/navigation";
 import { useForgotPasswordRequest } from "@/app/hooks/useFetchForgotPassword";
 

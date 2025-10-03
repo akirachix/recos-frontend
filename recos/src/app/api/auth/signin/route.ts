@@ -19,6 +19,7 @@ export async function POST(request: Request) {
     if (response.ok && result.token) {
       return new Response(JSON.stringify({ success: true, token: result.token }), {
         status: 200,
+        
         headers: { "Content-Type": "application/json" },
       });
     } else {

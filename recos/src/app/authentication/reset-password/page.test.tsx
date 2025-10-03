@@ -1,11 +1,17 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import ResetPasswordPage from '@/app/authentication/reset-password/page';
-import { useRouter } from 'next/navigation';
+import ResetPasswordPage from './page';
+import { useRouter, useSearchParams } from 'next/navigation';
+
+jest.mock('next/navigation', () => ({
+  useRouter: jest.fn(),
+  useSearchParams: jest.fn(),
+}));
 import { useResetPassword } from '@/app/hooks/useFetchResetPassword';
 
-jest.mock('next/navigation');
+const mockUseResetPassword = useResetPassword as jest.Mock;
+
 jest.mock('@/app/hooks/useFetchResetPassword');
 jest.mock('react-icons/ai', () => ({
   AiOutlineEye: jest.fn(() => <div data-testid="eye-icon" />),
@@ -28,14 +34,19 @@ describe('ResetPasswordPage', () => {
   const mockResetPassword = jest.fn();
   const mockGet = jest.fn();
 
+const mockUseResetPassword = useResetPassword as jest.Mock;
+
   beforeEach(() => {
     jest.clearAllMocks();
     
     (useRouter as jest.Mock).mockReturnValue({
       push: mockPush,
     });
+    (useSearchParams as jest.Mock).mockReturnValue({
+      get: mockGet,
+    });
     
-    (useResetPassword as jest.Mock).mockReturnValue({
+    mockUseResetPassword.mockReturnValue({
       loading: false,
       error: null,
       success: false,

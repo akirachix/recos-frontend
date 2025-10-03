@@ -2,11 +2,14 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import VerifyResetCodePage from '@/app/authentication/verify-reset-code/page';
-import { useRouter } from 'next/navigation';
 import { useFetchVerifyResetCode } from '@/app/hooks/useFetchVerifyResetCode';
 import { useForgotPasswordRequest } from '@/app/hooks/useFetchForgotPassword';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-jest.mock('next/navigation');
+jest.mock('next/navigation', () => ({
+  useRouter: jest.fn(),
+  useSearchParams: jest.fn(),
+}));
 jest.mock('@/app/hooks/useFetchVerifyResetCode');
 jest.mock('@/app/hooks/useFetchForgotPassword');
 
@@ -21,36 +24,75 @@ afterAll(() => {
   global.URLSearchParams = originalURLSearchParams;
 });
 
+const mockUseFetchVerifyResetCode = useFetchVerifyResetCode as jest.Mock;
+const mockUseForgotPasswordRequest = useForgotPasswordRequest as jest.Mock;
+
 describe('VerifyResetCodePage', () => {
+
   const mockPush = jest.fn();
+
   const mockVerifyResetCode = jest.fn();
+
   const mockRequestCode = jest.fn();
+
   const mockGet = jest.fn();
 
+
+
   beforeEach(() => {
+
     jest.clearAllMocks();
+
     (useRouter as jest.Mock).mockReturnValue({
+
       push: mockPush,
+
     });
+
+    (useSearchParams as jest.Mock).mockReturnValue({
+
+      get: mockGet,
+
+    });
+
     
-    (useFetchVerifyResetCode as jest.Mock).mockReturnValue({
+
+    mockUseFetchVerifyResetCode.mockReturnValue({
+
       loading: false,
+
       error: null,
+
       verified: false,
+
       verifyResetCode: mockVerifyResetCode,
+
     });
+
     
-    (useForgotPasswordRequest as jest.Mock).mockReturnValue({
+
+    mockUseForgotPasswordRequest.mockReturnValue({
+
       loading: false,
+
       error: null,
+
       success: false,
+
       requestCode: mockRequestCode,
+
     });
+
     
+
     mockGet.mockReturnValue('test@example.com');
+
     mockURLSearchParams.mockImplementation(() => ({
+
       get: mockGet
+
     }));
+
   });
 
   it('renders verification form with email from URL', () => {
