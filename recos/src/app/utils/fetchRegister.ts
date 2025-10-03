@@ -12,23 +12,15 @@ export async function registerUser(data: {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
-    
-    const result = await response.json();
-    
     if (!response.ok) {
-      if (result.email && Array.isArray(result.email) && result.email.length > 0) {
-        throw new Error(result.email[0]);
-      }
-      
-      if (result.error) {
-        throw new Error(result.error);
-      }
-      
-      throw new Error("Registration failed");
+     
+      throw new Error("Something went wrong during registration" + response.statusText);
     }
     
-    return result;
+    const result= await response.json();
+    return result
+
   } catch (error) {
-    throw error;
+    throw new Error("Failed to register user: " + (error as Error).message);
   }
 }

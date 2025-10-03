@@ -22,9 +22,8 @@ export async function verifyOdoo(credentials: object, token: string) {
 
         return await response.json();
     } catch (error) {
-        console.error("Error in verifyOdoo:", error);
         return { 
-            error: "Network error or server unreachable", 
+            error: (error as Error).message,
             status: 500,
             valid: false
         };
