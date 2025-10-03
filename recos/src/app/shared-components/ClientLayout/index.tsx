@@ -1,14 +1,13 @@
 'use client';
 
-<<<<<<< HEAD
 import { useState } from 'react';
-import { SidebarProvider } from '@/app/context/SidebarContext';
-import { LogoutModalProvider } from '@/app/context/LogoutModalContext';
+import { SidebarProvider, useSidebar } from '@/app/context/SidebarContext';
+import { CompanyProvider } from '@/app/context/CompanyContext';
+import { LogoutModalProvider, useLogoutModal } from '@/app/context/LogoutModalContext';
+import { useLogout } from '@/app/hooks/useFetchLogout';
 import { ReactNode } from 'react';
 import Sidebar from '../Sidebar';
 import Navbar from '../Navbar';
-import { useLogout } from '@/app/hooks/useFetchLogout';
-import { useLogoutModal } from '@/app/context/LogoutModalContext';
 
 function LogoutModal() {
   const { show, close } = useLogoutModal();
@@ -65,45 +64,24 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
   return (
     <LogoutModalProvider>
       <SidebarProvider>
-        <Sidebar />
-        <Navbar />
-        <LogoutModal />
-        <main
-          className={`p-4 bg-gray-100 min-h-screen transition-all duration-300 ${
-            isCollapsed ? 'ml-16' : 'ml-64'
-          } mt-[140px]`}
-        >
-          {children}
-        </main>
+        <CompanyProvider>
+          <Sidebar />
+          <Navbar />
+          <LogoutModal />
+          <MainContent isCollapsed={isCollapsed}>{children}</MainContent>
+        </CompanyProvider>
       </SidebarProvider>
     </LogoutModalProvider>
-=======
-import { SidebarProvider, useSidebar } from '@/app/context/SidebarContext';
-import { CompanyProvider } from '@/app/context/CompanyContext';
-import { ReactNode } from 'react';
-import Sidebar from '../Sidebar';
-import Navbar from '../Navbar';
-
-export default function ClientLayout({ children }: { children: ReactNode }) {
-  return (
-    <SidebarProvider>
-      <CompanyProvider>
-        <Sidebar />
-        <Navbar />
-        <MainContent>{children}</MainContent>
-      </CompanyProvider>
-    </SidebarProvider>
->>>>>>> 2bb68eaca8eb54a90698bdbdcdf40e3175ddbac7
   );
 }
 
-function MainContent({ children }: { children: ReactNode }) {
-  const { sidebarWidth } = useSidebar();
+function MainContent({ children, isCollapsed }: { children: ReactNode; isCollapsed: boolean }) {
+  const sidebarWidth = isCollapsed ? 64 : 256; 
 
   return (
     <main
-      className="p-4 transition-all duration-300 mt-[140px]"
-      style={{ marginLeft: `${sidebarWidth}px` }}
+      className="p-4 bg-gray-100 min-h-screen transition-all duration-300 mt-[140px]"
+      style={{ marginLeft: sidebarWidth }}
     >
       {children}
     </main>

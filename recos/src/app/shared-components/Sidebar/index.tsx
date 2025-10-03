@@ -21,7 +21,7 @@ import Button from "../Button";
 import { useLogoutModal } from "@/app/context/LogoutModalContext"; 
 
 const topMenuItems = [
-  { name: "Dashboard", href: "/", icon: HomeIcon },
+  { name: "Dashboard", href: "/analytics", icon: HomeIcon },
   { name: "Jobs", href: "/jobs", icon: BriefcaseIcon },
   { name: "Candidates", href: "/candidates", icon: UserGroupIcon },
   { name: "Analytics", href: "/analytics", icon: ChartBarIcon },
@@ -37,7 +37,7 @@ const companies = ["Zojo", "Alpha", "Beta"];
 export default function Sidebar() {
   const pathname = usePathname();
   const { isCollapsed, toggleSidebar, sidebarWidth } = useSidebar();
-  const { open } = useLogoutModal(); // <-- Use modal open function
+  const { open } = useLogoutModal(); 
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(companies[0]);
