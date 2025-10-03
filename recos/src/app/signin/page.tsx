@@ -32,7 +32,7 @@ export default function SignIn() {
       const success = await login(form);
       if (success) {
         setSuccessMessage("Successfully logged in!");
-        setTimeout(() => router.push("/authentication/odoo"), 1000);
+        setTimeout(() => router.push("/dashboard"), 1000);
       }
     } catch (error) {
       console.error("Login failed:", error);
@@ -88,7 +88,7 @@ export default function SignIn() {
                 type="button"
                 onClick={togglePasswordVisibility}
                 aria-label={showPassword ? "Hide password" : "Show password"}
-                className="absolute right-3 top-8 translate-y-1/2 text-gray-500 hover:text-purple-700 focus:outline-none"
+                className="absolute right-3 top-8 translate-y-1/2 text-gray-500 hover:text-purple-700 focus:outline-none cursor-pointer"
                 tabIndex={0}
               >
                 {showPassword ? (
@@ -108,7 +108,7 @@ export default function SignIn() {
             <button
               type="submit"
               disabled={loading}
-              className="bg-purple-700 text-white rounded-full py-2 px-20 text-lg font-semibold mx-auto block hover:bg-purple-800 transition"
+              className="bg-purple-700 text-white rounded-full py-2 px-20 text-lg font-semibold mx-auto block hover:bg-purple-800 transition cursor-pointer"
             >
               {loading ? "Signing In..." : "Sign In"}
             </button>

@@ -1,24 +1,24 @@
 "use client";
-
 import {
   HomeIcon,
   BriefcaseIcon,
   UserGroupIcon,
   ChartBarIcon,
   CalendarIcon,
-  CogIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   Bars3Icon,
   XMarkIcon,
   ChevronDownIcon,
 } from "@heroicons/react/24/outline";
+import { LogOut as LogoutIcon, User as ProfileIcon } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useSidebar } from "@/context/SidebarContext";
+import { useSidebar } from "@/app/context/SidebarContext";
 import { useEffect, useRef, useState } from "react";
 import Button from "../Button";
+import { useLogoutModal } from "@/app/context/LogoutModalContext"; 
 
 const topMenuItems = [
   { name: "Dashboard", href: "/", icon: HomeIcon },
@@ -29,7 +29,7 @@ const topMenuItems = [
 
 const bottomMenuItems = [
   { name: "Calendar", href: "/calendar", icon: CalendarIcon },
-  { name: "Settings", href: "/settings", icon: CogIcon },
+  { name: "Profile", href: "/profile", icon: ProfileIcon },
 ];
 
 const companies = ["Zojo", "Alpha", "Beta"];
@@ -37,6 +37,7 @@ const companies = ["Zojo", "Alpha", "Beta"];
 export default function Sidebar() {
   const pathname = usePathname();
   const { isCollapsed, toggleSidebar, sidebarWidth } = useSidebar();
+  const { open } = useLogoutModal(); // <-- Use modal open function
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(companies[0]);
@@ -111,10 +112,7 @@ export default function Sidebar() {
           )}
 
           <div className={`flex-1 lg:hidden ${isCollapsed ? "hidden" : ""}`} />
-
-          <div
-            className={`flex-1 hidden lg:flex ${isCollapsed ? "" : "hidden"}`}
-          />
+          <div className={`flex-1 hidden lg:flex ${isCollapsed ? "" : "hidden"}`} />
 
           <button
             onClick={toggleSidebar}
@@ -209,6 +207,16 @@ export default function Sidebar() {
                 {!isCollapsed && <span className="text-xl">{item.name}</span>}
               </Link>
             ))}
+            <button
+              type="button"
+              onClick={open} 
+              className="flex items-center p-2 rounded hover:bg-purple-600/20 space-x-2 w-full mt-2 mb-5 transition-all duration-200 outline-none focus:outline-none"
+              tabIndex={0}
+              aria-label="Logout"
+            >
+              <LogoutIcon className={iconSizeClass} />
+              {!isCollapsed && <span className="text-xl">Logout</span>}
+            </button>
           </nav>
         </div>
       </div>

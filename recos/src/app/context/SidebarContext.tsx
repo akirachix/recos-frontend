@@ -8,7 +8,8 @@ interface SidebarContextType {
   sidebarWidth: number;
 }
 
-const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
+const SidebarContext = createContext<SidebarContextType | null>(null);
+// Changed from undefined to null for default value. This avoids React warnings and is a more common pattern.
 
 export function SidebarProvider({ children }: { children: ReactNode }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -27,7 +28,7 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
 
 export const useSidebar = () => {
   const context = useContext(SidebarContext);
-  if (!context) {
+  if (context === null) {
     throw new Error('useSidebar must be used within a SidebarProvider');
   }
   return context;

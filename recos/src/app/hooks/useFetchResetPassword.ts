@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { fetchResetPassword } from "@/utils/fetchResetPassword";
+import { fetchResetPassword } from "@/app/utils/fetchResetPassword";
 
 export function useResetPassword() {
   const [loading, setLoading] = useState(false);
@@ -12,6 +12,7 @@ export function useResetPassword() {
     confirmPassword: string
   ) => {
     setLoading(true);
+    
     setError(null);
     setSuccess(false);
     try {

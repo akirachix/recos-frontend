@@ -1,16 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { SidebarProvider } from '@/app/context/SidebarContext';
-import { LogoutModalProvider } from '@/app/context/LogoutModalContext';
-import { ReactNode } from 'react';
-import Sidebar from '../Sidebar';
-import Navbar from '../Navbar';
-import { useLogout } from '@/app/hooks/useFetchLogout';
 import { useLogoutModal } from '@/app/context/LogoutModalContext';
+import { useLogout } from '@/app/hooks/useFetchLogout';
 
-// 1. Define the modal component here
-function LogoutModal() {
+export default function LogoutModal() {
   const { show, close } = useLogoutModal();
   const { logout, loading, error } = useLogout();
 
@@ -18,7 +11,7 @@ function LogoutModal() {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-black/80">
-      <div className="w-full max-w-2xl rounded-3xl shadow-2xl py-16 px-12 flex flex-col items-center bg-[#141244] border-4 border-[#eee]">
+      <div className="w-full max-w-2xl rounded-3xl shadow-2xl py-16 px-12 flex flex-col items-center bg-[#141244] border-[#eee]">
         <h1 className="text-4xl font-extrabold text-[#8645E8] mb-10 tracking-wide drop-shadow">
           Logout Confirmation
         </h1>
@@ -52,31 +45,5 @@ function LogoutModal() {
         )}
       </div>
     </div>
-  );
-}
-
-// 2. Use the modal in your layout
-export default function ClientLayout({ children }: { children: ReactNode }) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-
-  const toggleSidebar = () => {
-    setIsCollapsed((prev) => !prev);
-  };
-
-  return (
-    <LogoutModalProvider>
-      <SidebarProvider>
-        <Sidebar />
-        <Navbar />
-        <LogoutModal />
-        <main
-          className={`p-4 bg-gray-100 min-h-screen transition-all duration-300 ${
-            isCollapsed ? 'ml-16' : 'ml-64'
-          } mt-[140px]`}
-        >
-          {children}
-        </main>
-      </SidebarProvider>
-    </LogoutModalProvider>
   );
 }

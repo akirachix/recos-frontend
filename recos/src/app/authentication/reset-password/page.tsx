@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useResetPassword } from "@/hooks/useFetchResetPassword";
+import { useResetPassword } from "@/app/hooks/useFetchResetPassword";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 export default function ResetPasswordPage() {
@@ -61,10 +61,10 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <div className="relative bg-[#141244] h-screen w-screen flex items-center justify-center overflow-hidden px-4">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#FFF7F9] rounded-lg w-[1400px] h-[830px] z-10" />
-      <div className="relative z-20 bg-[#FFF7F9] flex flex-col md:flex-row w-full max-w-7xl h-[730px] overflow-auto">
-        <div className="flex flex-col justify-start p-8 md:p-16 md:w-1/2">
+    <div className="relative bg-[#141244] min-h-screen w-full flex items-center justify-center overflow-hidden px-4">
+      <div className="hidden xl:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#FFF7F9] rounded-lg w-[1400px] h-[830px] z-10" />
+      <div className="relative z-20 bg-[#FFF7F9] flex flex-col md:flex-row w-full max-w-4xl xl:max-w-7xl h-auto xl:h-[730px] overflow-auto shadow-xl rounded-lg">
+        <div className="flex flex-col justify-start p-8 xl:p-16 w-full md:w-1/2">
           <div className="mb-10 mt-1">
             <Image
               src="/recos_purple.png"
@@ -74,12 +74,12 @@ export default function ResetPasswordPage() {
               className="object-contain"
             />
           </div>
-          <h2 className="text-[#8645E8] font-extrabold text-2xl mt-10 mb-10 ml-20 select-none">
+          <h2 className="text-[#8645E8] font-extrabold text-2xl xl:text-3xl mt-10 mb-10 xl:ml-20 select-none">
             Reset Password
           </h2>
           <form onSubmit={handleSubmit} className="flex flex-col gap-7">
             <div>
-              <label htmlFor="password" className="block font-semibold mb-1 text-[#24184E] text-[15px]">
+              <label htmlFor="password" className="block font-semibold mb-1 text-[#24184E] text-[15px] xl:text-[17px]">
                 New Password
               </label>
               <div className="relative">
@@ -90,7 +90,7 @@ export default function ResetPasswordPage() {
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="w-full border border-[#24184E] rounded-md py-2 px-3 outline-none focus:ring-2 focus:ring-[#8645E8] text-[15px] pr-10 text-black bg-white placeholder:text-gray-400"
+                  className="w-full border border-[#24184E] rounded-md py-2 px-3 outline-none focus:ring-2 focus:ring-[#8645E8] text-[15px] xl:text-[16px] pr-10 text-black bg-white placeholder:text-gray-400"
                   placeholder="Enter new password"
                   autoComplete="new-password"
                 />
@@ -101,15 +101,15 @@ export default function ResetPasswordPage() {
                   onClick={() => setShowPassword(prev => ({ ...prev, password: !prev.password }))}
                   aria-label={showPassword.password ? "Hide password" : "Show password"}
                 >
-                    {showPassword.confirmPassword
-                  ? <AiOutlineEye size={22} color="black" />
-                  : <AiOutlineEyeInvisible size={22} color="black" />
-                }
+                  {showPassword.password
+                    ? <AiOutlineEyeInvisible size={22} color="black" />
+                    : <AiOutlineEye size={22} color="black" />
+                  }
                 </button>
               </div>
             </div>
             <div>
-              <label htmlFor="confirmPassword" className="block font-semibold mb-1 text-[#24184E] text-[15px]">
+              <label htmlFor="confirmPassword" className="block font-semibold mb-1 text-[#24184E] text-[15px] xl:text-[17px]">
                 Confirm Password
               </label>
               <div className="relative">
@@ -120,27 +120,25 @@ export default function ResetPasswordPage() {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   required
-                  className="w-full border border-[#24184E] rounded-md py-2 px-3 outline-none focus:ring-2 focus:ring-[#8645E8] text-[15px] pr-10 text-black bg-white placeholder:text-gray-400"
+                  className="w-full border border-[#24184E] rounded-md py-2 px-3 outline-none focus:ring-2 focus:ring-[#8645E8] text-[15px] xl:text-[16px] pr-10 text-black bg-white placeholder:text-gray-400"
                   placeholder="Confirm new password"
                   autoComplete="new-password"
                 />
                 <button
-                type="button"
-                tabIndex={-1}
-                className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
-                onClick={() =>
-                  setShowPassword(prev =>
-                    prev.confirmPassword
-                      ? { ...prev, confirmPassword: false }
-                      : { ...prev, confirmPassword: true }
-                  )
-                }
-                aria-label={showPassword.confirmPassword ? "Hide confirm password" : "Show confirm password"}
+                  type="button"
+                  tabIndex={-1}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
+                  onClick={() =>
+                    setShowPassword(prev =>
+                      ({ ...prev, confirmPassword: !prev.confirmPassword })
+                    )
+                  }
+                  aria-label={showPassword.confirmPassword ? "Hide confirm password" : "Show confirm password"}
                 >
-                {showPassword.confirmPassword
-                  ? <AiOutlineEye size={22} color="black" />
-                  : <AiOutlineEyeInvisible size={22} color="black" />
-                }
+                  {showPassword.confirmPassword
+                    ? <AiOutlineEyeInvisible size={22} color="black" />
+                    : <AiOutlineEye size={22} color="black" />
+                  }
                 </button>
               </div>
             </div>
@@ -158,11 +156,11 @@ export default function ResetPasswordPage() {
             {success && <p className="mt-2 text-green-600 text-center font-semibold">Password reset successful</p>}
           </form>
         </div>
-        <div className="bg-[#8645E8] text-white md:w-1/2 flex flex-col justify-center items-center p-16 text-center rounded-r-xl">
-          <h2 className="font-bold text-[26px] mb-10 leading-snug">
+        <div className="bg-[#8645E8] text-white w-full md:w-1/2 flex flex-col justify-center items-center p-8 xl:p-16 text-center rounded-b-lg md:rounded-r-xl md:rounded-bl-none">
+          <h2 className="font-bold text-[22px] xl:text-[26px] mb-10 leading-snug">
             Set Strong Password
           </h2>
-          <p className="text-[16px] font-normal leading-tight mt-2 max-w-sm mx-auto">
+          <p className="text-[15px] xl:text-[16px] font-normal leading-tight mt-2 max-w-sm mx-auto">
             Create a strong new password to secure your account. Use at least 8 characters, including a mix of letters, numbers, and symbols. Avoid using old passwords or easily guessed details. Once updated, you&apos;ll be able to log in again with full access.
           </p>
         </div>

@@ -1,10 +1,11 @@
+import '@testing-library/jest-dom';
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import ForgotPasswordPage from "../forgot-password/page"; 
-import { useForgotPasswordRequest } from "@/hooks/useFetchForgotPassword";
+import { useForgotPasswordRequest } from "@/app/hooks/useFetchForgotPassword";
 import { useRouter } from "next/navigation";
 
-jest.mock("../hooks/useFetchForgotPassword");
+jest.mock("@/app/hooks/useFetchForgotPassword");
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
 }));
@@ -35,8 +36,8 @@ describe("ForgotPasswordPage", () => {
 
   it("renders email input and button", () => {
     render(<ForgotPasswordPage />);
-    expect(screen.getByPlaceholderText(/enter your email/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /recover password/i })).toBeInTheDocument();
+    const button = screen.getByRole("button", { name: /recover password/i });
+    expect(button).toBeInTheDocument();
   });
 
   it("accepts input text changes", () => {
@@ -53,6 +54,7 @@ describe("ForgotPasswordPage", () => {
     fireEvent.change(input, { target: { value: "test@example.com" } });
     fireEvent.click(button);
     expect(mockRequestCode).toHaveBeenCalledWith("test@example.com");
+    expect(button).toBeEnabled();
   });
 
   it("disables button and shows loading state when loading", () => {
@@ -83,9 +85,11 @@ describe("ForgotPasswordPage", () => {
     const input = screen.getByPlaceholderText(/enter your email/i);
 
     fireEvent.change(input, { target: { value: "navigate@test.com" } });
-    fireEvent.click(screen.getByRole("button", { name: /recover password/i }));
+    const button = screen.getByRole("button", { name: /recover password/i });
+    fireEvent.click(button);
 
     expect(mockRequestCode).toHaveBeenCalledWith("navigate@test.com");
+    expect(button).toBeEnabled();
 
     (useForgotPasswordRequest as jest.Mock).mockReturnValue({
       loading: false,
@@ -95,7 +99,6 @@ describe("ForgotPasswordPage", () => {
     });
 
     rerender(<ForgotPasswordPage />);
-
     await waitFor(() =>
       expect(mockPush).toHaveBeenCalledWith(
         "/authentication/verify-reset-code?email=navigate%40test.com"

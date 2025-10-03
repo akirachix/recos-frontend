@@ -1,4 +1,4 @@
-import { fetchUser } from '@/utils/fetchUser';
+import { fetchUser } from '@/app/utils/fetchUser';
 
 global.fetch = jest.fn();
 

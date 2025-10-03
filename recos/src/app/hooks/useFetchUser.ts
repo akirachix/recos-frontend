@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchUser } from '@/utils/fetchUser';
+import { fetchUser } from '@/app/utils/fetchUser';
 
 type User = {
   id?: number;

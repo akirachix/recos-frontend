@@ -2,7 +2,7 @@
 
 import TopNav from '../TopNav';
 import BottomNav from '../BottomNav';
-import { useSidebar } from '@/context/SidebarContext';
+import { useSidebar } from '@/app/context/SidebarContext';
 
 export default function Navbar() {
   const { isCollapsed } = useSidebar();
