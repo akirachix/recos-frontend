@@ -1,14 +1,16 @@
 'use client';
+
 import Cookies from 'js-cookie';
 
 const AUTH_TOKEN_KEY = 'auth_token';
 
+
 export const setAuthToken = (token: string) => {
   Cookies.set(AUTH_TOKEN_KEY, token, {
-    expires: 10,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-    path: '/',
+    expires: 7, 
+    secure: process.env.NODE_ENV === 'production', 
+    sameSite: 'strict', 
+    path: '/', 
   });
 };
 
@@ -17,5 +19,5 @@ export const getAuthToken = (): string | undefined => {
 };
 
 export const removeAuthToken = () => {
-  Cookies.remove(AUTH_TOKEN_KEY);
+  Cookies.remove(AUTH_TOKEN_KEY, { path: '/' });
 };

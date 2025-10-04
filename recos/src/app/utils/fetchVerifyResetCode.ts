@@ -15,4 +15,3 @@ export async function fetchVerifyResetCode(email: string, code: string) {
     throw new Error("Failed to verify the code: " + (error as Error).message);
   }
 }
-

@@ -21,10 +21,6 @@ export async function postOdooCredentials(token: string, credentials: object) {
     
     return await response.json();  
   } catch (error) {
-    console.error("Error in postOdooCredentials:", error);
-    return { 
-      error: "Network error or server unreachable", 
-      status: 500 
-    };
+    throw error;
   }
 }

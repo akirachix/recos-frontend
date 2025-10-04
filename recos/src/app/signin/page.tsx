@@ -4,13 +4,12 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import useLogin from "../hooks/useLogin";
-import {EyeIcon, EyeSlashIcon} from '@heroicons/react/24/outline'
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
-
 
 export default function SignIn() {
   const router = useRouter();
-  const { login, loading, error } = useLogin();
+  const { login, loading } = useLogin();
 
   const [form, setForm] = useState({
     email: "",
@@ -18,6 +17,7 @@ export default function SignIn() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -26,10 +26,13 @@ export default function SignIn() {
       [name]: value,
     }));
     setSuccessMessage("");
+    setErrorMessage("");
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    setSuccessMessage("");
+    setErrorMessage("");
     try {
       const success = await login(form);
       if (success) {
@@ -37,10 +40,9 @@ export default function SignIn() {
         setTimeout(() => router.push("/authentication/odoo"), 1000);
       }
     } catch (error) {
-      console.error("Login failed:", error);
+      setErrorMessage("Login failed: " + (error as Error).message);
     }
   };
-
 
   const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
 
@@ -51,11 +53,7 @@ export default function SignIn() {
       <div className="relative z-20 bg-[#fff7f9] rounded-xl shadow-lg flex flex-col md:flex-row w-full max-w-7xl max-h-[90vh] overflow-auto">
         <div className="flex flex-col p-8 md:p-16 md:w-1/2">
           <div className="absolute top-6 left-6">
-            <Image
-            src="/Group 328.png"
-            alt="Recos Logo"
-            width="140" 
-            height="100"/>
+            <Image src="/Group 328.png" alt="Recos Logo" width={140} height={100} />
           </div>
           <h2 className="text-purple-700 font-semibold text-xl mt-16 mb-10 select-none">
             Sign In to Recos
@@ -63,7 +61,10 @@ export default function SignIn() {
 
           <form onSubmit={handleSubmit} className="flex flex-col space-y-7">
             <div>
-              <label htmlFor="email" className="block font-semibold mb-1 text-[#24184e] text-sm sm:text-base">
+              <label
+                htmlFor="email"
+                className="block font-semibold mb-1 text-[#24184e] text-sm sm:text-base"
+              >
                 Email
               </label>
               <input
@@ -78,7 +79,10 @@ export default function SignIn() {
             </div>
 
             <div className="relative">
-              <label htmlFor="password" className="block font-semibold mb-1 text-[#24184e] text-sm sm:text-base">
+              <label
+                htmlFor="password"
+                className="block font-semibold mb-1 text-[#24184e] text-sm sm:text-base"
+              >
                 Password
               </label>
               <input
@@ -94,14 +98,10 @@ export default function SignIn() {
                 type="button"
                 onClick={togglePasswordVisibility}
                 aria-label={showPassword ? "Hide password" : "Show password"}
-                className="absolute right-3 top-8 translate-y-1/2 text-gray-500 hover:text-purple-700 focus:outline-none"
+                className="absolute right-3 top-8 translate-y-1/2 text-gray-500 hover:text-purple-700 focus:outline-none cursor-pointer"
                 tabIndex={0}
               >
-                {showPassword ? (
-                  <EyeIcon className="h-5 w-5" />
-                ) : (
-                  <EyeSlashIcon className="h-5 w-5" />
-                )}
+                {showPassword ? <EyeIcon className="h-5 w-5" /> : <EyeSlashIcon className="h-5 w-5" />}
               </button>
             </div>
 
@@ -114,12 +114,12 @@ export default function SignIn() {
             <button
               type="submit"
               disabled={loading}
-              className="bg-purple-700 text-white rounded-full py-2 px-20 text-lg font-semibold mx-auto block hover:bg-purple-800 transition"
+              className="bg-purple-700 text-white rounded-full py-2 px-20 text-lg font-semibold mx-auto block hover:bg-purple-800 transition cursor-pointer"
             >
               {loading ? "Signing In..." : "Sign In"}
             </button>
-            {error && (
-              <p className="mt-2 text-red-600 text-center font-semibold text-sm sm:text-base">{error}</p>
+            {errorMessage && (
+              <p className="mt-2 text-red-600 text-center font-semibold text-sm sm:text-base">{errorMessage}</p>
             )}
             {successMessage && (
               <p className="mt-2 text-green-600 text-center font-semibold text-sm sm:text-base">{successMessage}</p>

@@ -82,8 +82,7 @@ export async function GET(request: NextRequest) {
         const candidatesData = await candidatesResponse.json() as Candidate[];
         return { candidates: candidatesData, jobId: job.job_id };
       } catch (error) {
-        console.error(`Failed to fetch candidates for job ${job.job_id}:`, error);
-        return { candidates: [], jobId: job.job_id };
+        return { candidates: [], jobId: job.job_id, error: error as Error };
       }
     });
 

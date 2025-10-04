@@ -16,4 +16,3 @@ export async function fetchResetPassword(email: string, password: string, confir
   }
 }
 
-

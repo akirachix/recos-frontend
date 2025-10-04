@@ -35,11 +35,11 @@ describe("registerUser", () => {
   test("should throw error if response is not ok", async () => {
     mockFetch.mockResolvedValueOnce({
       ok: false,
-      statusText: "Conflict",
+      json: jest.fn().mockResolvedValue({ error: "Conflict" }),
     });
 
     await expect(registerUser(mockData)).rejects.toThrow(
-      "response.json is not a function"
+      "Something went wrong during registrationConflict"
     );
   });
 
