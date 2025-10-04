@@ -52,9 +52,10 @@ export default function Sidebar() {
     
     return path;
   }, []);
+ 
 
   const constructPathWithCompany = useCallback((basePath: string, companyId: string) => {
-    const noCompanyIdPaths = ['/jobs', '/candidates', '/analytics', '/calendar', '/settings'];
+    const noCompanyIdPaths = ['/jobs', '/analytics', '/calendar', '/settings'];
     
     if (noCompanyIdPaths.includes(basePath)) {
       return basePath;
