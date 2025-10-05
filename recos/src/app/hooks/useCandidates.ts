@@ -38,8 +38,8 @@ export default function useCandidates(companyId: number, syncBeforeFetch: boolea
         }
         const data: Candidate[] = await fetchCandidates(companyId);
         setCandidates(data);
-      } catch (error: any) {
-        setError(error.message ?? "Unknown error");
+      } catch (error) {
+        setError((error as Error).message);
       } finally {
         setLoading(false);
       }
