@@ -8,7 +8,7 @@ interface InterviewFormModalProps {
   onClose: () => void;
   onSave: (data: CreateInterviewPayload) => Promise<void>;
   initialData: CreateInterviewPayload;
-  scheduledDate?: string; 
+  scheduledDate?: string;
 }
 export default function InterviewFormModal({
   isOpen,
@@ -36,6 +36,7 @@ export default function InterviewFormModal({
     createInterview,
     reset,
   } = useCreateInterview(initialData);
+
   useEffect(() => {
     if (scheduledDate) {
       setScheduledAt(scheduledDate);
@@ -76,8 +77,19 @@ export default function InterviewFormModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 text-2xl">
-      <div className="border-white bg-white rounded-2xl p-5 pb-5 max-w-[900px] w-full">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4
+                 xl:pl-80"
+    >
+      <div
+        className="
+          border-white bg-white rounded-2xl p-5 pb-5 max-w-[900px] w-full
+          mx-auto
+          sm:max-w-xl
+          md:max-w-3xl
+          lg:max-w-5xl
+        "
+      >
         <form
           onSubmit={handleSubmit}
           className="p-4 rounded-lg shadow-xl max-w-7xl flex flex-col space-y-4"
@@ -86,7 +98,7 @@ export default function InterviewFormModal({
             {initialData ? "Edit Interview" : "Create Interview"}
           </h2>
 
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
               <label className="block text-lg font-medium text-black mb-2">Title</label>
               <input
@@ -141,7 +153,7 @@ export default function InterviewFormModal({
               />
             </div>
 
-            <div className="col-span-2">
+            <div className="col-span-1 sm:col-span-2">
               <label className="block text-lg font-medium text-black mb-2">Description</label>
               <textarea
                 rows={2}

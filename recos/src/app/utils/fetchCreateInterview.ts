@@ -1,23 +1,30 @@
+
 import { CreateInterviewPayload } from "../hooks/useCreateInterview";
 
 const baseUrl = "/api/interview/create";
-export async function fetchCreateInterview(payload?: CreateInterviewPayload){
+
+export async function fetchCreateInterview(payload?: CreateInterviewPayload) {
   try {
+    const token = localStorage.getItem("authToken");
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+    if (token) {
+      headers["Authorization"] = `Token ${token}`;
+    }
     const response = await fetch(`${baseUrl}`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-       body: JSON.stringify(payload), 
+      headers: headers, 
+      body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
-      const text = await response.text();
-      throw new Error(`Failed to create interview: ${response.status} - ${text}`);
+      const errorData = await response.json();
+      throw new Error(errorData.detail || errorData.message || `Failed to create interview: ${response.status}`);
     }
 
     return await response.json();
   } catch (error) {
-    throw new Error((error as Error).message);
+    throw error;
   }
 }

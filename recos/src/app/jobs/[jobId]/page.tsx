@@ -48,9 +48,9 @@ export default function JobDetailsPage() {
   const stateDropdownRef = useRef<HTMLDivElement>(null);
 
   const router = useRouter(); 
-
+  
   const handleNavigate = () => {
-    router.push('/candidates');
+    router.push(`/candidates/`);
   };
 
   const candidates = fetchedCandidates;
