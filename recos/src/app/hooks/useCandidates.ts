@@ -1,24 +1,17 @@
 
 import { useState, useEffect } from "react";
-import { fetchCandidates } from "../utils/fetchCandidates";
-import { syncCandidates } from "../utils/syncCandidates";
+import { getAllCandidatesForCompany} from "../utils/fetchCandidatesByJobs";
 
 export type Candidate = {
   candidate_id: number;
   name: string;
-  job_title: string;  
-  state: string;
-  generated_skill_summary?: string;
   email: string;
   phone: string;
-  attachments: {
-    attachment_id: number;
-    name: string;
-    original_filename: string;
-    download_url: string;
-  }[];
+  state: string;
+  generated_skill_summary?: string;
+  job_title: string;
+  job_id: number;
 };
-
 
 export default function useCandidates(companyId: number, syncBeforeFetch: boolean = false) {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
@@ -33,10 +26,7 @@ export default function useCandidates(companyId: number, syncBeforeFetch: boolea
       setError(null);
 
       try {
-        if (syncBeforeFetch) {
-          await syncCandidates(companyId);
-        }
-        const data: Candidate[] = await fetchCandidates(companyId);
+        const data: Candidate[] = await getAllCandidatesForCompany(companyId, syncBeforeFetch);
         setCandidates(data);
       } catch (error) {
         setError((error as Error).message);
@@ -44,7 +34,6 @@ export default function useCandidates(companyId: number, syncBeforeFetch: boolea
         setLoading(false);
       }
     }
-
     fetchData();
   }, [companyId, syncBeforeFetch]);
 

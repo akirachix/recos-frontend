@@ -8,6 +8,11 @@ const nextConfig = {
           port: '8000',
           pathname: '/profiles/**',
         },
+        {
+          protocol:'https',
+          hostname: 'recos-7bb46015fb57.herokuapp.com',
+          pathname: '/profiles/**',
+        }
       ],
     },
   }
