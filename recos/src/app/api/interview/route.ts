@@ -4,8 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 const baseUrl = process.env.BASE_URL!;
 
 export async function GET(req: NextRequest) {
-  console.log("Interview API called");
-  
+
   const authHeader = req.headers.get("authorization");
   const token = authHeader ? authHeader.replace("Token ", "") : "";
 

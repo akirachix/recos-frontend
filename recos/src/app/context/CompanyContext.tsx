@@ -43,7 +43,6 @@ export function CompanyProvider({ children }: { children: React.ReactNode }) {
             }
           }
         } catch (error) {
-          console.error("Failed to parse saved company", error);
         }
       }
     }

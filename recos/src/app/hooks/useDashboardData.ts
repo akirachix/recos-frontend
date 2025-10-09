@@ -40,11 +40,6 @@ export const useDashboardData = (companyId?: string) => {
         const jobsData = Array.isArray(jobsResponse) ? jobsResponse : [];
         const interviewsData = Array.isArray(interviewsResponse) ? interviewsResponse : [];
         const candidatesData = Array.isArray(candidatesResponse) ? candidatesResponse : [];
-
-        console.log("Jobs data:", jobsData.length);
-        console.log("Interviews data:", interviewsData.length);
-        console.log("Candidates data:", candidatesData.length);
-
         setJobs(jobsData);
         setInterviews(interviewsData);
         setCandidates(candidatesData);
@@ -69,7 +64,6 @@ export const useDashboardData = (companyId?: string) => {
 
         setPositionSummary(positionSummaryData);
       } catch (error) {
-        console.error("Error in useDashboardData:", error);
         setError((error as Error).message);
       } finally {
         setLoading(false);

@@ -2,7 +2,6 @@ import { Interview } from '@/app/types';
 
 export const fetchInterviews = async (token: string): Promise<Interview[]> => {
   if (!token) {
-    console.error("No authentication token provided");
     throw new Error("Authentication token is required");
   }
   
@@ -15,7 +14,6 @@ export const fetchInterviews = async (token: string): Promise<Interview[]> => {
     });
     if (!response.ok) {
       const errorData = await response.json();
-      console.error("API error:", errorData);
       throw new Error(errorData.message || `Failed to fetch interviews: ${response.status}`);
     }
     const data = await response.json(); 
