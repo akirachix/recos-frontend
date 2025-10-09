@@ -1,9 +1,9 @@
-import { Open_Sans } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import './globals.css';
 import { CompanyProvider } from './context/CompanyContext';
 import { SidebarProvider } from './context/SidebarContext';
 
-const openSans = Open_Sans({ subsets: ['latin'], display:'swap' });
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
   title: 'Recos Dashboard',
@@ -13,7 +13,7 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={openSans.className}>
+      <body className={inter.className}>
         <CompanyProvider>
           <SidebarProvider>
             {children}

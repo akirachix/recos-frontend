@@ -28,7 +28,7 @@ export default function BottomNav() {
 
 
   return (
-    <div className="flex items-center p-8 pl-12">
+    <div className="flex items-center p-8">
         <h1 className="text-2xl sm:text-3xl font-semibold text-[#1E1B4B]">{currentTitle}</h1>
     </div>
   );

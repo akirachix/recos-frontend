@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { SidebarProvider, useSidebar } from '@/app/context/SidebarContext';
 import { CompanyProvider } from '@/app/context/CompanyContext';
 import { LogoutModalProvider, useLogoutModal } from '@/app/context/LogoutModalContext';
@@ -54,6 +55,11 @@ function LogoutModal() {
 }
 
 export default function ClientLayout({ children }: { children: ReactNode }) {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsCollapsed((prev) => !prev);
+  };
 
   return (
     <LogoutModalProvider>
@@ -62,20 +68,20 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
           <Sidebar />
           <Navbar />
           <LogoutModal />
-          <MainContent>{children}</MainContent>
+          <MainContent isCollapsed={isCollapsed}>{children}</MainContent>
         </CompanyProvider>
       </SidebarProvider>
     </LogoutModalProvider>
   );
 }
 
-function MainContent({ children }: { children: ReactNode }) {
-  const { sidebarWidth } = useSidebar();
+function MainContent({ children, isCollapsed }: { children: ReactNode; isCollapsed: boolean }) {
+  const sidebarWidth = isCollapsed ? 64 : 256; 
 
   return (
     <main
-      className="p-4 transition-all duration-300 mt-[140px]"
-      style={{ marginLeft: `${sidebarWidth}px` }}
+      className="p-4 bg-gray-100 min-h-screen transition-all duration-300 mt-[140px]"
+      style={{ marginLeft: sidebarWidth }}
     >
       {children}
     </main>
