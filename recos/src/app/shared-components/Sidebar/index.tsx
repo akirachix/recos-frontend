@@ -5,7 +5,6 @@ import {
   UserGroupIcon,
   ChartBarIcon,
   CalendarIcon,
-  CogIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   Bars3Icon,
@@ -49,7 +48,7 @@ export default function Sidebar() {
     return path;
   }, []);
   const constructPathWithCompany = useCallback((basePath: string, companyId: string) => {
-    const noCompanyIdPaths = ['/jobs', '/candidates', '/analytics', '/calendar', '/profile'];
+    const noCompanyIdPaths = ['/jobs','/analytics', '/calendar', '/profile'];
     if (noCompanyIdPaths.includes(basePath)) {
       return basePath;
     }

@@ -38,7 +38,7 @@ export async function PATCH(request: Request) {
 
     const contentType = request.headers.get("content-type") || "";
 
-    let bodyData: any;
+    let bodyData: FormData | string;
 
     if (contentType.includes("multipart/form-data")) {
       bodyData = await request.formData();
@@ -47,7 +47,7 @@ export async function PATCH(request: Request) {
       bodyData = JSON.stringify(jsonBody);
     }
 
-    let headers: { [key: string]: string } = {};
+    const headers: { [key: string]: string } = {};
     if (token) {
       headers["Authorization"] = `Token ${token}`;
     }
