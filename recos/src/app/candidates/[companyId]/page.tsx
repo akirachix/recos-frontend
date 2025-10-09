@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import useCandidates, { Candidate } from "../../hooks/useCandidates";
 import ClientLayout from "@/app/shared-components/ClientLayout";
 import { useParams } from "next/navigation";
-
+import { parseSkillSummary, ParsedSummary } from "../../utils/parseSkillSummary";
 
 function capitalizeName(name: string) {
   return name
@@ -14,10 +14,15 @@ function capitalizeName(name: string) {
     .join(" ");
 }
 
-
 interface CandidatesPageProps {
   selectedCompanyId: number;
 }
+const SummarySection: React.FC<{ title: string; content: string }> = ({ title, content }) => (
+  <section className="mb-6">
+    <h3 className="font-bold mb-2 text-purple-700">{title}</h3>
+    <p className="text-gray-800 text-sm whitespace-pre-wrap">{content}</p>
+  </section>
+);
 
 export function CandidatesPage({ selectedCompanyId }: CandidatesPageProps) {
   const { candidates, loading, error } = useCandidates(selectedCompanyId, true);
@@ -25,9 +30,11 @@ export function CandidatesPage({ selectedCompanyId }: CandidatesPageProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
 
-  const filteredCandidates = candidates.filter((candidate) =>
-    candidate.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredCandidates = Array.isArray(candidates)
+    ? candidates.filter((candidate) =>
+        candidate.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : [];
 
   useEffect(() => {
     if (Array.isArray(filteredCandidates) && filteredCandidates.length > 0 && !selectedCandidate) {
@@ -36,6 +43,8 @@ export function CandidatesPage({ selectedCompanyId }: CandidatesPageProps) {
       setSelectedCandidate(null);
     }
   }, [filteredCandidates, selectedCandidate]);
+
+  const parsedSummary: ParsedSummary = parseSkillSummary(selectedCandidate?.generated_skill_summary);
 
   return (
     <ClientLayout>
@@ -49,10 +58,8 @@ export function CandidatesPage({ selectedCompanyId }: CandidatesPageProps) {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="border border-purple-600 rounded-md py-2 px-3 mb-4 focus:outline-none focus:ring-2 focus:ring-purple-400"
           />
-          <div
-            data-testid="candidate-list"
-            className="overflow-y-auto flex-1 space-y-2"
-          >
+          
+          <div className="overflow-y-auto flex-1 space-y-2">
             {loading ? (
               <div className="text-center text-gray-600 mt-20">Loading candidates...</div>
             ) : error ? (
@@ -80,39 +87,32 @@ export function CandidatesPage({ selectedCompanyId }: CandidatesPageProps) {
         </div>
 
         {selectedCandidate && !loading && !error && (
-          <div className="flex-1 bg-white rounded-lg shadow-xl p-8 overflow-visible border border-purple-300">
-           <h2 className="text-3xl font-bold mb-6 text-gray-900">{capitalizeName(selectedCandidate.name)}</h2>
+          <div className="flex-1 bg-white rounded-lg shadow-xl p-6 overflow-hidden border border-purple-300 flex flex-col">
+            <div className="overflow-y-auto flex-grow">
+              <h2 className="text-3xl font-bold mb-6 text-gray-900">{capitalizeName(selectedCandidate.name)}</h2>
 
-            <section className="mb-10">
-              <h3 className="font-bold mb-3 text-purple-700">About</h3>
-              <p className="text-gray-800 text-base">
-                {selectedCandidate.generated_skill_summary ?? "No details available."}
-              </p>
-            </section>
-
-            <section className="mb-10">
-              <h3 className="font-bold mb-3 text-purple-700">Contact</h3>
-              <div className="text-gray-800 mb-1">Email: {selectedCandidate.email ?? "N/A"}</div>
-              <div className="text-gray-800">Phone: {selectedCandidate.phone ?? "N/A"}</div>
-            </section>
-
-            <section>
-              <h3 className="font-bold mb-3 text-purple-700">Resume</h3>
-              {selectedCandidate.attachments && selectedCandidate.attachments.length > 0 ? (
-                selectedCandidate.attachments.map((attachment) => (
-                  <a
-                    key={attachment.attachment_id}
-                    href={attachment.download_url}
-                    download
-                    className="text-gray-900 hover:underline block mb-1"
-                  >
-                    {attachment.original_filename || attachment.name}
-                  </a>
-                ))
-              ) : (
-                <p className="text-gray-900">No resumes uploaded.</p>
+              {parsedSummary["SKILLS SUMMARY"] && (
+                <SummarySection title="About" content={parsedSummary["SKILLS SUMMARY"]} />
               )}
-            </section>
+              {parsedSummary["KEY SKILLS"] && (
+                <SummarySection title="Skills" content={parsedSummary["KEY SKILLS"]} />
+              )}
+              {parsedSummary["EXPERIENCE"] && (
+                <SummarySection title="Experience" content={parsedSummary["EXPERIENCE"]} />
+              )}
+              {parsedSummary["EDUCATION"] && (
+                <SummarySection title="Education" content={parsedSummary["EDUCATION"]} />
+              )}
+              {parsedSummary["ADDITIONAL QUALIFICATIONS"] && (
+                <SummarySection title="Additional Qualifications" content={parsedSummary["ADDITIONAL QUALIFICATIONS"]} />
+              )}
+
+              <section className="mb-6">
+                <h3 className="font-bold mb-2 text-purple-700">Contact</h3>
+                <div className="text-gray-800 mb-1 text-sm">Email: {selectedCandidate.email ?? "N/A"}</div>
+                <div className="text-gray-800 text-sm">Phone: {selectedCandidate.phone ?? "N/A"}</div>
+              </section>
+            </div>
           </div>
         )}
       </main>

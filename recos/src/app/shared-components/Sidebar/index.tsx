@@ -19,6 +19,8 @@ import { useSidebar } from "@/app/context/SidebarContext";
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import Button from "../Button";
 import { useCompany } from "@/app/context/CompanyContext";
+import { useLogoutModal } from "@/app/context/LogoutModalContext";
+import { LogOut as LogoutIcon, User as ProfileIcon } from "lucide-react";
 const topMenuItems = [
   { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
   { name: "Jobs", href: "/jobs", icon: BriefcaseIcon },
@@ -27,26 +29,27 @@ const topMenuItems = [
 ];
 const bottomMenuItems = [
   { name: "Calendar", href: "/calendar", icon: CalendarIcon },
-  { name: "Settings", href: "/settings", icon: CogIcon },
+  { name: "Profile", href: "/profile", icon: ProfileIcon },
 ];
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { isCollapsed, toggleSidebar, sidebarWidth } = useSidebar();
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const { open } = useLogoutModal();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { selectedCompany, companies, setSelectedCompany } = useCompany();
   const iconSizeClass = isCollapsed ? "h-10 w-10" : "h-7 w-7";
   const getBasePath = useCallback((path: string) => {
     const segments = path.split('/').filter(Boolean);
-    if (segments.length >= 2 && segments[1] !== 'jobs' && segments[1] !== 'candidates' && segments[1] !== 'analytics' && segments[1] !== 'calendar' && segments[1] !== 'settings') {
+    if (segments.length >= 2 && segments[1] !== 'jobs' && segments[1] !== 'candidates' && segments[1] !== 'analytics' && segments[1] !== 'calendar' && segments[1] !== 'profile') {
       return `/${segments[0]}`;
     }
     return path;
   }, []);
   const constructPathWithCompany = useCallback((basePath: string, companyId: string) => {
-    const noCompanyIdPaths = ['/jobs', '/candidates', '/analytics', '/calendar', '/settings'];
+    const noCompanyIdPaths = ['/jobs', '/candidates', '/analytics', '/calendar', '/profile'];
     if (noCompanyIdPaths.includes(basePath)) {
       return basePath;
     }
@@ -98,23 +101,21 @@ export default function Sidebar() {
     return pathname === href || pathname.startsWith(href + '/');
   }, [pathname]);
   const getHref = useCallback((href: string) => {
-    if (href === "/jobs") {
-      return "/jobs";
-    }
-    if (href === "/calendar") {
-      return "/calendar";
+    const noCompanyIdPaths = ["/jobs", "/calendar", "/profile"];
+    if (noCompanyIdPaths.includes(href)) {
+      return href;
     }
     return selectedCompany ? `${href}/${selectedCompany.company_id}` : href;
   }, [selectedCompany]);
+
   const companiesList = useMemo(() => {
     return companies.map((company) => (
       <li
         key={company.company_id}
-        className={`px-4 py-2 cursor-pointer ${
-          selectedCompany?.company_id === company.company_id
+        className={`px-4 py-2 cursor-pointer ${selectedCompany?.company_id === company.company_id
             ? "bg-purple-700"
             : "hover:bg-purple-700"
-        }`}
+          }`}
         onClick={() => handleCompanySelect(company)}
       >
         {company.company_name}
@@ -134,10 +135,9 @@ export default function Sidebar() {
       <div
         ref={sidebarRef}
         className={`fixed top-0 left-0 h-full bg-[#141244] text-white flex flex-col transition-transform duration-300 z-50
-          ${
-            isCollapsed
-              ? "-translate-x-full lg:translate-x-0 lg:w-16 w-0 overflow-hidden"
-              : "translate-x-0 lg:w-64 w-full"
+          ${isCollapsed
+            ? "-translate-x-full lg:translate-x-0 lg:w-16 w-0 overflow-hidden"
+            : "translate-x-0 lg:w-64 w-full"
           }`}
         style={{ width: `${sidebarWidth}px` }}
       >
@@ -157,9 +157,8 @@ export default function Sidebar() {
           />
           <button
             onClick={toggleSidebar}
-            className={`p-2 rounded hover:bg-purple-600/20 lg:hidden ${
-              isCollapsed ? "hidden" : ""
-            }`}
+            className={`p-2 rounded hover:bg-purple-600/20 lg:hidden ${isCollapsed ? "hidden" : ""
+              }`}
           >
             <XMarkIcon className="h-6 w-6" />
           </button>
@@ -187,9 +186,8 @@ export default function Sidebar() {
             >
               {selectedCompany?.company_name || "Company"}
               <ChevronDownIcon
-                className={`ml-10 h-4 w-4 transition-transform ${
-                  isDropdownOpen ? "rotate-180" : ""
-                }`}
+                className={`ml-10 h-4 w-4 transition-transform ${isDropdownOpen ? "rotate-180" : ""
+                  }`}
                 stroke="currentColor"
               />
             </Button>
@@ -208,11 +206,10 @@ export default function Sidebar() {
               <Link
                 key={item.name}
                 href={getHref(item.href)}
-                className={`flex items-center p-2 rounded ${
-                  isActive(item.href)
+                className={`flex items-center p-2 rounded ${isActive(item.href)
                     ? "text-purple-600 border-b-3 border-purple-600"
                     : "hover:bg-purple-600/20"
-                } ${isCollapsed ? "justify-center" : "space-x-2"}`}
+                  } ${isCollapsed ? "justify-center" : "space-x-2"}`}
               >
                 <item.icon className={iconSizeClass} />
                 {!isCollapsed && <span className="text-xl">{item.name}</span>}
@@ -224,16 +221,25 @@ export default function Sidebar() {
               <Link
                 key={item.name}
                 href={getHref(item.href)}
-                className={`flex items-center p-2 rounded ${
-                  isActive(item.href)
+                className={`flex items-center p-2 rounded ${isActive(item.href)
                     ? "text-purple-600 border-b-3 border-purple-600"
                     : "hover:bg-purple-600/20"
-                } ${isCollapsed ? "justify-center" : "space-x-2"}`}
+                  } ${isCollapsed ? "justify-center" : "space-x-2"}`}
               >
                 <item.icon className={iconSizeClass} />
                 {!isCollapsed && <span className="text-xl">{item.name}</span>}
               </Link>
             ))}
+            <button
+              type="button"
+              onClick={open}
+              className="flex items-center p-2 rounded hover:bg-purple-600/20 space-x-2 w-full mt-2 mb-5 transition-all duration-200 outline-none focus:outline-none"
+              tabIndex={0}
+              aria-label="Logout"
+            >
+              <LogoutIcon className={iconSizeClass} />
+              {!isCollapsed && <span className="text-xl">Logout</span>}
+            </button>
           </nav>
         </div>
       </div>
