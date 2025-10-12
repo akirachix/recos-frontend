@@ -11,6 +11,7 @@ export interface CreateInterviewPayload {
   duration?: number;
   description?: string;
 }
+
 export const useCreateInterview = (initial: Partial<CreateInterviewPayload> = {}) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
@@ -25,6 +26,7 @@ export const useCreateInterview = (initial: Partial<CreateInterviewPayload> = {}
   );
   const [duration, setDuration] = useState<number>(initial.duration ?? 60);
   const [description, setDescription] = useState<string>(initial.description ?? "");
+
   useEffect(() => {
     setTitle(initial.title ?? "");
     setCandidateEmail(initial.candidate_email ?? "");
@@ -44,6 +46,7 @@ export const useCreateInterview = (initial: Partial<CreateInterviewPayload> = {}
     initial.duration,
     initial.description,
   ]);
+
   const reset = () => {
     setTitle("");
     setCandidateEmail("");
@@ -56,6 +59,7 @@ export const useCreateInterview = (initial: Partial<CreateInterviewPayload> = {}
     setError(null);
     setLoading(false);
   };
+
   const createInterview = async (payload: CreateInterviewPayload): Promise<object> => {
     setLoading(true);
     setError(null);

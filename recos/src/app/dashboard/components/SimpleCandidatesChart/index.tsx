@@ -1,13 +1,18 @@
 import React from "react";
+import { useParams } from 'next/navigation';
+import { useDashboardData } from "@/app/hooks/useDashboardData";
 
 interface CandidateSummary {
   reviewed: number;
   pending: number;
   total: number;
 }
+
 interface SimpleDonutChartProps {
   data: CandidateSummary;
 }
+
+
 const SimpleDonutChart: React.FC<SimpleDonutChartProps> = ({ data }) => {
   const total = data.reviewed + data.pending;
   const size = 180;
@@ -21,6 +26,7 @@ const SimpleDonutChart: React.FC<SimpleDonutChartProps> = ({ data }) => {
   const pendingDasharray = `${(pendingPercentage / 100) * circumference} ${circumference}`;
   const reviewedRotation = -90;
   const pendingRotation = reviewedRotation + (reviewedPercentage / 100) * 360;
+  
   return (
     <div className="bg-pink-50 rounded-lg shadow p-6 max-w-4xl">
       <h3 className="text-xl font-semibold mb-4 text-gray-900">Candidates summary</h3>
@@ -80,12 +86,55 @@ const SimpleDonutChart: React.FC<SimpleDonutChartProps> = ({ data }) => {
     </div>
   );
 };
-const CandidateSummaryChart = () => {
+
+
+const CandidateSummaryChart = ({ companyId: propCompanyId }: { companyId?: string }) => {
+
+  const params = useParams();
+  const urlCompanyId = params.companyId as string;
+  
+  const finalCompanyId = propCompanyId || urlCompanyId;
+
+  const { candidates, loading, error } = useDashboardData(finalCompanyId);
+
+  const reviewedCount = Array.isArray(candidates) ? candidates.filter(candidate => 
+  
+    candidate.interviewId || candidate.status === 'reviewed' || candidate.status === 'interviewed'
+  ).length : 0;
+  
+  const pendingCount = Array.isArray(candidates) ? candidates.length - reviewedCount : 0;
+  
   const summaryData = {
-    reviewed: 5,
-    pending: 5,
-    total: 10,
+    reviewed: reviewedCount,
+    pending: pendingCount,
+    total: Array.isArray(candidates) ? candidates.length : 0,
   };
+
+  if (loading) {
+    return (
+      <div className="bg-pink-50 rounded-lg shadow p-6 max-w-4xl">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-gray-500">Loading candidate data...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-pink-50 rounded-lg shadow p-6 max-w-4xl">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-red-500">
+            Error loading candidate data: {error}
+            <br />
+            <small className="text-gray-500">
+              Please check if the API endpoints are working correctly and the companyId is valid.
+            </small>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return <SimpleDonutChart data={summaryData} />;
 };

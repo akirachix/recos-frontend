@@ -1,8 +1,9 @@
+
 import { useState, useEffect } from 'react';
 import { Job, Interview, DashboardMetrics, PositionSummary, Candidate } from '@/app/types';
 import { fetchJobs } from '../utils/fetchJobs';
 import { fetchInterviews } from "../utils/fetchInterview";
-import { fetchJobCandidates } from '../utils/fetchJobCandidates';
+import { getAllCandidatesForCompany } from '../utils/fetchCandidatesByJobs';
 
 const getAuthToken = () => {
   if (typeof document !== 'undefined') {
@@ -14,7 +15,7 @@ const getAuthToken = () => {
   return null;
 };
 
-export const useDashboardData = (companyId?: string) => {
+export const useDashboardData = (companyId?: string) => { 
   const [jobs, setJobs] = useState<Job[]>([]);
   const [interviews, setInterviews] = useState<Interview[]>([]);
   const [candidates, setCandidates] = useState<Candidate[]>([]);
@@ -27,31 +28,52 @@ export const useDashboardData = (companyId?: string) => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
+      if (!companyId) {
+        setError("Company ID is required to fetch dashboard data.");
+        setLoading(false);
+        return;
+      }
 
       try {
         const token = getAuthToken();
         if (!token) throw new Error("Authentication token is missing");
-        const jobsResponse = await fetchJobs(companyId);
-        const interviewsResponse = await fetchInterviews(token);
-        const candidatesResponse = companyId !== undefined && companyId !== null
-          ? await fetchJobCandidates((companyId))
-          : [];
-          
-        const jobsData = Array.isArray(jobsResponse) ? jobsResponse : [];
-        const interviewsData = Array.isArray(interviewsResponse) ? interviewsResponse : [];
-        const candidatesData = Array.isArray(candidatesResponse) ? candidatesResponse : [];
-        setJobs(jobsData);
-        setInterviews(interviewsData);
-        setCandidates(candidatesData);
+        const companyIdAsNumber = parseInt(companyId, 10);
+        if (isNaN(companyIdAsNumber)) {
+            throw new Error("Invalid Company ID provided.");
+        }
 
+        console.log("Fetching data for companyId:", companyIdAsNumber);
+        
+        const jobsResponse = await fetchJobs(companyId);
+        const jobsData = Array.isArray(jobsResponse) ? jobsResponse : [];
+        setJobs(jobsData);
+
+        const interviewsResponse = await fetchInterviews(token);
+        const interviewsData = Array.isArray(interviewsResponse) ? interviewsResponse : [];
+        setInterviews(interviewsData);
+
+        const candidatesData = await getAllCandidatesForCompany(companyIdAsNumber, true);
+        
+        let finalCandidatesData: Candidate[] = [];
+        if (Array.isArray(candidatesData)) {
+          finalCandidatesData = candidatesData;
+        } else if (candidatesData && Array.isArray(candidatesData.data)) {
+          finalCandidatesData = candidatesData.data;
+        } else if (candidatesData && Array.isArray(candidatesData.candidates)) {
+          finalCandidatesData = candidatesData.candidates;
+        } else {
+          console.error("API response for candidates is not a recognized array format. Setting to empty array.");
+        }
+        setCandidates(finalCandidatesData);
+  
         const openPositions = jobsData.filter((job: Job) => job.state === 'open').length;
         const completedInterviews = interviewsData.length;
-        const totalCandidates = candidatesData.length;
+        const totalCandidates = finalCandidatesData.length; 
 
         setMetrics({
           totalCandidates,
           openPositions,
-          avgHiringCycle: 0, 
+          avgHiringCycle: 0,
           completedInterviews,
         });
 
@@ -59,11 +81,12 @@ export const useDashboardData = (companyId?: string) => {
           .filter((job: Job) => job.state === 'open')
           .map((job: Job) => ({
             name: job.job_title,
-            value: 0, 
+            value: 0,
           }));
 
         setPositionSummary(positionSummaryData);
       } catch (error) {
+        console.error("Dashboard data fetch error:", error);
         setError((error as Error).message);
       } finally {
         setLoading(false);
@@ -71,7 +94,7 @@ export const useDashboardData = (companyId?: string) => {
     };
 
     fetchData();
-  }, [companyId]);
+  }, [companyId]); 
 
   return {
     jobs,

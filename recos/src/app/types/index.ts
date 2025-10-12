@@ -16,6 +16,8 @@ export interface Job {
   status?: string;
 }
 export interface Candidate {
+  status: string;
+  interviewId: boolean;
   candidate_id: number;
   job: number;
   job_title: string;
@@ -51,9 +53,13 @@ export interface PositionSummary {
   value: number;
 }
 export interface CandidateSummary {
-  total: number;
-  reviewed: number;
-  pending: number;
+ total: number;
+  applied: number;
+  qualified: number;
+  interview: number;
+  offer: number;
+  hired: number;
+  rejected: number;
 }
 export interface InterviewItem {
   id: number;
