@@ -73,11 +73,11 @@ export default function InterviewFormModal({
       const companyIdAsNumber = parseInt(companyId, 10);
       if (isNaN(companyIdAsNumber)) throw new Error(`Invalid Company ID format: "${companyId}".`);
 
-      // Use the specific logic requested by the user
+  
       const candidatesData = await getAllCandidatesForCompany(companyIdAsNumber, true);
       const jobsResponse = await fetchJobs(companyId);
 
-      // Process candidates data
+
       let finalCandidatesData: Candidate[] = [];
       if (Array.isArray(candidatesData)) {
         finalCandidatesData = candidatesData;
@@ -90,7 +90,6 @@ export default function InterviewFormModal({
       }
       setCandidates(finalCandidatesData);
 
-      // Process jobs data
       let finalJobsData: Job[] = [];
       if (Array.isArray(jobsResponse)) {
         finalJobsData = jobsResponse;
@@ -105,14 +104,14 @@ export default function InterviewFormModal({
     }
   }, [companyId]);
 
-  // Function to update company ID and reset form
+
   const updateCompanyId = useCallback(() => {
     const id = getCompanyId();
     if (id !== companyId) {
       console.log("Company ID changed from", companyId, "to", id);
       setCompanyId(id);
       
-      // Reset form fields when company changes
+    
       reset();
       setCandidateId(null);
       setCandidateEmail('');
@@ -120,31 +119,23 @@ export default function InterviewFormModal({
       setSelectedJobId(null);
       setSelectedJobTitle("");
       setCandidateJobTitle("");
-      setCandidates([]); // Clear candidates immediately
-      setJobs([]); // Clear jobs immediately
+      setCandidates([]); 
+      setJobs([]); 
     }
   }, [companyId, reset]);
 
-  // Effect to get the company ID and set up a listener for changes
+
   useEffect(() => {
-    // Initial call
     updateCompanyId();
-
-    // Set up an interval to check for changes to localStorage
     const intervalId = setInterval(updateCompanyId, 1000);
-
-    // Clean up the interval when the component unmounts
     return () => clearInterval(intervalId);
   }, [updateCompanyId]);
-
-  // Effect to fetch candidates and jobs when the modal opens or company changes
   useEffect(() => {
     if (isOpen && companyId) {
       fetchCandidatesAndJobs();
     }
   }, [isOpen, companyId, fetchCandidatesAndJobs]);
 
-  // Effect to set the scheduled date if provided
   useEffect(() => {
     if (scheduledDate) setScheduledAt(scheduledDate);
   }, [scheduledDate, setScheduledAt]);
