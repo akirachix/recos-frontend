@@ -12,55 +12,74 @@ export interface CreateInterviewPayload {
   description?: string;
 }
 
-export const useCreateInterview = (initial: Partial<CreateInterviewPayload> = {}) => {
-  const [loading, setLoading] = useState<boolean>(false);
+export const useCreateInterview = (
+  initial: Partial<CreateInterviewPayload> = {},
+  profileId?: number,
+  scheduledDate?: string,
+) => {
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const [title, setTitle] = useState<string>(initial.title ?? "");
-  const [candidateEmail, setCandidateEmail] = useState<string>(initial.candidate_email ?? "");
-  const [candidateName, setCandidateName] = useState<string>(initial.candidate_name ?? "");
+  const [title, setTitle] = useState(initial.title ?? "");
+  const [candidateEmail, setCandidateEmail] = useState(initial.candidate_email ?? "");
+  const [candidateName, setCandidateName] = useState(initial.candidate_name ?? "");
   const [candidateId, setCandidateId] = useState<number | null>(initial.candidate ?? null);
-  const [recruiterId, setRecruiterId] = useState<number | null>(initial.recruiter ?? null);
-  const [scheduledAt, setScheduledAt] = useState<string>(
-    initial.scheduled_at ? initial.scheduled_at.slice(0, 16) : ""
+  const [recruiterId, setRecruiterId] = useState<number | null>(initial.recruiter ?? profileId ?? null);
+  const [scheduledAt, setScheduledAt] = useState(
+    initial.scheduled_at ? initial.scheduled_at.slice(0, 16) : scheduledDate ?? ""
   );
-  const [duration, setDuration] = useState<number>(initial.duration ?? 60);
-  const [description, setDescription] = useState<string>(initial.description ?? "");
+  const [duration, setDuration] = useState(initial.duration ?? 60);
+  const [description, setDescription] = useState(initial.description ?? "");
 
   useEffect(() => {
     setTitle(initial.title ?? "");
     setCandidateEmail(initial.candidate_email ?? "");
     setCandidateName(initial.candidate_name ?? "");
     setCandidateId(initial.candidate ?? null);
-    setRecruiterId(initial.recruiter ?? null);
-    setScheduledAt(initial.scheduled_at ? initial.scheduled_at.slice(0, 16) : "");
+    setRecruiterId(initial.recruiter ?? profileId ?? null);
+    setScheduledAt(initial.scheduled_at ? initial.scheduled_at.slice(0, 16) : scheduledDate ?? "");
     setDuration(initial.duration ?? 60);
     setDescription(initial.description ?? "");
-  }, [
-    initial.title,
-    initial.candidate_email,
-    initial.candidate_name,
-    initial.candidate,
-    initial.recruiter,
-    initial.scheduled_at,
-    initial.duration,
-    initial.description,
-  ]);
+  }, [initial, profileId, scheduledDate]);
+
+  useEffect(() => {
+    if (profileId !== undefined && profileId !== null) {
+      setRecruiterId(profileId);
+    }
+  }, [profileId]);
+
+  useEffect(() => {
+    if (scheduledDate) {
+      setScheduledAt(scheduledDate);
+    }
+  }, [scheduledDate]);
+
+  useEffect(() => {
+    if (successMessage || error) {
+      const timer = setTimeout(() => {
+        setSuccessMessage(null);
+        setError(null);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage, error]);
 
   const reset = () => {
     setTitle("");
     setCandidateEmail("");
     setCandidateName("");
     setCandidateId(null);
-    setRecruiterId(null);
-    setScheduledAt("");
+    setRecruiterId(profileId ?? null);
+    setScheduledAt(scheduledDate ?? "");
     setDuration(60);
     setDescription("");
     setError(null);
     setLoading(false);
+    setSuccessMessage(null);
   };
 
-  const createInterview = async (payload: CreateInterviewPayload): Promise<object> => {
+  const createInterview = async (payload: CreateInterviewPayload): Promise<any> => {
     setLoading(true);
     setError(null);
     try {
@@ -77,6 +96,7 @@ export const useCreateInterview = (initial: Partial<CreateInterviewPayload> = {}
   return {
     loading,
     error,
+    successMessage,
     createInterview,
     title,
     setTitle,
