@@ -1,20 +1,24 @@
+import { Interview } from '@/app/types';
 
-const baseUrl = "/api/interview";
-export async function fetchInterviews(token: string) {
+export const fetchInterviews = async (token: string): Promise<Interview[]> => {
+  if (!token) {
+    throw new Error("Authentication token is required");
+  }
+  
   try {
-    const response = await fetch(baseUrl, {
+    const response = await fetch('/api/interview', {
       headers: {
         Authorization: `Token ${token}`,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
-
     if (!response.ok) {
-      const text = await response.text();
-      throw new Error(text);
+      const errorData = await response.json();
+      throw new Error(errorData.message || `Failed to fetch interviews: ${response.status}`);
     }
-    return await response.json();
+    const data = await response.json(); 
+    return data;
   } catch (error) {
-    throw new Error((error as Error).message);
+    throw error;
   }
-}
+};

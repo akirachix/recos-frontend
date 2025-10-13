@@ -199,20 +199,20 @@ const monthNameToIndexMap = months.reduce<Record<string, number>>((accumulator, 
 };
 const Dashboard = () => {
   const data = [
-    { month: "Jan", "QA Analyst": 350, "Financial Analyst": 220, Manager: 500 },
-    { month: "Feb", "QA Analyst": 450, "Financial Analyst": 360, Manager: 480 },
-    { month: "Mar", "QA Analyst": 700, "Financial Analyst": 670, Manager: 550 },
-    { month: "Apr", "QA Analyst": 850, "Financial Analyst": 680, Manager: 600 },
-    { month: "May", "QA Analyst": 870, "Financial Analyst": 710, Manager: 630 },
-    { month: "Jun", "QA Analyst": 750, "Financial Analyst": 560, Manager: 580 },
-    { month: "Jul", "QA Analyst": 600, "Financial Analyst": 720, Manager: 680 },
-    { month: "Aug", "QA Analyst": 650, "Financial Analyst": 820, Manager: 720 },
-    { month: "Sep", "QA Analyst": 700, "Financial Analyst": 900, Manager: 730 },
-    { month: "Oct", "QA Analyst": 800, "Financial Analyst": 950, Manager: 780 },
-    { month: "Nov", "QA Analyst": 720, "Financial Analyst": 980, Manager: 800 },
-    { month: "Dec", "QA Analyst": 750, "Financial Analyst": 900, Manager: 830 },
+    { month: "Jan", "Frontend Developer": 350, "DevOps": 220, Manager: 500 },
+    { month: "Feb", "Frontend Developer": 450, "DevOps": 360, Manager: 480 },
+    { month: "Mar", "Frontend Developer": 700, "DevOps": 670, Manager: 550 },
+    { month: "Apr", "Frontend Developer": 850, "DevOps": 680, Manager: 600 },
+    { month: "May", "Frontend Developer": 870, "DevOps": 710, Manager: 630 },
+    { month: "Jun", "Frontend Developer": 750, "DevOps": 560, Manager: 580 },
+    { month: "Jul", "Frontend Developer": 600, "DevOps": 720, Manager: 680 },
+    { month: "Aug", "Frontend Developer": 650, "DevOps": 820, Manager: 720 },
+    { month: "Sep", "Frontend Developer": 700, "DevOps": 900, Manager: 730 },
+    { month: "Oct", "Frontend Developer": 800, "DevOps": 950, Manager: 780 },
+    { month: "Nov", "Frontend Developer": 720, "DevOps": 980, Manager: 800 },
+    { month: "Dec", "Frontend Developer": 750, "DevOps": 900, Manager: 830 },
   ];
-  const seriesNames = ["QA Analyst", "Financial Analyst", "Manager"];
+  const seriesNames = ["Frontend Developer", "DevOps", "Backend Developer"];
   const seriesColors = ["#6366f1", "#22d3ee", "#a78bfa"];
   return <MultiLineChart data={data} seriesNames={seriesNames} seriesColors={seriesColors} />;
 };

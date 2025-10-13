@@ -51,7 +51,7 @@ function DashboardContent() {
               </h1>
               <div className="flex gap-6 mb-6 justify-between">
                 <MetricCard title="Open Positions" value={metrics?.openPositions || 0} />
-                <MetricCard title="Completed Interviews" value={metrics?.completedInterviews || 0} />
+                <MetricCard title="Interviews" value={metrics?.completedInterviews || 0} />
                 <MetricCard title="Total Candidates" value={metrics?.totalCandidates || 0} />
               </div>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 mb-6">
