@@ -1,10 +1,17 @@
+
 import { NextRequest, NextResponse } from "next/server";
 
-const baseUrl= process.env.BASE_URL!;
+const baseUrl = process.env.BASE_URL!;
 
 export async function GET(req: NextRequest) {
+
   const authHeader = req.headers.get("authorization");
   const token = authHeader ? authHeader.replace("Token ", "") : "";
+
+  if (!token) {
+    return NextResponse.json({ message: "Authentication token is required" }, { status: 401 });
+  }
+  
   try {
     const response = await fetch(`${baseUrl}/interview/`, {
       headers: {
@@ -12,9 +19,13 @@ export async function GET(req: NextRequest) {
         "Content-Type": "application/json",
       },
     });
+    
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
-    return NextResponse.json({ message: (error as Error).message  }, { status: 500 });
+    return NextResponse.json(
+      { message: (error as Error).message }, 
+      { status: 500 }
+    );
   }
 }

@@ -9,7 +9,7 @@ import Image from "next/image";
 
 export default function SignIn() {
   const router = useRouter();
-  const { login, loading } = useLogin();
+  const { login, loading, error } = useLogin();
 
   const [form, setForm] = useState({
     email: "",
@@ -26,7 +26,7 @@ export default function SignIn() {
       [name]: value,
     }));
     setSuccessMessage("");
-    setErrorMessage("");
+    setErrorMessage("Invalid Credentials");
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -110,7 +110,12 @@ export default function SignIn() {
                 Forgot Password?
               </Link>
             </div>
-
+             {errorMessage && (
+              <p className="mt-2 text-red-600 text-center font-semibold text-sm sm:text-base">{errorMessage}</p>
+            )}
+            {successMessage && (
+              <p className="mt-2 text-green-600 text-center font-semibold text-sm sm:text-base">{successMessage}</p>
+            )}
             <button
               type="submit"
               disabled={loading}
@@ -118,12 +123,7 @@ export default function SignIn() {
             >
               {loading ? "Signing In..." : "Sign In"}
             </button>
-            {errorMessage && (
-              <p className="mt-2 text-red-600 text-center font-semibold text-sm sm:text-base">{errorMessage}</p>
-            )}
-            {successMessage && (
-              <p className="mt-2 text-green-600 text-center font-semibold text-sm sm:text-base">{successMessage}</p>
-            )}
+           
           </form>
 
           <p className="text-center text-[#24184e] font-semibold mt-8 select-none text-sm sm:text-base">
