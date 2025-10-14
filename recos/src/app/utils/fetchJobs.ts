@@ -1,7 +1,7 @@
 export const fetchJobs = async (companyId?: string) => {
   try {
 
-    const url = companyId ? `/api/jobs?companyId=${companyId}` : '/api/jobs';
+    const url = `/api/jobs?companyId=${companyId}`;
 
     const response = await fetch(url);
     
