@@ -100,7 +100,7 @@ export default function Sidebar() {
     return pathname === href || pathname.startsWith(href + '/');
   }, [pathname]);
   const getHref = useCallback((href: string) => {
-    const noCompanyIdPaths = ["/jobs", "/profile"];
+    const noCompanyIdPaths = ["/jobs", "/profile", "/calendar",];
     if (noCompanyIdPaths.includes(href)) {
       return href;
     }
