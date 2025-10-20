@@ -1,9 +1,9 @@
-import { Inter } from 'next/font/google';
+import { Inter, Nunito } from 'next/font/google';
 import './globals.css';
 import { CompanyProvider } from './context/CompanyContext';
 import { SidebarProvider } from './context/SidebarContext';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Nunito({ subsets: ['latin'] });
 
 export const metadata = {
   title: 'Recos Dashboard',

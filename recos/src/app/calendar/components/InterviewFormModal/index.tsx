@@ -1,16 +1,18 @@
 'use client';
 
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { CreateInterviewPayload, useCreateInterview } from "@/app/hooks/useCreateInterview";
 import { Candidate, Job } from "@/app/types";
 import { getAllCandidatesForCompany } from "@/app/utils/fetchCandidatesByJobs";
 import { fetchJobs } from "@/app/utils/fetchJobs";
 import useFetchProfile from "@/app/hooks/useFetchProfile";
+import { useParams } from "next/navigation";
+import { useCompany } from "@/app/context/CompanyContext";
 
 interface InterviewFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: CreateInterviewPayload) => Promise<void>;
+  onSave: (data: any) => Promise<void>; 
   initialData: CreateInterviewPayload;
   scheduledDate?: string;
 }
@@ -28,12 +30,19 @@ function hasProperty<T extends string | number | symbol>(object: unknown, prop: 
   return typeof object === "object" && object !== null && prop in object;
 }
 
-const getCompanyId = (): string | null => {
-  if (typeof window !== "undefined") {
-    const storedId = localStorage.getItem("companyId");
-    if (storedId) return storedId;
+const useCompanyId = (): string | null => {
+  const params = useParams();
+  const { selectedCompany } = useCompany();
+  let companyId = params.companyId;
+  if (!companyId && selectedCompany) {
+    companyId = selectedCompany.company_id?.toString();
   }
-  return "1";
+
+  if (typeof companyId === 'string' && companyId.trim() !== '') {
+    return companyId;
+  }
+  
+  return null;
 };
 
 export default function InterviewFormModal({
@@ -43,7 +52,12 @@ export default function InterviewFormModal({
   initialData,
   scheduledDate,
 }: InterviewFormModalProps) {
+  const companyId = useCompanyId();
   const { user: profile } = useFetchProfile();
+  const { selectedCompany, companies, setSelectedCompany } = useCompany();
+  
+  const hasInitializedRef = useRef(false);
+  const prevCompanyIdRef = useRef<string | null>(null);
 
   const {
     title,
@@ -76,12 +90,15 @@ export default function InterviewFormModal({
   const [saving, setSaving] = useState(false);
   const [loadingCandidates, setLoadingCandidates] = useState(false);
   const [candidatesError, setCandidatesError] = useState<string | null>(null);
-  const [companyId, setCompanyId] = useState<string | null>(null);
-
   const [showSuccess, setShowSuccess] = useState(false);
+  const [debugInfo, setDebugInfo] = useState<string | null>(null);
 
   const fetchCompanyCandidates = useCallback(async () => {
-    if (!companyId) return;
+    if (!companyId) {
+      setCandidatesError("Company ID is required");
+      return;
+    }
+    
     setLoadingCandidates(true);
     setCandidatesError(null);
     try {
@@ -111,32 +128,58 @@ export default function InterviewFormModal({
     }
   }, [companyId]);
 
-  const updateCompanyId = useCallback(() => {
-    const id = getCompanyId();
-    if (id !== companyId) {
-      setCompanyId(id);
-      reset();
-      setCandidateId(null);
-      setCandidateEmail("");
-      setCandidateName("");
-      setCandidateJobTitle("");
-      setSelectedJobId(null);
-      setCandidates([]);
-      setJobs([]);
-      setError(null);
-      setShowSuccess(false);
-    }
-  }, [companyId, reset]);
+  const resetFormFields = useCallback(() => {
+    setCandidateId(null);
+    setCandidateEmail("");
+    setCandidateName("");
+    setCandidateJobTitle("");
+    setSelectedJobId(null);
+    setCandidates([]);
+    setJobs([]);
+    setError(null);
+    setShowSuccess(false);
+    setDebugInfo(null);
+  }, []);
+
+  const handleCompanySelect = useCallback((company: any) => {
+    setSelectedCompany(company);
+  }, [setSelectedCompany]);
+
+  const companiesList = React.useMemo(() => {
+    return companies.map((company) => (
+      <li
+        key={company.company_id}
+        className={`px-4 py-2 cursor-pointer ${
+          selectedCompany?.company_id === company.company_id
+            ? "bg-purple-700"
+            : "hover:bg-purple-700"
+        }`}
+        onClick={() => handleCompanySelect(company)}
+      >
+        {company.company_name}
+      </li>
+    ));
+  }, [companies, selectedCompany, handleCompanySelect]);
 
   useEffect(() => {
-    updateCompanyId();
-  }, [updateCompanyId]);
-
-  useEffect(() => {
-    if (isOpen && companyId) {
-      fetchCompanyCandidates();
+    const justOpened = isOpen && !hasInitializedRef.current;
+    const companyIdChanged = companyId !== prevCompanyIdRef.current;
+    if (isOpen) hasInitializedRef.current = true;
+    prevCompanyIdRef.current = companyId;
+    
+    if (justOpened || companyIdChanged) {
+      resetFormFields();
+      if (justOpened) {
+        setTimeout(() => reset(), 0);
+      }
+      
+      if (companyId) {
+        fetchCompanyCandidates();
+      } else {
+        setCandidatesError("Company ID is required");
+      }
     }
-  }, [isOpen, companyId, fetchCompanyCandidates]);
+  }, [isOpen, companyId, resetFormFields, fetchCompanyCandidates, reset]);
 
   useEffect(() => {
     if (successMessage) {
@@ -181,17 +224,39 @@ export default function InterviewFormModal({
     e.preventDefault();
     setError(null);
     setShowSuccess(false);
-
+    setDebugInfo(null);
+    if (!title.trim()) {
+      setError("Title is required.");
+      return;
+    }
+    
+    if (!candidateId && !candidateName.trim()) {
+      setError("Candidate selection is required.");
+      return;
+    }
+    
+    if (!candidateEmail.trim() || !/^\S+@\S+\.\S+$/.test(candidateEmail)) {
+      setError("Valid candidate email is required.");
+      return;
+    }
+    
     if (!recruiterId || isNaN(Number(recruiterId)) || recruiterId <= 0) {
       setError("Recruiter ID is missing or invalid.");
       return;
     }
+    
     if (!scheduledAt || new Date(scheduledAt) <= new Date()) {
       setError("Interview must be scheduled for a future date and time.");
       return;
     }
+    
+    if (!duration || isNaN(Number(duration)) || duration <= 0) {
+      setError("Valid duration is required.");
+      return;
+    }
 
     setSaving(true);
+    
     try {
       const payload: CreateInterviewPayload = {
         title,
@@ -203,16 +268,28 @@ export default function InterviewFormModal({
         duration,
         description,
       };
+      console.log("Interview payload:", payload);
+      setDebugInfo(`Creating interview: ${title} for ${candidateName}`);
 
       const response = await createInterview(payload);
-
-   
-
-      await onSave(payload);
-      reset();
-      onClose();
+  
+    
+      if (response && response.interview) {
+        await onSave(response.interview);
+        setDebugInfo(`Interview created successfully with ID: ${response.interview.interview_id}`);
+      } else {
+        await onSave(payload);
+        setDebugInfo("Interview created with payload data");
+      }
+    
+      setShowSuccess(true);
+      setTimeout(() => {
+        resetFormFields();
+        onClose();
+      }, 1500);
     } catch (error) {
-      setError((error as Error).message || "Failed to save interview.");
+      let errorMessage = "Failed to save interview.";
+      setError(errorMessage);
     } finally {
       setSaving(false);
     }
@@ -225,6 +302,30 @@ export default function InterviewFormModal({
       <div className="border-white bg-white rounded-2xl p-5 pb-5 max-w-[900px] w-full mx-auto sm:max-w-xl md:max-w-3xl lg:max-w-5xl">
         <form onSubmit={handleSubmit} className="p-4 rounded-lg shadow-xl max-w-7xl flex flex-col space-y-4">
           <h2 className="text-2xl font-bold text-black pb-5">{initialData ? "Edit Interview" : "Create Interview"}</h2>
+          
+          {!companyId && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+              <p className="font-medium">Company ID is required</p>
+              <p className="text-sm">Please ensure the company ID is provided in the URL or select a company.</p>
+            </div>
+          )}
+          
+       
+          {selectedCompany && (
+            <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded mb-4">
+              <p className="font-medium">Selected Company</p>
+              <p className="text-sm">{selectedCompany.company_name}</p>
+            </div>
+          )}
+          {!selectedCompany && companies.length > 0 && (
+            <div className="mb-4">
+              <label className="block text-lg font-medium text-black mb-2">Select Company</label>
+              <ul className="border border-gray-300 rounded-md max-h-40 overflow-y-auto">
+                {companiesList}
+              </ul>
+            </div>
+          )}
+          
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
               <label className="block text-lg font-medium text-black mb-2">Title</label>
@@ -235,7 +336,18 @@ export default function InterviewFormModal({
               {loadingCandidates ? (
                 <div className="w-full px-3 py-2 border border-gray-300 rounded-md text-lg bg-gray-50">Loading candidates...</div>
               ) : candidatesError ? (
-                <div className="w-full px-3 py-2 border border-red-300 rounded-md text-lg text-red-600 bg-red-50">Error: {candidatesError}</div>
+                <div className="space-y-2">
+                  <div className="w-full px-3 py-2 border border-red-300 rounded-md text-lg text-red-600 bg-red-50">Error: {candidatesError}</div>
+                  {companyId && (
+                    <button 
+                      type="button" 
+                      onClick={fetchCompanyCandidates}
+                      className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors text-sm"
+                    >
+                      Retry
+                    </button>
+                  )}
+                </div>
               ) : (
                 <select value={candidateId?.toString() || ""} onChange={handleCandidateChange} required className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-lg">
                   <option value="">Select a candidate</option>
@@ -281,15 +393,12 @@ export default function InterviewFormModal({
               <label className="block text-lg font-medium text-black mb-2">Description</label>
               <textarea rows={2} value={description} onChange={e => setDescription(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-lg" />
             </div>
+               {showSuccess && <p className="text-green-600 text-sm mt-2" role="alert">Interview created successfully!</p>}
           </div>
-
-          {error && <p className="text-red-600 text-lg mt-2" role="alert">{error}</p>}
-          {(hookError && !error) && <p className="text-red-600 text-lg mt-2" role="alert">{hookError.message}</p>}
-          {showSuccess && <p className="text-green-600 text-sm mt-2" role="alert">{successMessage}</p>}
-
+       
           <div className="flex justify-end gap-4 pt-4">
             <button type="button" onClick={onClose} disabled={saving} className="px-6 py-2 bg-gray-200 text-black rounded-md hover:bg-gray-300 transition-colors text-lg cursor-pointer">Cancel</button>
-            <button type="submit" disabled={saving} className="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors text-lg disabled:bg-purple-400 cursor-pointer">{saving ? "Saving..." : "Save Interview"}</button>
+            <button type="submit" disabled={saving || !companyId} className="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors text-lg disabled:bg-purple-400 cursor-pointer">{saving ? "Saving..." : "Save Interview"}</button>
           </div>
         </form>
       </div>

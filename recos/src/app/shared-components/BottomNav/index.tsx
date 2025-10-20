@@ -1,6 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
+import { useSidebar } from '@/app/context/SidebarContext';
 
 export default function BottomNav() {
   const pathname = usePathname();
@@ -25,11 +26,13 @@ export default function BottomNav() {
   };
 
   const currentTitle = getTitleFromPath(pathname);
-
+  const {sidebarWidth} = useSidebar(); 
+  
 
   return (
     <div className="flex items-center p-8">
-        <h1 className="text-2xl sm:text-3xl font-semibold text-[#1E1B4B]">{currentTitle}</h1>
+        <h1 className={`text-2xl sm:text-3xl pl-2 font-semibold text-[#1E1B4B] ${sidebarWidth == 84 ? 'pl-6' : 'pl-2'}`}
+        >{currentTitle}</h1>
     </div>
   );
 }

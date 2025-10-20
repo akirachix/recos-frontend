@@ -1,3 +1,4 @@
+import { error } from "console";
 
 const baseurl = process.env.BASE_URL;
 
@@ -23,7 +24,7 @@ export async function POST(request: Request) {
         headers: { "Content-Type": "application/json" },
       });
     } else {
-      return new Response(JSON.stringify({ error: "Invalid credentials" }), {
+      return new Response(JSON.stringify({ error}), {
         status: 401,
         headers: { "Content-Type": "application/json" },
       });

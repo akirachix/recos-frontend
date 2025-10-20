@@ -26,7 +26,6 @@ export default function SignIn() {
       [name]: value,
     }));
     setSuccessMessage("");
-    setErrorMessage("Invalid Credentials");
   };
 
   const handleSubmit = async (event: React.FormEvent) => {

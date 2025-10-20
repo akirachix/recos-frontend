@@ -3,6 +3,9 @@ import React, { useState } from "react";
 import { useCreateInterview } from "@/app/hooks/useCreateInterview";
 
 export type Event = {
+  position: string;
+  candidate_name: string;
+  scheduled_at: string | number | Date;
   id: number;
   date: string;
   label: string;
@@ -85,11 +88,11 @@ export default function SimpleSchedule({
   return (
     <div className="bg-white p-14 gap-10 rounded shadow overflow-hidden max-w-full text-2xl">
       <div className="flex items-center mb-4 space-x-4">
-        <button onClick={previousMonth} className="px-3 py-1 rounded border border-gray-300 hover:bg-gray-100">
+        <button onClick={previousMonth} className="px-3 py-1 rounded border border-gray-300 hover:bg-gray-100 cursor-pointer">
           &lt;
         </button>
         <div className="font-semibold">{new Date(year, month).toLocaleString("default", { month: "long", year: "numeric" })}</div>
-        <button onClick={nextMonth} className="px-3 py-1 rounded border border-gray-300 hover:bg-gray-100">
+        <button onClick={nextMonth} className="px-3 py-1 rounded border border-gray-300 hover:bg-gray-100 cursor-pointer">
           &gt;
         </button>
       </div>

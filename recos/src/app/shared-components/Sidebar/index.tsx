@@ -49,7 +49,7 @@ export default function Sidebar() {
     return path;
   }, []);
   const constructPathWithCompany = useCallback((basePath: string, companyId: string) => {
-    const noCompanyIdPaths = ['/jobs', '/candidates', '/analytics', '/calendar', '/profile'];
+    const noCompanyIdPaths = ['/jobs', '/analytics', '/calendar', '/profile'];
     if (noCompanyIdPaths.includes(basePath)) {
       return basePath;
     }
@@ -101,7 +101,7 @@ export default function Sidebar() {
     return pathname === href || pathname.startsWith(href + '/');
   }, [pathname]);
   const getHref = useCallback((href: string) => {
-    const noCompanyIdPaths = ["/jobs", "/calendar", "/profile"];
+    const noCompanyIdPaths = ['/jobs', '/analytics', '/calendar', '/profile'];
     if (noCompanyIdPaths.includes(href)) {
       return href;
     }

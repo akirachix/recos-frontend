@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { fetchJobs, syncJobs } from '@/app/utils/fetchJobs';
 
-type Job = {
+export type Job = {
   job_id: number;
   company_name: string;
   job_title: string;

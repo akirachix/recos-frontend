@@ -1,17 +1,15 @@
-'use client';
-import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
-import Navbar from '@/app/shared-components/Navbar';
-import Sidebar from '@/app/shared-components/Sidebar';
-import {useCompany } from '@/app/context/CompanyContext';
-import { useDashboardData } from '@/app/hooks/useDashboardData';
-import MetricCard from '../components/MetricsCard';
-import SimpleLineChart from '../components/SimpleLineChart';
-import SimpleDonutChart from '../components/SimpleCandidatesChart';
-import UpcomingInterviews from '../components/UpcomingInterview';
-import JobSummary from '../components/JobSummary';
-import ClientLayout from '@/app/shared-components/ClientLayout';
-
+"use client";
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import Navbar from "@/app/shared-components/Navbar";
+import Sidebar from "@/app/shared-components/Sidebar";
+import { useCompany } from "@/app/context/CompanyContext";
+import { useDashboardData } from "@/app/hooks/useDashboardData";
+import MetricCard from "../components/MetricsCard";
+import SimpleLineChart from "../components/SimpleLineChart";
+import SimpleDonutChart from "../components/SimpleCandidatesChart";
+import UpcomingInterviews from "../components/UpcomingInterview";
+import ClientLayout from "@/app/shared-components/ClientLayout";
 
 function DashboardContent() {
   const params = useParams();
@@ -20,10 +18,9 @@ function DashboardContent() {
   const { metrics, loading, error } = useDashboardData(companyId);
   const [isGeneralView, setIsGeneralView] = useState(!companyId);
 
-
   useEffect(() => {
     if (companyId && companies.length > 0) {
-      const company = companies.find(c => c.company_id.toString() === companyId);
+      const company = companies.find((c) => c.company_id.toString() === companyId);
       if (company && company.company_id !== selectedCompany?.company_id) {
         setSelectedCompany(company);
       }
@@ -33,34 +30,44 @@ function DashboardContent() {
     }
   }, [companyId, companies, selectedCompany, setSelectedCompany]);
 
-
   return (
     <ClientLayout>
       {loading ? (
-        <div>Loading...</div>
+        <div className="flex justify-center items-center h-screen text-gray-500 text-sm sm:text-base md:text-lg">
+          Loading...
+        </div>
       ) : error ? (
-        <div>Error: {error}</div>
+        <div className="flex justify-center items-center h-screen text-red-500 text-sm sm:text-base md:text-lg">
+          Error: {error}
+        </div>
       ) : (
-        <div className="flex min-h-screen">
+        <div className="flex min-h-screen flex-col sm:flex-row">
           <Sidebar />
-          <div className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col w-full">
             <Navbar />
-            <div className="px-6  py-6">
-              <h1 className="text-2xl font-bold mb-6">
-                {isGeneralView ? 'General Dashboard' : selectedCompany? `${selectedCompany.company_name} Dashboard` : 'Dashboard'}
+            <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 w-full max-w-[1440px] mx-auto">
+              <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-4 sm:mb-6">
+                {isGeneralView
+                  ? "General Dashboard"
+                  : selectedCompany
+                  ? `${selectedCompany.company_name} Dashboard`
+                  : "Dashboard"}
               </h1>
-              <div className="flex gap-6 mb-6 justify-between">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6">
                 <MetricCard title="Open Positions" value={metrics?.openPositions || 0} />
                 <MetricCard title="Interviews" value={metrics?.completedInterviews || 0} />
                 <MetricCard title="Total Candidates" value={metrics?.totalCandidates || 0} />
               </div>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 mb-6">
-                <SimpleLineChart />
-                <SimpleDonutChart />
+              <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 md:gap-8 lg:gap-12 mb-6">
+                <div className="flex-1 min-w-0">
+                  <SimpleLineChart />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <SimpleDonutChart />
+                </div>
               </div>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 mb-6">
+              <div className="mb-6 w-full">
                 <UpcomingInterviews />
-                <JobSummary />
               </div>
             </div>
           </div>
@@ -69,4 +76,5 @@ function DashboardContent() {
     </ClientLayout>
   );
 }
+
 export default DashboardContent;

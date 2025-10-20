@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { EyeIcon, ChevronDoubleLeftIcon, ChevronDoubleRightIcon, ChevronDownIcon , ArrowLeftIcon} from '@heroicons/react/24/outline';
 import Button from '@/app/shared-components/Button';
 import { useRouter } from 'next/navigation';
+import { useCompany } from "@/app/context/CompanyContext";
 
 
 const JOB_STATES = [
@@ -48,9 +49,26 @@ export default function JobDetailsPage() {
   const stateDropdownRef = useRef<HTMLDivElement>(null);
 
   const router = useRouter(); 
+
+  const useCompanyId = (): string | null => {
+  const params = useParams();
+  const { selectedCompany } = useCompany();
+  let companyId = params.companyId;
+  if (!companyId && selectedCompany) {
+    companyId = selectedCompany.company_id?.toString();
+  }
+
+  if (typeof companyId === 'string' && companyId.trim() !== '') {
+    return companyId;
+  }
   
-  const handleNavigate = () => {
-    router.push(`/candidates/`);
+  return null;
+};
+  
+const companyId = useCompanyId();
+
+const handleNavigate = () => {
+    router.push(`/candidates/${companyId}`);
   };
 
   const candidates = fetchedCandidates;
@@ -151,7 +169,9 @@ export default function JobDetailsPage() {
                   <h3 className="font-semibold">Job Summary</h3>
                   <p className="text-sm">
                     {job.generated_job_summary && typeof job.generated_job_summary === 'string' && job.generated_job_summary.trim() !== ''
-                      ? job.generated_job_summary
+                      ? job.generated_job_summary === 'Job description is too short to generate a summary.'
+                        ? 'No job summary'
+                        : job.generated_job_summary
                       : 'No job summary'}
                   </p>
                   <div className="flex justify-end mt-2">

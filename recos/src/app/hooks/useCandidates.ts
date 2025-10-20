@@ -1,8 +1,10 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, ReactNode } from "react";
 import { getAllCandidatesForCompany} from "../utils/fetchCandidatesByJobs";
 
 export type Candidate = {
+  initialMatch: ReactNode;
+  position: ReactNode;
   candidate_id: number;
   name: string;
   email: string;

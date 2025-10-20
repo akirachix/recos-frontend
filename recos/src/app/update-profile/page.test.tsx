@@ -1,11 +1,12 @@
 import '@testing-library/jest-dom';
 import React from "react";
-import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { useRouter } from "next/navigation";
 import UpdateProfilePage from "./page";
 import useFetchProfile from "../hooks/useFetchProfile";
 import { fetchUpdateProfile } from "../utils/fetchProfile";
 import { removeAuthToken } from "../utils/authToken";
+import { CompanyProvider } from "../context/CompanyContext";
 
 global.URL.createObjectURL = jest.fn(() => 'some-url');
 
@@ -17,6 +18,17 @@ jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
   usePathname: () => '/',
 }));
+
+jest.mock("../hooks/useFetchCompanies", () => ({
+  useCompanies: () => ({
+    companies: [{ company_id: "1", company_name: "Test Company" }],
+    isLoading: false,
+  }),
+}));
+
+const renderWithCompanyProvider = (ui: React.ReactElement) => {
+  return render(<CompanyProvider>{ui}</CompanyProvider>);
+};
 
 describe("UpdateProfilePage", () => {
   const pushMock = jest.fn();
@@ -32,7 +44,7 @@ describe("UpdateProfilePage", () => {
       loading: false,
       error: "Failed to load",
     });
-    render(<UpdateProfilePage />);
+    renderWithCompanyProvider(<UpdateProfilePage />);
     expect(screen.getByText("Failed to load")).toBeInTheDocument();
   });
 
@@ -42,7 +54,7 @@ describe("UpdateProfilePage", () => {
       loading: false,
       error: null,
     });
-    render(<UpdateProfilePage />);
+    renderWithCompanyProvider(<UpdateProfilePage />);
     expect(screen.getByDisplayValue("jacky@gmail.com")).toBeInTheDocument();
     expect(screen.getByDisplayValue("Jacky Uwase")).toBeInTheDocument();
   });
@@ -56,7 +68,7 @@ describe("UpdateProfilePage", () => {
     (fetchUpdateProfile as jest.Mock).mockResolvedValue({});
     (removeAuthToken as jest.Mock).mockImplementation(() => {});
 
-    render(<UpdateProfilePage />);
+    renderWithCompanyProvider(<UpdateProfilePage />);
     fireEvent.change(screen.getByPlaceholderText("Email"), {
       target: { value: "new@b.com" },
     });
@@ -79,7 +91,7 @@ describe("UpdateProfilePage", () => {
     });
     (fetchUpdateProfile as jest.Mock).mockRejectedValue(new Error("fail"));
 
-    render(<UpdateProfilePage />);
+    renderWithCompanyProvider(<UpdateProfilePage />);
     fireEvent.submit(screen.getByRole("button", { name: "Save"}));
 
     await waitFor(() => expect(fetchUpdateProfile).toHaveBeenCalled());
@@ -93,7 +105,7 @@ describe("UpdateProfilePage", () => {
       loading: false,
       error: null,
     });
-    render(<UpdateProfilePage />);
+    renderWithCompanyProvider(<UpdateProfilePage />);
     fireEvent.click(screen.getByText("Cancel"));
     expect(pushMock).toHaveBeenCalledWith("/profile");
   });
@@ -104,7 +116,7 @@ describe("UpdateProfilePage", () => {
       loading: false,
       error: null,
     });
-    render(<UpdateProfilePage />);
+    renderWithCompanyProvider(<UpdateProfilePage />);
     const toggleBtn = screen.getByLabelText("Show password");
     const passwordInput = screen.getByPlaceholderText("Change Password") as HTMLInputElement;
     expect(passwordInput.type).toBe("password");

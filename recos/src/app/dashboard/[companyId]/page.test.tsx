@@ -42,7 +42,9 @@ describe('DashboardPage', () => {
     expect(openPositionsCard).toBeInTheDocument();
     expect(within(openPositionsCard!).getByText('10')).toBeInTheDocument();
 
-    const completedInterviewsCard = screen.getByText(/Completed Interviews/i).closest('div');
+    const completedInterviewsCard = screen.getByText((content, element) => {
+      return element?.tagName.toLowerCase() === 'div' && content.startsWith('Interviews');
+    });
     expect(completedInterviewsCard).toBeInTheDocument();
     expect(within(completedInterviewsCard!).getByText('5')).toBeInTheDocument();
 
