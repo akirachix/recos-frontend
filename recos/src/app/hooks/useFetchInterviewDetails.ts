@@ -1,20 +1,37 @@
 import { useState, useEffect } from "react";
 import { fetchInterviewById } from "../utils/fetchInterviewById";
+
 interface InterviewDetails {
-  id: number;
-  candidate_id: number;
+  interview_id: number;
+  candidate: number;
+  recruiter: number;
   candidate_name: string;
   candidate_email: string;
   recruiter_name: string;
   recruiter_email: string;
-  scheduled_at: string;
-  created_at?: string;
+  title: string;
   description?: string;
+  scheduled_at: string;
   duration: number;
-  status: string;
+  end_time: string;
   interview_link?: string;
+  required_preparation?: string;
+  status: string;
+  google_event_id?: string;
   google_calendar_link?: string;
+  send_calendar_invite: boolean;
+  is_upcoming: boolean;
+  created_at: string;
+  updated_at: string;
+  completed_at?: string;
+  calendar_event?: {
+    event_id: string;
+    meet_link: string;
+    calendar_link: string;
+    ai_join_url?: string;
+  };
 }
+
 export function useInterviewDetails(
   selectedInterviewId: number | null,
   token: string | null,

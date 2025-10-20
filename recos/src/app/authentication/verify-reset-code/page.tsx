@@ -126,7 +126,7 @@ export default function VerifyResetCodePage() {
               {loading ? "Verifying..." : "Verify"}
             </button>
           </form>
-          <div className="text-[#24184E] text-xs mt-6 xl:ml-25 mb-10 mt-10 flex flex-col items-start gap-1">
+          <div className="text-[#24184E] text-xs  xl:ml-25 mb-10 mt-10 flex flex-col items-start gap-1">
             <span>
               Didn&apos;t receive your code?{" "}
               <span

@@ -1,44 +1,38 @@
-import React from 'react';
+import React from "react";
+import { useFetchInterviews } from "@/app/hooks/useFetchInterviews";
 
-interface Interview {
-  time: string;
-  candidateName: string;
-  position: string;
-  status: 'completed' | 'pending';
-}
+const UpcomingInterviews: React.FC = () => {
+  const { events, loading, error } = useFetchInterviews();
 
-interface UpcomingInterviewsProps {
-  interviews: Interview[];
-}
-const UpcomingInterviews: React.FC<UpcomingInterviewsProps> = ({ interviews }) => {
+  const upcomingInterviews = events.filter(event => new Date(event.date) > new Date());
+
+  if (loading) return <p>Loading upcoming interviews...</p>;
+  if (error) return <p className="text-red-600">{error}</p>;
+  if (upcomingInterviews.length === 0) return <p>No upcoming interviews.</p>;
+
   return (
-    <div className="bg-white rounded-lg shadow p-6 max-w-4xl">
-      <h3 className="text-xl font-semibold mb-4">Upcoming Interviews</h3>
+    <div className="bg-white rounded-lg shadow p-6 w-full">
+      <h3 className="text-xl font-semibold mb-4 text-purple-800">Upcoming Interviews</h3>
       <ul className="space-y-4 max-h-80 overflow-auto">
-        {interviews.map((interview, idx) => (
-          <li key={idx} className="flex items-center justify-between border-b pb-2">
-            <div className="flex items-center gap-3">
-              <div>
-                <p className="font-semibold">{interview.time}</p>
-                <p className="text-gray-600 text-sm">
-                  Interview with {interview.candidateName} on {interview.position}
-                </p>
-              </div>
-            </div>
-          </li>
-        ))}
+        {upcomingInterviews.map((interview, idx) => {
+          const startTime = new Date(interview.date);
+          const formattedDate = startTime.toLocaleDateString(undefined, {
+            month: '2-digit',
+            day: '2-digit',
+            year: 'numeric',
+          });
+          const formattedTime = startTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+          return (
+            <li key={idx} className="flex flex-col border-b pb-2">
+              <p className="font-semibold">{`${formattedDate} ${formattedTime}`}</p>
+              <p className="text-[#7c3aed] text-sm">
+                Interview with {interview.candidate_name || "Candidate"}  {interview.position || ""}
+              </p>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
 };
-
-export const UpcomingInterview = () => {
-  const mockInterviews: Interview[] = [
-    { time: '09.00 - 10.00 AM', candidateName: 'Johnny Gait', position: 'QA (Quality Assurance)', status: 'completed' },
-    { time: '10.00 - 11.00 AM', candidateName: 'Alice Johnson', position: 'Product Manager', status: 'completed' },
-    { time: '11.30 - 12.30 PM', candidateName: 'Bob Smith', position: 'Developer', status: 'pending' },
-    { time: '01.00 - 02.00 PM', candidateName: 'Diana Prince', position: 'Designer', status: 'pending' },
-  ];
-  return <UpcomingInterviews interviews={mockInterviews} />;
-};
-export default UpcomingInterview;
+export default UpcomingInterviews;

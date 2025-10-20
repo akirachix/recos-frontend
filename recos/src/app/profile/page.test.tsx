@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom';
 import React from "react";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { useRouter } from "next/navigation";
 import ProfilePage from "./page";
 import useFetchProfile from "../hooks/useFetchProfile";
-
+import { CompanyProvider } from "../context/CompanyContext";
 
 jest.mock("../hooks/useFetchProfile", () => ({
   __esModule: true,
@@ -16,6 +16,17 @@ jest.mock("next/navigation", () => ({
   usePathname: () => '/',
 }));
 
+jest.mock("../hooks/useFetchCompanies", () => ({
+  useCompanies: () => ({
+    companies: [{ company_id: "1", company_name: "Test Company" }],
+    isLoading: false,
+  }),
+}));
+
+const renderWithCompanyProvider = (ui: React.ReactElement) => {
+  return render(<CompanyProvider>{ui}</CompanyProvider>);
+};
+
 describe("ProfilePage", () => {
   const pushMock = jest.fn();
 
@@ -26,12 +37,12 @@ describe("ProfilePage", () => {
 
   it("renders loading without crashing", () => {
     (useFetchProfile as jest.Mock).mockReturnValue({ user: null, error: null });
-    render(<ProfilePage />);
+    renderWithCompanyProvider(<ProfilePage />);
   });
 
   it("renders error message", () => {
     (useFetchProfile as jest.Mock).mockReturnValue({ user: null, error: "Failed to fetch" });
-    render(<ProfilePage />);
+    renderWithCompanyProvider(<ProfilePage />);
     expect(screen.getByText("Failed to fetch")).toBeInTheDocument();
   });
 
@@ -45,7 +56,7 @@ describe("ProfilePage", () => {
     };
     (useFetchProfile as jest.Mock).mockReturnValue({ user: mockUser, error: null });
 
-    render(<ProfilePage />);
+    renderWithCompanyProvider(<ProfilePage />);
 
     expect(screen.getByRole('heading', { name: /profile/i })).toBeInTheDocument();
     expect(screen.getByText("Details")).toBeInTheDocument();
@@ -61,7 +72,7 @@ describe("ProfilePage", () => {
     const mockUser = { first_name: "Jacky", last_name: "Uwase", email: "", created_at: "", image: null };
     (useFetchProfile as jest.Mock).mockReturnValue({ user: mockUser, error: null });
 
-    render(<ProfilePage />);
+    renderWithCompanyProvider(<ProfilePage />);
     const editButton = screen.getAllByRole("button", { name: /edit profile/i })[0];
     fireEvent.click(editButton);
     expect(pushMock).toHaveBeenCalledWith("/update-profile");
@@ -71,7 +82,7 @@ describe("ProfilePage", () => {
     const mockUser = { first_name: "Jacky", last_name: "Uwase", email: "", created_at: "", image: null };
     (useFetchProfile as jest.Mock).mockReturnValue({ user: mockUser, error: null });
 
-    render(<ProfilePage />);
+    renderWithCompanyProvider(<ProfilePage />);
     const updateButton = screen.getByRole("button", { name: /update/i });
     fireEvent.click(updateButton);
     expect(pushMock).toHaveBeenCalledWith("/update-profile");

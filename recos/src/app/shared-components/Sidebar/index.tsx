@@ -5,6 +5,7 @@ import {
   UserGroupIcon,
   ChartBarIcon,
   CalendarIcon,
+  CogIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   Bars3Icon,
@@ -100,7 +101,7 @@ export default function Sidebar() {
     return pathname === href || pathname.startsWith(href + '/');
   }, [pathname]);
   const getHref = useCallback((href: string) => {
-    const noCompanyIdPaths = ["/jobs", "/profile", "/calendar",];
+    const noCompanyIdPaths = ['/jobs', '/analytics', '/calendar', '/profile'];
     if (noCompanyIdPaths.includes(href)) {
       return href;
     }

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import useCandidates, { Candidate } from "../../hooks/useCandidates";
 import ClientLayout from "@/app/shared-components/ClientLayout";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { parseSkillSummary, ParsedSummary } from "../../utils/parseSkillSummary";
 
 function capitalizeName(name: string) {
@@ -17,6 +17,7 @@ function capitalizeName(name: string) {
 interface CandidatesPageProps {
   selectedCompanyId: number;
 }
+
 const SummarySection: React.FC<{ title: string; content: string }> = ({ title, content }) => (
   <section className="mb-6">
     <h3 className="font-bold mb-2 text-purple-700">{title}</h3>
@@ -26,6 +27,7 @@ const SummarySection: React.FC<{ title: string; content: string }> = ({ title, c
 
 export function CandidatesPage({ selectedCompanyId }: CandidatesPageProps) {
   const { candidates, loading, error } = useCandidates(selectedCompanyId, true);
+  const router = useRouter();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
@@ -46,8 +48,25 @@ export function CandidatesPage({ selectedCompanyId }: CandidatesPageProps) {
 
   const parsedSummary: ParsedSummary = parseSkillSummary(selectedCandidate?.generated_skill_summary);
 
+  const handleViewInterviewPlan = () => {
+    router.push('/analytics');
+  };
+
   return (
     <ClientLayout>
+      <div className="flex justify-end px-6 py-4 bg-gray-50">
+        <button 
+          onClick={handleViewInterviewPlan}
+          className="flex items-center gap-2 bg-blue-900 hover:bg-blue-800 text-white font-medium py-2 px-4 rounded transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          View Interview Plan
+        </button>
+      </div>
+      
       <main className="flex gap-8 min-h-[600px] h-[80vh] w-full px-6 py-4 bg-gray-50">
         <div className="w-1/2 bg-white rounded-lg shadow-xl p-5 flex flex-col max-h-full">
           <h1 className="text-2xl font-bold mb-4 text-gray-900">List of Candidates</h1>

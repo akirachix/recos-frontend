@@ -20,7 +20,7 @@ const useLogin = () => {
         setAuthToken(data.token); 
         return true;
       } else {
-        setError("Invalid credentials");
+        setError(error);
         return false;
       }
     } catch (err) {
