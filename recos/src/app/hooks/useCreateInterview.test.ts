@@ -55,7 +55,7 @@ describe('useCreateInterview Hook', () => {
   });
 
   it('updates individual states via setters', () => {
-    const { result } = renderHook(() => useCreateInterview());
+    const { result } = renderHook(() => useCreateInterview(initialPayload));
 
     act(() => {
       result.current.setTitle('New Title');

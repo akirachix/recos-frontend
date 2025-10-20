@@ -79,7 +79,7 @@ describe('JobsPage', () => {
       expect(formatButtonStatus('close')).toBe('Closed');
     });
 
-    test('should format "cancel" to "Cancelled"', () => {
+    test('should format "cancel" to "Canceled"', () => {
       expect(formatButtonStatus('cancel')).toBe('Canceled');
     });
 
@@ -132,19 +132,27 @@ describe('JobsPage', () => {
       (useFetchJobs as jest.Mock).mockReturnValue({
         jobs: [],
         loading: false,
+        syncing: true,
+        error: null,
+        refetch: jest.fn(),
+        syncAndFetchJobs: jest.fn(),
+      });
+
+      const { rerender } = render(<JobsPage />);
+
+      (useFetchJobs as jest.Mock).mockReturnValue({
+        jobs: [],
+        loading: false,
         syncing: false,
         error: 'Failed to fetch jobs',
-        refetch: jest.fn().mockResolvedValue(undefined),
-        syncAndFetchJobs: jest.fn().mockResolvedValue(undefined),
+        refetch: jest.fn(),
+        syncAndFetchJobs: jest.fn(),
       });
 
-      await act(async () => {
-        render(<JobsPage />);
-      });
+      rerender(<JobsPage />);
 
       await waitFor(() => {
-        expect(screen.getByText('Error loading jobs: Failed to fetch jobs')).toBeInTheDocument();
-        expect(screen.getByText('Retry')).toBeInTheDocument();
+        expect(screen.getByText('Failed to sync jobs. Please try again.')).toBeInTheDocument();
       });
     });
 

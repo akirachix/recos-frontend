@@ -29,8 +29,8 @@ describe('useFetchInterviews', () => {
       expect(result.current.loading).toBe(false);
       expect(result.current.error).toBe(null);
       expect(result.current.events).toEqual([
-        { id: 1, date: '2025-10-01T10:00:00Z', label: 'Interview', created_at: '2025-09-20T10:00:00Z' },
-        { id: 2, date: '2025-10-02T11:00:00Z', label: 'Interview', created_at: undefined }
+        { id: 1, date: '2025-10-01T10:00:00Z', label: 'Interview', created_at: '2025-09-20T10:00:00Z', scheduled_at: '2025-10-01T10:00:00Z', candidate_email: '', candidate_name: '', position: '', interview_link: undefined, google_calendar_link: undefined, calendar_event: undefined, description: undefined, duration: undefined, status: undefined },
+        { id: 2, date: '2025-10-02T11:00:00Z', label: 'Interview', created_at: undefined, scheduled_at: '2025-10-02T11:00:00Z', candidate_email: '', candidate_name: '', position: '', interview_link: undefined, google_calendar_link: undefined, calendar_event: undefined, description: undefined, duration: undefined, status: undefined }
       ]);
     });
   });

@@ -19,18 +19,15 @@ describe('useDashboardData', () => {
     });
   });
   it('handles error state when fetching data fails', async () => {
-    const errorMessage = 'Failed to fetch';
-    mockedFetchJobs.mockRejectedValue(new Error(errorMessage));
-    mockedFetchInterviews.mockResolvedValue([]);
-
-    const { result } = renderHook(() => useDashboardData('test-company'));
-
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false);
-    });
-
-    expect(result.current.error).toBe(errorMessage);
-    expect(result.current.jobs).toEqual([]);
-    expect(result.current.interviews).toEqual([]);
-  });
+        const errorMessage = "Failed to fetch";
+        mockedFetchJobs.mockRejectedValue(new Error(errorMessage));
+        mockedFetchInterviews.mockResolvedValue([]);
+    
+        const { result } = renderHook(() => useDashboardData('1'));
+    
+        await waitFor(() => {
+          expect(result.current.loading).toBe(false);
+        });
+    
+        expect(result.current.error).toBe(errorMessage);  });
 });

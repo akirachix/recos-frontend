@@ -5,8 +5,9 @@ import { useToken } from '../hooks/useToken';
 import mockRouter from 'next-router-mock';
 
 jest.mock('next/navigation', () => ({
-  ...jest.requireActual('next-router-mock'),
-  usePathname: () => '/',
+  useParams: jest.fn(),
+  usePathname: jest.fn().mockImplementation(() => mockRouter.pathname),
+  useRouter: jest.fn(() => mockRouter),
   useSearchParams: () => new URLSearchParams(),
 }));
 
@@ -25,6 +26,7 @@ describe('CalendarPage', () => {
   beforeEach(() => {
     mockRouter.setCurrentUrl('/');
     mockUseToken.mockReturnValue('fake-token');
+    (jest.requireMock('next/navigation').useParams as jest.Mock).mockReturnValue({ companyId: '1' });
   });
 
   afterEach(() => {

@@ -43,10 +43,10 @@ describe('DashboardPage', () => {
     expect(within(openPositionsCard!).getByText('10')).toBeInTheDocument();
 
     const completedInterviewsCard = screen.getByText((content, element) => {
-      return element?.tagName.toLowerCase() === 'div' && content.startsWith('Interviews');
+      return element?.tagName.toLowerCase() === 'p' && content.startsWith('Interviews');
     });
     expect(completedInterviewsCard).toBeInTheDocument();
-    expect(within(completedInterviewsCard!).getByText('5')).toBeInTheDocument();
+    expect(within(completedInterviewsCard!.closest('div')!).getByText('5')).toBeInTheDocument();
 
     const totalCandidatesCard = screen.getAllByText(/Total Candidates/i)[0].closest('div');
     expect(totalCandidatesCard).toBeInTheDocument();

@@ -13,8 +13,13 @@ export const fetchInterviews = async (token: string): Promise<Interview[]> => {
       },
     });
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || `Failed to fetch interviews: ${response.status}`);
+      const errorText = await response.text();
+      try {
+        const errorData = JSON.parse(errorText);
+        throw new Error(errorData.message || `Failed to fetch interviews: ${response.status}`);
+      } catch (e) {
+        throw new Error(errorText || `Failed to fetch interviews: ${response.status}`);
+      }
     }
     const data = await response.json(); 
     return data;
