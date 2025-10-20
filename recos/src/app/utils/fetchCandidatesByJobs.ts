@@ -88,6 +88,6 @@ export async function getAllCandidatesForCompany(
 
     return allCandidates;
   } catch (error) {
-    throw new Error();
+    throw new Error("Failed to get all candidates for company: " + (error as Error).message);
   }
 }

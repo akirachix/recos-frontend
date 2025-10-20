@@ -19,18 +19,24 @@ jest.mock('next/navigation', () => ({
 }));
 
 jest.mock('@/app/hooks/useDashboardData', () => ({
-  useDashboardData: jest.fn(() => ({
-    metrics: {
-      openPositions: 10,
-      completedInterviews: 5,
-      totalCandidates: 20,
-    },
-    loading: false,
-    error: null,
-  })),
+  useDashboardData: jest.fn(),
 }));
 
+const mockUseDashboardData = jest.requireMock('@/app/hooks/useDashboardData').useDashboardData;
+
 describe('DashboardPage', () => {
+  beforeEach(() => {
+    mockUseDashboardData.mockReturnValue({
+      metrics: {
+        openPositions: 10,
+        completedInterviews: 5,
+        totalCandidates: 20,
+      },
+      loading: false,
+      error: null,
+    });
+  });
+
   it('renders dashboard with metrics', () => {
     render(
       <CompanyProvider>
@@ -55,8 +61,7 @@ describe('DashboardPage', () => {
   });
 
   it('renders loading state', () => {
-    const useDashboardDataMock = require('@/app/hooks/useDashboardData');
-    useDashboardDataMock.useDashboardData.mockReturnValue({
+    mockUseDashboardData.mockReturnValue({
       metrics: null,
       loading: true,
       error: null,
@@ -71,10 +76,9 @@ describe('DashboardPage', () => {
     const main = screen.getByRole('main');
     expect(within(main).getByText(/Loading.../i)).toBeInTheDocument();
   });
-  
+
   it('renders error state', () => {
-    const useDashboardDataMock = require('@/app/hooks/useDashboardData');
-    useDashboardDataMock.useDashboardData.mockReturnValue({
+    mockUseDashboardData.mockReturnValue({
       metrics: null,
       loading: false,
       error: 'Failed to load metrics',

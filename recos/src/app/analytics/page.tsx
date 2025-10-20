@@ -67,18 +67,6 @@ export default function CandidateReportPage() {
     timeManagement: 0,
   };
 
-
-
-  const useHiringDecision = (candidateId: string) => ({
-    decision: null,
-    isSubmitting: false,
-    makeDecision: async (value: "reject" | "advance") => {
-      console.log(`Decision: ${value} for candidate ${candidateId}`);
-    },
-    resetDecision: () => {},
-    error: null,
-  });
-
   return (
     <ClientLayout>
       <div className="min-h-screen bg-gray-50">

@@ -15,6 +15,9 @@ describe('fetchInterviews', () => {
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
       json: jest.fn().mockResolvedValue(mockResponseData),
+      headers: {
+        get: jest.fn().mockReturnValue('application/json'),
+      },
     });
 
     const data = await fetchInterviews(mockToken);
@@ -32,7 +35,11 @@ describe('fetchInterviews', () => {
   test('should throw error with response text when response not ok', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       ok: false,
-      text: jest.fn().mockResolvedValue('Unauthorized'),
+      status: 401,
+      json: jest.fn().mockResolvedValue({ message: 'Unauthorized' }),
+      headers: {
+        get: jest.fn().mockReturnValue('application/json'),
+      },
     });
 
     await expect(fetchInterviews(mockToken)).rejects.toThrow('Unauthorized');

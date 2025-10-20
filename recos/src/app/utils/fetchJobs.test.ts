@@ -13,7 +13,10 @@ describe('fetchJobs', () => {
     const mockData = [{ id: 2, title: 'Job 2' }];
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve(mockData)
+      json: () => Promise.resolve(mockData),
+      headers: {
+        get: jest.fn().mockReturnValue('application/json'),
+      },
     });
 
     const result = await fetchJobs(companyId);
@@ -26,7 +29,11 @@ describe('fetchJobs', () => {
     const errorMessage = 'Failed to fetch jobs';
     mockFetch.mockResolvedValueOnce({
       ok: false,
-      json: () => Promise.resolve({ error: errorMessage })
+      json: () => Promise.resolve({ error: errorMessage }),
+      text: jest.fn().mockResolvedValue(errorMessage),
+      headers: {
+        get: jest.fn().mockReturnValue('application/json'),
+      },
     });
 
     await expect(fetchJobs()).rejects.toThrow(errorMessage);
@@ -50,13 +57,19 @@ describe('syncJobs', () => {
     const mockData = { success: true, synced: 5 };
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve(mockData)
+      json: () => Promise.resolve(mockData),
+      headers: {
+        get: jest.fn().mockReturnValue('application/json'),
+      },
     });
 
     const result = await syncJobs(companyId);
     
     expect(mockFetch).toHaveBeenCalledWith(`/api/sync-jobs/${companyId}`, {
-      method: 'POST'
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
     expect(result).toEqual(mockData);
   });
@@ -66,7 +79,11 @@ describe('syncJobs', () => {
     const errorMessage = 'Sync failed';
     mockFetch.mockResolvedValueOnce({
       ok: false,
-      json: () => Promise.resolve({ error: errorMessage })
+      json: () => Promise.resolve({ error: errorMessage }),
+      text: jest.fn().mockResolvedValue(errorMessage),
+      headers: {
+        get: jest.fn().mockReturnValue('application/json'),
+      },
     });
 
     await expect(syncJobs(companyId)).rejects.toThrow(errorMessage);
