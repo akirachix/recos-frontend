@@ -67,11 +67,7 @@ export default function CandidateReportPage() {
     timeManagement: 0,
   };
 
-  const useAIAnalysis = () => ({
-    analysis,
-    loading: false,
-    error: null,
-  });
+
 
   const useHiringDecision = (candidateId: string) => ({
     decision: null,

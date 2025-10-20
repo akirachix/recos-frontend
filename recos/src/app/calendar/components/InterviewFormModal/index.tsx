@@ -16,6 +16,10 @@ interface InterviewFormModalProps {
   initialData: CreateInterviewPayload;
   scheduledDate?: string;
 }
+interface Company {
+  company_id: string;
+  company_name: string;
+}
 
 type CandidateWithJob = Candidate & {
   job?: { id?: number; job_title?: string } | number;
@@ -141,7 +145,7 @@ export default function InterviewFormModal({
     setDebugInfo(null);
   }, []);
 
-  const handleCompanySelect = useCallback((company: any) => {
+  const handleCompanySelect = useCallback((company: Company) => {
     setSelectedCompany(company);
   }, [setSelectedCompany]);
 
