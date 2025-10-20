@@ -14,6 +14,10 @@ export interface CreateInterviewPayload {
 
 
 export interface Interview {
+  calendar_link: any;
+  google_calendar_link: any;
+  calendar_event: any;
+  meet_link: number;
   interview_id: number;
   title: string;
   candidate_email: string;

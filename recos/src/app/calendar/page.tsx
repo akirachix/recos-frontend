@@ -10,22 +10,48 @@ import { useInterviewDetails } from "../hooks/useFetchInterviewDetails";
 import InterviewFormModal from "./components/InterviewFormModal";
 import { useCreateInterview, CreateInterviewPayload } from "../hooks/useCreateInterview";
 
+interface Interview {
+  id: number;
+  candidate_name: string;
+  candidate_email: string;
+  description?: string;
+  scheduled_at: string;
+  duration: number;
+  status?: string;
+  interview_link?: string;
+  meet_link?: string;
+  google_calendar_link?: string;
+  calendar_link?: string;
+  calendar_event?: {
+    meet_link?: string;
+    calendar_link?: string;
+    ai_join_url?: string;
+  };
+}
+
+
+
 export default function CalendarPage() {
   const token = useToken();
   const { events, loading, error, refetch } = useFetchInterviews();
   const { loading: creating, createInterview } = useCreateInterview();
   const [selectedInterviewId, setSelectedInterviewId] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const { selectedInterview, loadingDetails, detailError } = useInterviewDetails(
+  const { selectedInterview: interviewDetails, loadingDetails, detailError } = useInterviewDetails(
     selectedInterviewId,
     token,
     "",
     modalOpen
   );
 
+  const selectedInterview: Interview | null =
+    interviewDetails && selectedInterviewId !== null
+      ? { id: selectedInterviewId, ...interviewDetails }
+      : null;
+
   const [formModalOpen, setFormModalOpen] = useState(false);
   const [formScheduledDate, setFormScheduledDate] = useState<string | undefined>(undefined);
-  const [formInitialData, setFormInitialData] = useState<CreateInterviewPayload | null>(null);
+  const [formInitialData, setFormInitialData] = useState<CreateInterviewPayload>({} as CreateInterviewPayload);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -40,18 +66,18 @@ export default function CalendarPage() {
   };
 
   const onCreateInterviewClick = (dateStr: string) => {
-    setFormInitialData(null);
+    setFormInitialData({} as CreateInterviewPayload);
     setFormScheduledDate(dateStr);
     setFormModalOpen(true);
   };
 
   const closeFormModal = () => {
     setFormModalOpen(false);
-    setFormInitialData(null);
+    setFormInitialData({} as CreateInterviewPayload);
     setFormScheduledDate(undefined);
   };
 
-  const handleSaveInterview = async (data: any) => {
+  const handleSaveInterview = async (data: CreateInterviewPayload) => {
     try {
       const response = await createInterview(data);
       console.log("Create interview response:", JSON.stringify(response, null, 2));
@@ -60,10 +86,9 @@ export default function CalendarPage() {
       setSuccessMessage("Interview created successfully!");
       refetch();
       setTimeout(() => setSuccessMessage(null), 2000);
-    } catch (err) {
+    } catch {
       setErrorMessage("Failed to create interview. Please try again.");
       setTimeout(() => setErrorMessage(null), 2000);
-      throw err;
     }
   };
 
@@ -80,7 +105,7 @@ export default function CalendarPage() {
   };
 
   const normalizeStatus = (status: string | undefined) => {
-    const s = (status ?? "").toString().toLowerCase();
+    const s = (status ?? "").toLowerCase();
     if (s === "pending" || s === "draft") return "pending";
     if (s === "scheduled") return "scheduled";
     if (s === "completed") return "completed";
@@ -106,23 +131,21 @@ export default function CalendarPage() {
     return status ?? "";
   };
 
-  const getInterviewLink = (interview: any) => {
-    return interview?.interview_link ||
-      interview?.meet_link ||
-      interview?.calendar_event?.meet_link ||
-      null;
-  };
+  const getInterviewLink = (interview: Interview) =>
+    interview?.interview_link ||
+    interview?.meet_link ||
+    interview?.calendar_event?.meet_link ||
+    null;
 
-  const getGoogleCalendarLink = (interview: any) => {
-    return interview?.google_calendar_link ||
-      interview?.calendar_link ||
-      interview?.calendar_event?.calendar_link ||
-      null;
-  };
+  const getGoogleCalendarLink = (interview: Interview) =>
+    interview?.google_calendar_link ||
+    interview?.calendar_link ||
+    interview?.calendar_event?.calendar_link ||
+    null;
 
-  const getAIJoinUrl = (interview: any) => interview?.calendar_event?.ai_join_url || null;
+  const getAIJoinUrl = (interview: Interview) => interview?.calendar_event?.ai_join_url || null;
 
-  const hasAnyLink = (interview: any) =>
+  const hasAnyLink = (interview: Interview) =>
     !!getInterviewLink(interview) ||
     !!getGoogleCalendarLink(interview) ||
     !!getAIJoinUrl(interview);
@@ -182,12 +205,17 @@ export default function CalendarPage() {
                   </span>
                 </p>
 
-                {hasAnyLink(selectedInterview) && (
+                {hasAnyLink(selectedInterview) ? (
                   <>
                     {getInterviewLink(selectedInterview) && (
                       <div className="mt-4 p-3 bg-blue-50 rounded-md">
                         <strong>Interview Link:</strong>{" "}
-                        <a href={getInterviewLink(selectedInterview)} className="text-blue-600 underline" target="_blank" rel="noreferrer">
+                        <a
+                          href={getInterviewLink(selectedInterview)!}
+                          className="text-blue-600 underline"
+                          target="_blank"
+                          rel="noreferrer"
+                        >
                           Join Meeting
                         </a>
                       </div>
@@ -195,7 +223,12 @@ export default function CalendarPage() {
                     {getGoogleCalendarLink(selectedInterview) && (
                       <div className="mt-2 p-3 bg-green-50 rounded-md">
                         <strong>Google Calendar:</strong>{" "}
-                        <a href={getGoogleCalendarLink(selectedInterview)} className="text-blue-600 underline" target="_blank" rel="noreferrer">
+                        <a
+                          href={getGoogleCalendarLink(selectedInterview)!}
+                          className="text-blue-600 underline"
+                          target="_blank"
+                          rel="noreferrer"
+                        >
                           View Event
                         </a>
                       </div>
@@ -203,15 +236,18 @@ export default function CalendarPage() {
                     {getAIJoinUrl(selectedInterview) && (
                       <div className="mt-2 p-3 bg-purple-50 rounded-md">
                         <strong>AI Analysis:</strong>{" "}
-                        <a href={getAIJoinUrl(selectedInterview)} className="text-purple-600 underline" target="_blank" rel="noreferrer">
+                        <a
+                          href={getAIJoinUrl(selectedInterview)!}
+                          className="text-purple-600 underline"
+                          target="_blank"
+                          rel="noreferrer"
+                        >
                           Enable AI Analysis
                         </a>
                       </div>
                     )}
                   </>
-                )}
-
-                {!hasAnyLink(selectedInterview) && (
+                ) : (
                   <div className="mt-4 p-3 bg-yellow-50 rounded-md">
                     <p className="text-yellow-800">
                       <strong>No meeting links available.</strong> This interview might not have been synced with Google Calendar yet.
@@ -224,7 +260,7 @@ export default function CalendarPage() {
 
           <InterviewFormModal
             isOpen={formModalOpen}
-            initialData={formInitialData ?? {} as CreateInterviewPayload}
+            initialData={formInitialData}
             scheduledDate={formScheduledDate}
             onClose={closeFormModal}
             onSave={handleSaveInterview}
