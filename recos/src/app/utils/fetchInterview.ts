@@ -2,9 +2,9 @@ import { Interview } from '@/app/types';
 
 export const fetchInterviews = async (token: string): Promise<Interview[]> => {
   if (!token) {
-    throw new Error("Authentication token is required");
+    throw new Error('Authentication token is required');
   }
-  
+
   try {
     const response = await fetch('/api/interview', {
       headers: {
@@ -12,18 +12,38 @@ export const fetchInterviews = async (token: string): Promise<Interview[]> => {
         'Content-Type': 'application/json',
       },
     });
+
     if (!response.ok) {
-      const errorText = await response.text();
-      try {
-        const errorData = JSON.parse(errorText);
-        throw new Error(errorData.message || `Failed to fetch interviews: ${response.status}`);
-      } catch (e) {
-        throw new Error(errorText || `Failed to fetch interviews: ${response.status}`);
+      let errorMessage = `Failed to fetch interviews: ${response.status}`;
+
+      const contentType = response.headers.get('content-type') || '';
+
+      if (contentType.includes('application/json')) {
+        try {
+          const errorData = await response.json();
+          if (errorData && (errorData.message || errorData.error)) {
+            errorMessage = String(errorData.message ?? errorData.error);
+          }
+        } catch {
+        }
       }
+
+      if (errorMessage.startsWith('Failed to fetch interviews')) {
+        try {
+          const text = await response.text();
+          if (text) errorMessage = text;
+        } catch {
+  
+        }
+      }
+
+      throw new Error(errorMessage);
     }
-    const data = await response.json(); 
-    return data;
+
+    const data = await response.json();
+
+    return data as Interview[];
   } catch (error) {
-    throw error;
+      throw new Error();
+    }
   }
-};

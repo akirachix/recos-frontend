@@ -16,6 +16,7 @@ export async function GET(request: Request) {
         { status: 401 }
       );
     }
+  
     const response = await fetch(`${baseUrl}/users/`, {
       headers: { Authorization: token },
     });
@@ -53,7 +54,7 @@ export async function PATCH(request: Request) {
       bodyData = await request.json() as ProfileData;
     }
 
-    let headers: { [key: string]: string } = {};
+    const headers: { [key: string]: string } = {};
     if (token) {
       headers["Authorization"] = `Token ${token}`;
     }

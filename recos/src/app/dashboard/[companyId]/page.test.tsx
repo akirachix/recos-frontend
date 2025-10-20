@@ -2,6 +2,7 @@
 import { render, screen, within } from '@testing-library/react';
 import DashboardPage from './page';
 import { CompanyProvider } from '@/app/context/CompanyContext';
+import React from "react";
 
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(() => ({

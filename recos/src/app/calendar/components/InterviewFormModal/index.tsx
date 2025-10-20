@@ -292,7 +292,7 @@ export default function InterviewFormModal({
         onClose();
       }, 1500);
     } catch (error) {
-      let errorMessage = "Failed to save interview.";
+      const errorMessage = "Failed to save interview.";
       setError(errorMessage);
     } finally {
       setSaving(false);

@@ -14,7 +14,7 @@ jest.mock('next/navigation', () => ({
 jest.mock('../hooks/useFetchInterviews');
 jest.mock('../hooks/useToken');
 jest.mock('./components/Calendar', () => {
-  return function DummyCalendar(props: any) {
+  return function DummyCalendar(props: string) {
     return <div data-testid="simple-schedule">SimpleSchedule</div>;
   };
 });
