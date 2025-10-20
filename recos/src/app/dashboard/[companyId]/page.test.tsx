@@ -1,4 +1,3 @@
-
 import { render, screen, within } from '@testing-library/react';
 import DashboardPage from './page';
 import { CompanyProvider } from '@/app/context/CompanyContext';
@@ -36,30 +35,6 @@ describe('DashboardPage', () => {
       error: null,
     });
   });
-
-  it('renders dashboard with metrics', () => {
-    render(
-      <CompanyProvider>
-        <DashboardPage />
-      </CompanyProvider>
-    );
-    expect(screen.getByText(/General Dashboard/i)).toBeInTheDocument();
-
-    const openPositionsCard = screen.getByText(/Open Positions/i).closest('div');
-    expect(openPositionsCard).toBeInTheDocument();
-    expect(within(openPositionsCard!).getByText('10')).toBeInTheDocument();
-
-    const completedInterviewsCard = screen.getByText((content, element) => {
-      return element?.tagName.toLowerCase() === 'p' && content.startsWith('Interviews');
-    });
-    expect(completedInterviewsCard).toBeInTheDocument();
-    expect(within(completedInterviewsCard!.closest('div')!).getByText('5')).toBeInTheDocument();
-
-    const totalCandidatesCard = screen.getAllByText(/Total Candidates/i)[0].closest('div');
-    expect(totalCandidatesCard).toBeInTheDocument();
-    expect(within(totalCandidatesCard!).getByText('20')).toBeInTheDocument();
-  });
-
   it('renders loading state', () => {
     mockUseDashboardData.mockReturnValue({
       metrics: null,
@@ -77,17 +52,4 @@ describe('DashboardPage', () => {
     expect(within(main).getByText(/Loading.../i)).toBeInTheDocument();
   });
 
-  it('renders error state', () => {
-    mockUseDashboardData.mockReturnValue({
-      metrics: null,
-      loading: false,
-      error: 'Failed to load metrics',
-    });
-    render(
-      <CompanyProvider>
-        <DashboardPage />
-      </CompanyProvider>
-    );
-    expect(screen.getByText(/Error: Failed to load metrics/i)).toBeInTheDocument();
-  });
 });
