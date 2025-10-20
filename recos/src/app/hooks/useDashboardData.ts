@@ -4,6 +4,7 @@ import { fetchJobs } from '../utils/fetchJobs';
 import { fetchInterviews } from "../utils/fetchInterview";
 import { getAllCandidatesForCompany } from '../utils/fetchCandidatesByJobs';
 
+
 const getAuthToken = () => {
   if (typeof document !== 'undefined') {
     return document.cookie
@@ -14,6 +15,7 @@ const getAuthToken = () => {
   return null;
 };
 
+
 type CandidateWithJob = Candidate & {
   job?: {
     id?: number;
@@ -22,21 +24,35 @@ type CandidateWithJob = Candidate & {
   job_title?: string;
 };
 
+
 type CandidatesResponse = {
   data?: Candidate[];
   candidates?: Candidate[];
 } | Candidate[];
+
 
 type JobsResponse = {
   data?: Job[];
   jobs?: Job[];
 } | Job[];
 
+
+// This type is still correct
 type JobWithId = Job & {
   id?: number;
   job_title?: string;
   state?: string;
 };
+
+// NEW: A type that represents the Job object from the API, which may have alternative property names.
+// This extends the base Job type to include all its original properties.
+type ApiJob = Job & {
+  jobId?: number;
+  job_id?: number;
+  title?: string;
+  jobTitle?: string;
+};
+
 
 export const useDashboardData = (companyId?: string) => { 
   const [jobs, setJobs] = useState<JobWithId[]>([]);
@@ -46,6 +62,7 @@ export const useDashboardData = (companyId?: string) => {
   const [positionSummary, setPositionSummary] = useState<PositionSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,53 +82,43 @@ export const useDashboardData = (companyId?: string) => {
             throw new Error("Invalid Company ID provided.");
         }
 
-
         const jobsResponse = await fetchJobs(companyId) as JobsResponse;
         let jobsData: JobWithId[] = [];
         
         if (Array.isArray(jobsResponse)) {
           jobsData = jobsResponse as JobWithId[];
-        } else if (jobsResponse && typeof jobsResponse === 'object') {
-          const responseObj = jobsResponse as any;
-          if (responseObj.data && Array.isArray(responseObj.data)) {
-            jobsData = responseObj.data as JobWithId[];
-          } else if (responseObj.jobs && Array.isArray(responseObj.jobs)) {
-            jobsData = responseObj.jobs as JobWithId[];
-          }
+        } else if (jobsResponse && typeof jobsResponse === 'object' && 'data' in jobsResponse && Array.isArray(jobsResponse.data)) {
+          jobsData = jobsResponse.data;
+        } else if (jobsResponse && typeof jobsResponse === 'object' && 'jobs' in jobsResponse && Array.isArray(jobsResponse.jobs)) {
+          jobsData = jobsResponse.jobs;
         }
         
-  
-        jobsData = jobsData.map((job: any) => ({
-          ...job,
-          id: job.id || job.jobId || job.job_id,
+       
+        const normalizedJobs = jobsData.map((job: ApiJob) => ({
+          ...job, 
+          id:job.jobId || job.job_id,
           job_title: job.job_title || job.title || job.jobTitle || 'Untitled Position',
           state: job.state || 'open'
         }));
         
-        setJobs(jobsData);
-
+        setJobs(normalizedJobs);
 
         const interviewsResponse = await fetchInterviews(token);
         const interviewsData = Array.isArray(interviewsResponse) ? interviewsResponse : [];
         setInterviews(interviewsData);
 
-  
         const candidatesResponse = await getAllCandidatesForCompany(companyIdAsNumber, true) as CandidatesResponse;
         let candidatesData: Candidate[] = [];
         
         if (Array.isArray(candidatesResponse)) {
           candidatesData = candidatesResponse;
-        } else if (candidatesResponse && typeof candidatesResponse === 'object') {
-          const responseObj = candidatesResponse as any;
-          if (responseObj.data && Array.isArray(responseObj.data)) {
-            candidatesData = responseObj.data;
-          } else if (responseObj.candidates && Array.isArray(responseObj.candidates)) {
-            candidatesData = responseObj.candidates;
-          }
+        } else if (candidatesResponse && typeof candidatesResponse === 'object' && 'data' in candidatesResponse && Array.isArray(candidatesResponse.data)) {
+          candidatesData = candidatesResponse.data;
+        } else if (candidatesResponse && typeof candidatesResponse === 'object' && 'candidates' in candidatesResponse && Array.isArray(candidatesResponse.candidates)) {
+          candidatesData = candidatesResponse.candidates;
         }
         
-  
-        const candidatesWithJob: CandidateWithJob[] = candidatesData.map((candidate: any) => {
+        const candidatesWithJob: CandidateWithJob[] = candidatesData.map((candidate: Candidate) => {
           return {
             ...candidate,
             candidate_id: candidate.candidate_id,
@@ -121,7 +128,9 @@ export const useDashboardData = (companyId?: string) => {
         });
         
         setCandidates(candidatesWithJob);
-        const openPositions = jobsData.filter((job: JobWithId) => job.state === 'open').length;
+        
+        // Use normalizedJobs for calculations
+        const openPositions = normalizedJobs.filter((job: JobWithId) => job.state === 'open').length;
         const completedInterviews = interviewsData.length;
         const totalCandidates = candidatesWithJob.length; 
 
@@ -132,7 +141,7 @@ export const useDashboardData = (companyId?: string) => {
           completedInterviews,
         });
 
-        const positionSummaryData = jobsData
+        const positionSummaryData = normalizedJobs
           .filter((job: JobWithId) => job.state === 'open')
           .map((job: JobWithId) => ({
             name: job.job_title || 'Untitled Position',

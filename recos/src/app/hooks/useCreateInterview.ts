@@ -12,6 +12,22 @@ export interface CreateInterviewPayload {
   description?: string;
 }
 
+
+export interface Interview {
+  interview_id: number;
+  title: string;
+  candidate_email: string;
+  candidate_name: string;
+  candidate: number;
+  recruiter: number;
+  scheduled_at: string; 
+  duration: number;
+  description?: string;
+}
+export interface CreateInterviewResponse {
+  interview: Interview;
+}
+
 export const useCreateInterview = (
   initial: Partial<CreateInterviewPayload> = {},
   profileId?: number,
@@ -79,7 +95,7 @@ export const useCreateInterview = (
     setSuccessMessage(null);
   };
 
-  const createInterview = async (payload: CreateInterviewPayload): Promise<any> => {
+  const createInterview = async (payload: CreateInterviewPayload): Promise<CreateInterviewResponse> => {
     setLoading(true);
     setError(null);
     try {

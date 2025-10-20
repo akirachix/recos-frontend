@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { CreateInterviewPayload, useCreateInterview } from "@/app/hooks/useCreateInterview";
-import { Candidate, Job } from "@/app/types";
+import { Candidate, Interview, Job } from "@/app/types";
 import { getAllCandidatesForCompany } from "@/app/utils/fetchCandidatesByJobs";
 import { fetchJobs } from "@/app/utils/fetchJobs";
 import useFetchProfile from "@/app/hooks/useFetchProfile";
@@ -12,7 +12,7 @@ import { useCompany } from "@/app/context/CompanyContext";
 interface InterviewFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: any) => Promise<void>; 
+  onSave: (data: Interview | CreateInterviewPayload) => Promise<void>; 
   initialData: CreateInterviewPayload;
   scheduledDate?: string;
 }
