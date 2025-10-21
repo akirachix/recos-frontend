@@ -5,6 +5,7 @@ import { useFetchJobDetails } from '@/app/hooks/useFetchJobDetails';
 import { useParams } from 'next/navigation';
 import { act } from 'react';
 import '@testing-library/jest-dom';
+import { CompanyProvider } from '@/app/context/CompanyContext';
 
 jest.mock('next/navigation', () => ({
   useParams: jest.fn(),
@@ -120,7 +121,7 @@ describe('JobDetailsPage', () => {
   describe('Component Rendering', () => {
     test('should render job title and candidates correctly', async () => {
       await act(async () => {
-        render(<JobDetailsPage />);
+        render(<CompanyProvider><JobDetailsPage /></CompanyProvider>);
       });
 
       await waitFor(() => {
@@ -144,7 +145,7 @@ describe('JobDetailsPage', () => {
       });
 
       await act(async () => {
-        render(<JobDetailsPage />);
+        render(<CompanyProvider><JobDetailsPage /></CompanyProvider>);
       });
 
       await waitFor(() => {
@@ -163,7 +164,7 @@ describe('JobDetailsPage', () => {
       });
 
       await act(async () => {
-        render(<JobDetailsPage />);
+        render(<CompanyProvider><JobDetailsPage /></CompanyProvider>);
       });
 
       await waitFor(() => {
@@ -182,7 +183,7 @@ describe('JobDetailsPage', () => {
       });
 
       await act(async () => {
-        render(<JobDetailsPage />);
+        render(<CompanyProvider><JobDetailsPage /></CompanyProvider>);
       });
 
       await waitFor(() => {

@@ -40,9 +40,7 @@ export default function UpdateProfilePage() {
       setFormData({
         email: profile.email || "",
         password: "",
-        full_name: `${profile.first_name || ""} ${
-          profile.last_name || ""
-        }`.trim(),
+        full_name: `${profile.first_name || ""} ${profile.last_name || ""}`.trim(),
         image: null,
       });
       setAvatarPreview(profile.image || null);
@@ -87,28 +85,19 @@ export default function UpdateProfilePage() {
       last_name = names.slice(1).join(" ");
     }
 
-    let dataToSend: FormData | { [key: string]: string };
-
+    // Always send FormData so the type matches fetchUpdateProfile(FormData)
+    const form = new FormData();
+    form.append("email", cleanEmail);
+    form.append("first_name", first_name);
+    form.append("last_name", last_name);
+    if (formData.password) form.append("password", formData.password);
     if (avatarImage) {
-      const form = new FormData();
-      form.append("email", cleanEmail);
-      form.append("first_name", first_name);
-      form.append("last_name", last_name);
-      if (formData.password) form.append("password", formData.password);
       form.append("image", avatarImage);
-      dataToSend = form;
-    } else {
-      dataToSend = {
-        email: cleanEmail,
-        first_name,
-        last_name,
-        ...(formData.password && { password: formData.password }),
-      };
     }
 
     setSaving(true);
     try {
-      await fetchUpdateProfile(dataToSend);
+      await fetchUpdateProfile(form);
 
       const emailChanged =
         formData.email && profile && formData.email !== profile.email;
@@ -163,7 +152,7 @@ export default function UpdateProfilePage() {
                       src={avatarPreview}
                       alt="Avatar Preview"
                       fill
-                      objectFit="cover"
+                      style={{ objectFit: "cover" }}
                       sizes="240px"
                       priority
                     />
@@ -173,9 +162,7 @@ export default function UpdateProfilePage() {
                 </div>
                 <button
                   type="button"
-                  onClick={() =>
-                    document.getElementById("avatarInput")?.click()
-                  }
+                  onClick={() => document.getElementById("avatarInput")?.click()}
                   className="absolute bottom-6 right-1.5 w-11 h-11 bg-[#8645E8] border-4 border-[#141244] rounded-full flex items-center justify-center shadow-lg hover:bg-[#a886f9] transition mb-1 ml-100 cursor-pointer"
                   aria-label="Upload avatar"
                 >
@@ -239,9 +226,7 @@ export default function UpdateProfilePage() {
                       type="button"
                       onClick={() => setShowPassword((v) => !v)}
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#8645E8] hover:text-[#a886f9] focus:outline-none cursor-pointer"
-                      aria-label={
-                        showPassword ? "Hide password" : "Show password"
-                      }
+                      aria-label={showPassword ? "Hide password" : "Show password"}
                       tabIndex={-1}
                     >
                       {showPassword ? (
@@ -298,16 +283,12 @@ export default function UpdateProfilePage() {
                 </div>
                 {errorMessage && (
                   <div className="w-full text-center mt-2">
-                    <span className="text-red-400 font-semibold">
-                      {errorMessage}
-                    </span>
+                    <span className="text-red-400 font-semibold">{errorMessage}</span>
                   </div>
                 )}
                 {success && (
                   <div className="w-full text-center mt-2">
-                    <span className="text-green-400 font-semibold">
-                      Profile updated successfully!
-                    </span>
+                    <span className="text-green-400 font-semibold">Profile updated successfully!</span>
                   </div>
                 )}
               </form>

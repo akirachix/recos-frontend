@@ -1,4 +1,4 @@
-import { Inter, Nunito } from 'next/font/google';
+import { Nunito } from 'next/font/google';
 import './globals.css';
 import { CompanyProvider } from './context/CompanyContext';
 import { SidebarProvider } from './context/SidebarContext';

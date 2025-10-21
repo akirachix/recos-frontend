@@ -1,4 +1,11 @@
+
 const baseUrl = process.env.BASE_URL;
+interface ProfileData {
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  image?: File | string; 
+}
 
 export async function GET(request: Request) {
   try {
@@ -9,6 +16,7 @@ export async function GET(request: Request) {
         { status: 401 }
       );
     }
+  
     const response = await fetch(`${baseUrl}/users/`, {
       headers: { Authorization: token },
     });
@@ -38,27 +46,26 @@ export async function PATCH(request: Request) {
 
     const contentType = request.headers.get("content-type") || "";
 
-    let bodyData: any;
+    let bodyData: FormData | ProfileData;
 
     if (contentType.includes("multipart/form-data")) {
       bodyData = await request.formData();
     } else {
-      const jsonBody = await request.json();
-      bodyData = JSON.stringify(jsonBody);
+      bodyData = await request.json() as ProfileData;
     }
 
-    let headers: { [key: string]: string } = {};
+    const headers: { [key: string]: string } = {};
     if (token) {
       headers["Authorization"] = `Token ${token}`;
     }
     if (!contentType.includes("multipart/form-data")) {
-      headers["Content-Type"] = contentType;
+      headers["Content-Type"] = "application/json";
     }
 
     const response = await fetch(`${baseUrl}/update-profile/`, {
       method: "PATCH",
       headers: headers,
-      body: bodyData,
+      body: contentType.includes("multipart/form-data") ? bodyData as FormData : JSON.stringify(bodyData as ProfileData),
     });
 
     const result = await response.json();

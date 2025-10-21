@@ -20,7 +20,10 @@ export const fetchJobs = async (companyId?: string) => {
 export const syncJobs = async (companyId: string) => {
   try {
     const response = await fetch(`/api/sync-jobs/${companyId}`, {
-      method: 'POST'
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
         
     if (!response.ok) {

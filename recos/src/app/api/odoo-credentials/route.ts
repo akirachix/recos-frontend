@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const baseUrl = process.env.BASE_URL;
-if (!baseUrl) throw new Error("API base URL not configured");
 
 export async function POST(request: NextRequest) {
   try {
