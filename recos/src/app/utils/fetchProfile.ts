@@ -27,7 +27,7 @@ export async function fetchProfile() {
 }
 
 export async function fetchUpdateProfile(
-  data: FormData | any 
+  data: FormData 
 ) {
   try {
     const token = getAuthToken();

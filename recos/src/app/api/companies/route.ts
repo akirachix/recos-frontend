@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const baseUrl = process.env.BASE_URL;
-if (!baseUrl) throw new Error("API base URL missing");
 
 export async function GET(request: NextRequest) {
   try {
