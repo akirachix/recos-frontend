@@ -23,7 +23,7 @@ describe("useFetchProfile hook", () => {
   });
 
   it("sets error if fetchProfile fails", async () => {
-    (fetchProfileModule.fetchProfile as jest.Mock).mockRejectedValue(new Error("Fetch failed"));
+    (fetchProfileModule.fetchProfile as jest.Mock).mockRejectedValue(new Error("F"));
 
     const { result } = renderHook(() => useFetchProfile());
 
