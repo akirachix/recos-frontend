@@ -30,16 +30,16 @@ interface PerformanceItem {
 export default function CandidateReportPage() {
   const candidate: Candidate = {
     id: "1",
-    name: "Johnny Gait",
+    name: "Danait",
   };
 
   const job: Job = {
     id: "1",
-    job_title: "Quality Assurance",
+    job_title: "Python Developer",
   };
 
   const about =
-    "Detail-oriented QA tester with 2 years of experience in manual and automated testing for web and mobile apps. Skilled in creating and executing test cases, plans, and using tools like Selenium and JIRA. Committed to improving software quality and user experience through teamwork and continuous learning.";
+    "Danait is a software engineer with experience in backend and frontend development, database design, and API development. They have experience building web applications, mobile apps, and AI agents, demonstrating a strong foundation for a backend developer role.";
 
   const skills: Skill[] = [
     { name: "Machine Learning", match: 40 },
@@ -72,7 +72,7 @@ export default function CandidateReportPage() {
       <div className="min-h-screen bg-gray-50">
         <div className="w-full mx-auto px-4 py-6"> 
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-extrabold text-gray-800">Johnny Gait</h1>
+            <h1 className="text-2xl font-extrabold text-gray-800">Danait</h1>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
