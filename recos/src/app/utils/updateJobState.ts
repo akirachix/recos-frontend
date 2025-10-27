@@ -1,27 +1,19 @@
-export interface JobUpdateData {
-  company_id?: number;
-  company?: number;
-  job_title: string;
-  job_description: string;
-  posted_at?: string;
-  state?: string; 
-}
-
-export const updateJobState = async (jobId: string, state: string, jobData: JobUpdateData) => {
+export const updateJobState = async (jobId: string, state: string) => {
   try {
     const response = await fetch(`/api/jobs/${jobId}/update`, {
-      method: 'PUT',
+      method: 'PATCH',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        company: jobData.company_id || jobData.company,
-        job_title: jobData.job_title,
-        job_description: jobData.job_description,
-        posted_at: jobData.posted_at,
-        state
-      })
+        state,
+      }),
     });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.details?.message || 'Failed to update job state');
+    }
 
     return await response.json();
   } catch (error) {

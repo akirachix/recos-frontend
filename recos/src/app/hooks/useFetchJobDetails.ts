@@ -54,6 +54,8 @@ export const useFetchJobDetails = (jobId: string) => {
       setLoading(true);
       try {
         const jobData = await fetchJobDetails(jobId);
+        console.log("Job Data",jobData);
+        
         const { job: rawJob } = jobData;
         const transformedJob: Job = {
           ...rawJob,
@@ -65,6 +67,9 @@ export const useFetchJobDetails = (jobId: string) => {
           status: (rawJob.state || rawJob.status || 'Open').charAt(0).toUpperCase() + (rawJob.state || rawJob.status || 'Open').slice(1),
           total_applicants: rawJob.total_applicants || 0
         };
+
+        console.log('Transformed job data:', transformedJob);
+        
         setJob(transformedJob);
 
         const candidateData = await fetchJobCandidates(jobId);
@@ -95,23 +100,25 @@ export const useFetchJobDetails = (jobId: string) => {
 
   const handleStateUpdate = async (newState: string) => {
     if (!job) return;
-    
+
     setUpdating(true);
     try {
-      const updatedJob = await updateJobState(jobId, newState, job);
-      
+      const updatedJob = await updateJobState(jobId, newState); // Removed job parameter
+
       const transformedJob: Job = {
         ...job,
         state: updatedJob.state,
-        status: updatedJob.state.charAt(0).toUpperCase() + updatedJob.state.slice(1)
+        status: updatedJob.state.charAt(0).toUpperCase() + updatedJob.state.slice(1),
       };
-      
+
       setJob(transformedJob);
-      
-      window.dispatchEvent(new CustomEvent('jobUpdated', { 
-        detail: { jobId, state: updatedJob.state } 
-      }));
-      
+
+      window.dispatchEvent(
+        new CustomEvent('jobUpdated', {
+          detail: { jobId, state: updatedJob.state },
+        })
+      );
+
       return transformedJob;
     } catch (error) {
       setError((error as Error).message);
