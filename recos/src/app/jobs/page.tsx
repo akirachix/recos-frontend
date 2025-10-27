@@ -168,64 +168,6 @@ function JobsPageContent() {
           )}
         </div>
       </div>
-
-      {/* <div className="overflow-x-auto">
-        <table className="w-full border-collapse bg-purple-100 rounded-lg overflow-hidden">
-          <thead className="bg-purple-600 text-white">
-            <tr>
-              <th className="p-3 text-left">Job Title</th>
-              <th className="p-3 text-left">Applicants</th>
-              <th className="p-3 text-left">AI Shortlisted</th>
-              <th className="p-3 text-left">Date Posted</th>
-              <th className="p-3 text-left">Status</th>
-              <th className="p-3 text-left">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={6} className="p-8 text-center">
-                  <Loader size="md" message="Loading jobs..." className="py-4" />
-                </td>
-              </tr>
-            ) : paginatedJobs.length > 0 ? (
-              paginatedJobs.map((job) => (
-                <tr key={job.job_id} className="bg-white hover:bg-gray-50">
-                  <td className="p-3">{job.job_title}</td>
-                  <td className="p-3">{job.applicants}</td>
-                  <td className="p-3">{job.ai_shortlisted}</td>
-                  <td className="p-3">{job.posted_at}</td>
-                  <td className="p-3">
-                    <span
-                      className={`px-4 py-1 rounded-sm text-sm font-medium text-white ${getStatusColor(job.status)}`}
-                    >
-                      {formatButtonStatus(job.status)}
-                    </span>
-                  </td>
-                  <td className="p-3">
-                    <Link href={`/jobs/${job.job_id}`}>
-                      <button className="p-1 flex gap-1 border-[#141344] text-sm border-1 text-[#141344] rounded mr-2 cursor-pointer hover:bg-purple-50 transition-colors">
-                        <EyeIcon className="h-5 w-5 text-gray-500" aria-hidden="true" />
-                        View Details
-                      </button>
-                    </Link>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={6} className="p-8 text-center text-gray-500">
-                  {jobs.length === 0 ? (
-                    <p>No jobs found for this company.</p>
-                  ) : (
-                    "No jobs match your search criteria."
-                  )}
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div> */}
    <div className="overflow-x-auto">
   <table className="w-full border-collapse bg-purple-100 rounded-lg overflow-hidden">
     <thead className="bg-purple-600 text-white">

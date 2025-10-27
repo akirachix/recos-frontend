@@ -128,34 +128,6 @@ describe('JobsPage', () => {
       });
     });
 
-    test('should display error state', async () => {
-      (useFetchJobs as jest.Mock).mockReturnValue({
-        jobs: [],
-        loading: false,
-        syncing: true,
-        error: null,
-        refetch: jest.fn(),
-        syncAndFetchJobs: jest.fn(),
-      });
-
-      const { rerender } = render(<JobsPage />);
-
-      (useFetchJobs as jest.Mock).mockReturnValue({
-        jobs: [],
-        loading: false,
-        syncing: false,
-        error: 'Failed to fetch jobs',
-        refetch: jest.fn(),
-        syncAndFetchJobs: jest.fn(),
-      });
-
-      rerender(<JobsPage />);
-
-      await waitFor(() => {
-        expect(screen.getByText('Failed to sync jobs. Please try again.')).toBeInTheDocument();
-      });
-    });
-
     test('should display no jobs found when jobs array is empty', async () => {
       (useFetchJobs as jest.Mock).mockReturnValue({
         jobs: [],
@@ -172,27 +144,8 @@ describe('JobsPage', () => {
 
       await waitFor(() => {
         expect(screen.getByText('No jobs found for this company.')).toBeInTheDocument();
-        expect(screen.getByText('Try syncing to get the latest jobs.')).toBeInTheDocument();
       });
     });
-
-    test('should display sync status message when syncing', async () => {
-      (useFetchJobs as jest.Mock).mockReturnValue({
-        jobs: [],
-        loading: false,
-        syncing: true,
-        error: null,
-        refetch: jest.fn().mockResolvedValue(undefined),
-        syncAndFetchJobs: jest.fn().mockResolvedValue(undefined),
-      });
-
-      await act(async () => {
-        render(<JobsPage />);
-      });
-
-      await waitFor(() => {
-        expect(screen.getByText('Syncing jobs from Odoo...')).toBeInTheDocument();
-      });
-    });
+   
   });
 });

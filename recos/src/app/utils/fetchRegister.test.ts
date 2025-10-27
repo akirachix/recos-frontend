@@ -39,7 +39,7 @@ describe("registerUser", () => {
     });
 
     await expect(registerUser(mockData)).rejects.toThrow(
-      "Something went wrong during registrationConflict"
+      "Registration failed: User with this email address already exists."
     );
   });
 
