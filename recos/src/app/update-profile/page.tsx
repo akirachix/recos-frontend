@@ -85,7 +85,6 @@ export default function UpdateProfilePage() {
       last_name = names.slice(1).join(" ");
     }
 
-    // Always send FormData so the type matches fetchUpdateProfile(FormData)
     const form = new FormData();
     form.append("email", cleanEmail);
     form.append("first_name", first_name);

@@ -1,15 +1,13 @@
 'use client';
-
 import { useFetchJobDetails } from '@/app/hooks/useFetchJobDetails';
 import { useParams } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import ClientLayout from '@/app/shared-components/ClientLayout';
 import Link from 'next/link';
-import { EyeIcon, ChevronDoubleLeftIcon, ChevronDoubleRightIcon, ChevronDownIcon , ArrowLeftIcon} from '@heroicons/react/24/outline';
+import { EyeIcon, ChevronDoubleLeftIcon, ChevronDoubleRightIcon, ChevronDownIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
 import Button from '@/app/shared-components/Button';
 import { useRouter } from 'next/navigation';
-import { useCompany } from "@/app/context/CompanyContext";
-
+import { useCompany } from '@/app/context/CompanyContext';
 
 const JOB_STATES = [
   { value: 'open', label: 'Open' },
@@ -21,12 +19,10 @@ const JOB_STATES = [
 export const formatButtonStatus = (status: string) => {
   if (status.toLowerCase() === 'open') {
     return status.charAt(0).toUpperCase() + status.slice(1);
-  }
-  else if (status.toLowerCase().endsWith('e')) {
+  } else if (status.toLowerCase().endsWith('e')) {
     return status.charAt(0).toUpperCase() + status.slice(1) + 'd';
-  }
-  else{
-  return status.charAt(0).toUpperCase() + status.slice(1) + 'ed';
+  } else {
+    return status.charAt(0).toUpperCase() + status.slice(1) + 'ed';
   }
 };
 
@@ -43,31 +39,29 @@ export default function JobDetailsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [pageSize, setPageSize] = useState(5);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const pageSizes = [5, 10, 20];
   const [isStateDropdownOpen, setIsStateDropdownOpen] = useState(false);
+  const [updateError, setUpdateError] = useState<string | null>(null); 
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const stateDropdownRef = useRef<HTMLDivElement>(null);
-
-  const router = useRouter(); 
+  const router = useRouter();
+  const pageSizes = [5, 10, 20];
 
   const useCompanyId = (): string | null => {
-  const params = useParams();
-  const { selectedCompany } = useCompany();
-  let companyId = params.companyId;
-  if (!companyId && selectedCompany) {
-    companyId = selectedCompany.company_id?.toString();
-  }
+    const params = useParams();
+    const { selectedCompany } = useCompany();
+    let companyId = params.companyId;
+    if (!companyId && selectedCompany) {
+      companyId = selectedCompany.company_id?.toString();
+    }
+    if (typeof companyId === 'string' && companyId.trim() !== '') {
+      return companyId;
+    }
+    return null;
+  };
 
-  if (typeof companyId === 'string' && companyId.trim() !== '') {
-    return companyId;
-  }
-  
-  return null;
-};
-  
-const companyId = useCompanyId();
+  const companyId = useCompanyId();
 
-const handleNavigate = () => {
+  const handleNavigate = () => {
     router.push(`/candidates/${companyId}`);
   };
 
@@ -79,7 +73,6 @@ const handleNavigate = () => {
         setIsDropdownOpen(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -92,7 +85,6 @@ const handleNavigate = () => {
         setIsStateDropdownOpen(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -101,21 +93,41 @@ const handleNavigate = () => {
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'open': return 'bg-[#141244]'; 
-      case 'pause': return 'bg-yellow-600'; 
-      case 'close': return 'bg-green-500'; 
-      case 'cancel': return 'bg-gray-600'; 
-      default: return 'bg-gray-800'; 
+      case 'open':
+        return 'bg-[#141244]';
+      case 'pause':
+        return 'bg-yellow-600';
+      case 'close':
+        return 'bg-green-500';
+      case 'cancel':
+        return 'bg-gray-600';
+      default:
+        return 'bg-gray-800';
     }
   };
 
   const getStatusTextColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'open': return 'text-[#141244]'; 
-      case 'pause': return 'text-yellow-600'; 
-      case 'close': return 'text-green-500'; 
-      case 'cancel': return 'text-gray-600'; 
-      default: return 'text-gray-800'; 
+      case 'open':
+        return 'text-[#141244]';
+      case 'pause':
+        return 'text-yellow-600';
+      case 'close':
+        return 'text-green-500';
+      case 'cancel':
+        return 'text-gray-600';
+      default:
+        return 'text-gray-800';
+    }
+  };
+
+  const handleStateChange = async (state: string) => {
+    setIsStateDropdownOpen(false);
+    setUpdateError(null); 
+    try {
+      await handleStateUpdate(state);
+    } catch (error) {
+      setUpdateError((error as Error).message); 
     }
   };
 
@@ -163,12 +175,13 @@ const handleNavigate = () => {
                   <span className="p-1 bg-gray-100 rounded">{job.created_at}</span>
                 </div>
               </div>
-
               <div className="flex gap-4 mb-6">
                 <div className="p-4 bg-pink-100 shadow-sm rounded-lg w-3/4">
                   <h3 className="font-semibold">Job Summary</h3>
                   <p className="text-sm">
-                    {job.generated_job_summary && typeof job.generated_job_summary === 'string' && job.generated_job_summary.trim() !== ''
+                    {job.generated_job_summary &&
+                    typeof job.generated_job_summary === 'string' &&
+                    job.generated_job_summary.trim() !== ''
                       ? job.generated_job_summary === 'Job description is too short to generate a summary.'
                         ? 'No job summary'
                         : job.generated_job_summary
@@ -187,11 +200,11 @@ const handleNavigate = () => {
                   </div>
                   {showFullDescription && (
                     <div className="mt-2">
-                      {job.job_description && typeof job.job_description === 'string' && job.job_description.trim() !== '' && job.job_description !== 'False' ? (
-                        <div
-                          className="text-sm"
-                          dangerouslySetInnerHTML={{ __html: job.job_description }}
-                        />
+                      {job.job_description &&
+                      typeof job.job_description === 'string' &&
+                      job.job_description.trim() !== '' &&
+                      job.job_description !== 'False' ? (
+                        <div className="text-sm" dangerouslySetInnerHTML={{ __html: job.job_description }} />
                       ) : (
                         <p className="text-sm text-gray-500">No job description</p>
                       )}
@@ -205,12 +218,16 @@ const handleNavigate = () => {
                   </div>
                   <div className="relative" ref={stateDropdownRef}>
                     <button
-                      className={`px-8 py-2 rounded w-full flex items-center justify-between ${getStatusColor(job.status)} text-white cursor-pointer`}
+                      className={`px-8 py-2 rounded w-full flex items-center justify-between ${getStatusColor(
+                        job.status
+                      )} text-white cursor-pointer`}
                       onClick={() => setIsStateDropdownOpen(!isStateDropdownOpen)}
                       disabled={updating}
                     >
                       {updating ? 'Updating...' : formatButtonStatus(job.status)}
-                      <ChevronDownIcon className={`ml-2 h-4 w-4 transition-transform ${isStateDropdownOpen ? 'rotate-180' : ''}`} />
+                      <ChevronDownIcon
+                        className={`ml-2 h-4 w-4 transition-transform ${isStateDropdownOpen ? 'rotate-180' : ''}`}
+                      />
                     </button>
                     {isStateDropdownOpen && (
                       <div className="absolute top-full right-0 mt-1 w-48 bg-white border border-gray-200 rounded shadow-lg z-50 animate-fade-in">
@@ -221,14 +238,10 @@ const handleNavigate = () => {
                               className={`px-4 py-2 cursor-pointer hover:bg-gray-100 focus:bg-gray-100 ${
                                 job.state === state.value ? 'bg-gray-50 font-semibold' : ''
                               } ${getStatusTextColor(state.value)}`}
-                              onClick={() => {
-                                setIsStateDropdownOpen(false); 
-                                handleStateUpdate(state.value);
-                              }}
+                              onClick={() => handleStateChange(state.value)}
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter' || e.key === ' ') {
-                                  setIsStateDropdownOpen(false); 
-                                  handleStateUpdate(state.value);
+                                  handleStateChange(state.value);
                                 }
                               }}
                               role="option"
@@ -242,9 +255,11 @@ const handleNavigate = () => {
                       </div>
                     )}
                   </div>
+                  {updateError && (
+                    <div className="text-red-500 text-sm mt-2">Error updating job state: {updateError}</div>
+                  )}
                 </div>
               </div>
-
               <div className="mb-4 flex justify-between items-center">
                 <h2 className="text-xl font-semibold w-1/2">List of Candidates</h2>
                 <div className="flex gap-8 justify-end items-center w-1/2">
@@ -269,9 +284,7 @@ const handleNavigate = () => {
                       />
                     </Button>
                     {isDropdownOpen && (
-                      <div
-                        className="absolute top-full right-0 mt-1 w-20 bg-white border border-gray-200 rounded shadow-lg z-50 animate-fade-in max-h-40 overflow-y-auto"
-                      >
+                      <div className="absolute top-full right-0 mt-1 w-20 bg-white border border-gray-200 rounded shadow-lg z-50 animate-fade-in max-h-40 overflow-y-auto">
                         <ul className="py-1 text-md text-[#803CEB]" role="listbox">
                           {pageSizes.map((size, index) => (
                             <li
@@ -304,7 +317,6 @@ const handleNavigate = () => {
                   </div>
                 </div>
               </div>
-
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse bg-purple-100 rounded-lg overflow-hidden">
                   <thead className="bg-purple-600 text-white">
@@ -325,11 +337,15 @@ const handleNavigate = () => {
                           <td className="p-3">
                             <span
                               className={`px-4 py-1 rounded-sm text-sm font-medium ${
-                                candidate.stage === 'Applied' ? 'bg-[#141344] text-white' :
-                                candidate.stage === 'Interview' ? 'bg-blue-500 text-white' :
-                                candidate.stage === 'Offer' ? 'bg-green-500 text-white' :
-                                candidate.stage === 'Screening' ? 'bg-yellow-500 text-white' :
-                                'bg-gray-500 text-white'
+                                candidate.stage === 'Applied'
+                                  ? 'bg-[#141344] text-white'
+                                  : candidate.stage === 'Interview'
+                                  ? 'bg-blue-500 text-white'
+                                  : candidate.stage === 'Offer'
+                                  ? 'bg-green-500 text-white'
+                                  : candidate.stage === 'Screening'
+                                  ? 'bg-yellow-500 text-white'
+                                  : 'bg-gray-500 text-white'
                               }`}
                             >
                               {candidate.stage}
@@ -338,18 +354,23 @@ const handleNavigate = () => {
                           <td className="p-3">
                             <span
                               className={`px-4 py-1 rounded-sm text-sm font-medium ${
-                                candidate.interview_status === 'Scheduled' ? 'bg-[#141344] text-white' :
-                                candidate.interview_status === 'Pending' ? 'bg-yellow-500 text-white' :
-                                candidate.interview_status === 'Completed' ? 'bg-green-500 text-white' :
-                                'bg-red-500 text-white'
+                                candidate.interview_status === 'Scheduled'
+                                  ? 'bg-[#141344] text-white'
+                                  : candidate.interview_status === 'Pending'
+                                  ? 'bg-yellow-500 text-white'
+                                  : candidate.interview_status === 'Completed'
+                                  ? 'bg-green-500 text-white'
+                                  : 'bg-red-500 text-white'
                               }`}
                             >
                               {candidate.interview_status}
                             </span>
                           </td>
                           <td className="p-3">
-                            <button className="p-1 flex border-[#141344] text-sm border-1 text-[#141344] rounded cursor-pointer"
-                            onClick={handleNavigate}>
+                            <button
+                              className="p-1 flex border-[#141344] text-sm border-1 text-[#141344] rounded cursor-pointer"
+                              onClick={handleNavigate}
+                            >
                               <EyeIcon className="h-5 w-5 text-gray-500 mr-1" aria-hidden="true" />
                               View Profile
                             </button>
@@ -366,14 +387,11 @@ const handleNavigate = () => {
                   </tbody>
                 </table>
               </div>
-
               {totalCandidates > 0 && (
                 <div className="mt-4 flex justify-center items-center space-x-2">
                   <button
                     className={`px-4 py-2 rounded ${
-                      currentPage === 1
-                        ? 'text-gray-500 cursor-not-allowed'
-                        : 'text-purple-600 cursor-pointer'
+                      currentPage === 1 ? 'text-gray-500 cursor-not-allowed' : 'text-purple-600 cursor-pointer'
                     }`}
                     onClick={handlePrevious}
                     disabled={currentPage === 1}
@@ -383,9 +401,7 @@ const handleNavigate = () => {
                   <span className="text-[#141344]">{currentPage} of {totalPages}</span>
                   <button
                     className={`px-4 py-2 rounded ${
-                      currentPage === totalPages
-                        ? 'text-gray-500 cursor-not-allowed'
-                        : 'text-purple-600 cursor-pointer'
+                      currentPage === totalPages ? 'text-gray-500 cursor-not-allowed' : 'text-purple-600 cursor-pointer'
                     }`}
                     onClick={handleNext}
                     disabled={currentPage === totalPages}

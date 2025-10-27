@@ -145,6 +145,12 @@ export default function Signup() {
                 )}
               </button>
             </div>
+            {error && (
+              <p className="mt-2 text-red-600 text-center font-semibold">{error}</p>
+            )}
+            {successMessage && (
+              <p className="mt-2 text-green-600 text-center font-semibold">{successMessage}</p>
+            )}
             <button
               type="submit"
               disabled={loading}
@@ -152,12 +158,7 @@ export default function Signup() {
             >
               {loading ? "Signing Up..." : "Sign Up"}
             </button>
-            {error && (
-              <p className="mt-2 text-red-600 text-center font-semibold">{error}</p>
-            )}
-            {successMessage && (
-              <p className="mt-2 text-green-600 text-center font-semibold">{successMessage}</p>
-            )}
+            
           </form>
           <p className="text-center font-semibold mt-6">
             Already have an account?{" "}

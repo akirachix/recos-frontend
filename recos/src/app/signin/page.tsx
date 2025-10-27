@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -10,14 +9,12 @@ import Image from "next/image";
 export default function SignIn() {
   const router = useRouter();
   const { login, loading, error } = useLogin();
-
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -31,15 +28,10 @@ export default function SignIn() {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setSuccessMessage("");
-    setErrorMessage("");
-    try {
-      const success = await login(form);
-      if (success) {
-        setSuccessMessage("Successfully logged in!");
-        setTimeout(() => router.push("/authentication/odoo"), 1000);
-      }
-    } catch (error) {
-      setErrorMessage("Login failed: " + (error as Error).message);
+    const success = await login(form);
+    if (success) {
+      setSuccessMessage("Successfully logged in!");
+      setTimeout(() => router.push("/authentication/odoo"), 1000);
     }
   };
 
@@ -48,7 +40,6 @@ export default function SignIn() {
   return (
     <div className="relative bg-[#141244] h-screen w-screen flex items-center justify-center overflow-hidden px-4">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg w-[1400px] h-[780px] z-10" />
-
       <div className="relative z-20 bg-[#fff7f9] rounded-xl shadow-lg flex flex-col md:flex-row w-full max-w-7xl max-h-[90vh] overflow-auto">
         <div className="flex flex-col p-8 md:p-16 md:w-1/2">
           <div className="absolute top-6 left-6">
@@ -57,7 +48,6 @@ export default function SignIn() {
           <h2 className="text-purple-700 font-semibold text-xl mt-16 mb-10 select-none">
             Sign In to Recos
           </h2>
-
           <form onSubmit={handleSubmit} className="flex flex-col space-y-7">
             <div>
               <label
@@ -76,7 +66,6 @@ export default function SignIn() {
                 className="w-full border border-[#24184e] rounded-md py-2 px-3 outline-none focus:ring-2 focus:ring-purple-700 text-sm sm:text-base"
               />
             </div>
-
             <div className="relative">
               <label
                 htmlFor="password"
@@ -103,14 +92,13 @@ export default function SignIn() {
                 {showPassword ? <EyeIcon className="h-5 w-5" /> : <EyeSlashIcon className="h-5 w-5" />}
               </button>
             </div>
-
             <div className="flex justify-end text-sm text-[#24184e]">
               <Link href="/authentication/forgot-password" className="text-purple-700 hover:underline">
                 Forgot Password?
               </Link>
             </div>
-             {errorMessage && (
-              <p className="mt-2 text-red-600 text-center font-semibold text-sm sm:text-base">{errorMessage}</p>
+            {error && (
+              <p className="mt-2 text-red-600 text-center font-semibold text-sm sm:text-base">{error}</p>
             )}
             {successMessage && (
               <p className="mt-2 text-green-600 text-center font-semibold text-sm sm:text-base">{successMessage}</p>
@@ -122,9 +110,7 @@ export default function SignIn() {
             >
               {loading ? "Signing In..." : "Sign In"}
             </button>
-           
           </form>
-
           <p className="text-center text-[#24184e] font-semibold mt-8 select-none text-sm sm:text-base">
             Don&apos;t have an account?{" "}
             <Link href="/signup" className="text-purple-700 font-bold hover:underline">

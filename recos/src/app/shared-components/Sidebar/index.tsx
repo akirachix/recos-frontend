@@ -5,7 +5,6 @@ import {
   UserGroupIcon,
   ChartBarIcon,
   CalendarIcon,
-  CogIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   Bars3Icon,
@@ -134,7 +133,7 @@ export default function Sidebar() {
       )}
       <div
         ref={sidebarRef}
-        className={`fixed top-0 left-0 h-full bg-[#141244] text-white flex flex-col transition-transform duration-300 z-50
+        className={`fixed top-0 left-0 h-full bg-[#141244] rounded-br-xl rounded-tr-xl text-white flex flex-col transition-transform duration-300 z-50
           ${isCollapsed
             ? "-translate-x-full lg:translate-x-0 lg:w-16 w-0 overflow-hidden"
             : "translate-x-0 lg:w-64 w-full"
