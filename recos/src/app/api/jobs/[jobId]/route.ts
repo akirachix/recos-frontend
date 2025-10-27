@@ -43,6 +43,9 @@ export async function GET(request: NextRequest, context: { params: Promise<{ job
 
     const jobData = await response.json() as RawJob; 
 
+    console.log('Fetched job data:', jobData);
+    
+
     const enhancedJob: RawJob = {
       ...jobData,
       total_applicants: jobData.total_applicants || 0, 
@@ -53,6 +56,8 @@ export async function GET(request: NextRequest, context: { params: Promise<{ job
       status: jobData.state.charAt(0).toUpperCase() + jobData.state.slice(1)
     };
 
+    console.log('Enhanced job data:', enhancedJob);
+    
     return NextResponse.json({ job: enhancedJob });
 
   } catch (error) {

@@ -17,10 +17,10 @@ const useLogin = () => {
     try {
       const data = await loginUser(credentials);
       if (data?.success && data.token) {
-        setAuthToken(data.token); 
+        setAuthToken(data.token);
         return true;
       } else {
-        setError(error);
+        setError(data.error || "Invalid credentials");
         return false;
       }
     } catch (err) {

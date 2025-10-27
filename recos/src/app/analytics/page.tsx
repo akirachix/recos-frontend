@@ -72,7 +72,7 @@ export default function CandidateReportPage() {
       <div className="min-h-screen bg-gray-50">
         <div className="w-full mx-auto px-4 py-6"> 
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-extrabold text-gray-800">Candidate Report</h1>
+            <h1 className="text-2xl font-extrabold text-gray-800">Johnny Gait</h1>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -103,11 +103,11 @@ export default function CandidateReportPage() {
             <div className="flex items-center gap-3">
               <span className="inline-block w-10 h-10 bg-gray-200 rounded-full" aria-label="avatar" />
               <div>
-                <div className="text-sm font-semibold text-gray-700">{candidate.name}</div>
-                <div className="text-xs text-gray-500">{job.job_title} • ID {candidate.id}</div>
+                <div className="text-xl font-semibold text-gray-700">{candidate.name}</div>
+                <div className="text-xl text-gray-500">{job.job_title} • ID {candidate.id}</div>
               </div>
             </div>
-            <span className="px-3 py-1.5 text-xs font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-100">
+            <span className="px-3 py-1.5 text-xl font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-100">
               Overall fit: {analysis.overall}
             </span>
           </div>

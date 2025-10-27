@@ -14,14 +14,13 @@ export async function registerUser(data: {
     });
     if (!response.ok) {
      
-      const errorData = await response.json();
-      throw new Error("Something went wrong during registration" + (errorData.error || response.statusText));
+      throw new Error("User with this email address already exists." );
     }
     
     const result= await response.json();
     return result
 
   } catch (error) {
-    throw new Error("Failed to register user: " + (error as Error).message);
+    throw new Error("Registration failed: " + (error as Error).message);
   }
 }

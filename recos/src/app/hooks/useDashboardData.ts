@@ -37,15 +37,13 @@ type JobsResponse = {
 } | Job[];
 
 
-// This type is still correct
 type JobWithId = Job & {
   id?: number;
   job_title?: string;
   state?: string;
 };
 
-// NEW: A type that represents the Job object from the API, which may have alternative property names.
-// This extends the base Job type to include all its original properties.
+
 type ApiJob = Job & {
   jobId?: number;
   job_id?: number;
@@ -129,7 +127,6 @@ export const useDashboardData = (companyId?: string) => {
         
         setCandidates(candidatesWithJob);
         
-        // Use normalizedJobs for calculations
         const openPositions = normalizedJobs.filter((job: JobWithId) => job.state === 'open').length;
         const completedInterviews = interviewsData.length;
         const totalCandidates = candidatesWithJob.length; 
